@@ -8,6 +8,7 @@ const { web } = require('../../app/controllers');
 const admin = require('./admin');
 const auth = require('./auth');
 const myAccount = require('./my-account');
+const dashboard = require('./dashboard');
 
 const router = new Router();
 
@@ -15,12 +16,6 @@ const localeRouter = new Router({ prefix: '/:locale' });
 
 localeRouter
   .get('/', web.auth.homeOrDashboard)
-  .get(
-    '/dashboard',
-    policies.ensureLoggedIn,
-    web.breadcrumbs,
-    render('dashboard')
-  )
   .get('/about', render('about'))
   .get('/404', render('404'))
   .get('/500', render('500'))
@@ -61,6 +56,7 @@ localeRouter
   .post('/register', policies.ensureLoggedOut, web.auth.register);
 
 localeRouter.use(myAccount.routes());
+localeRouter.use(dashboard.routes());
 localeRouter.use(admin.routes());
 
 router.use(auth.routes());

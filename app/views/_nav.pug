@@ -34,9 +34,12 @@ nav(class=['/register', '/login', config.verificationPath].includes(ctx.pathWith
     ul.navbar-nav.ml-auto
       //- links that show only if you're logged in
       if user
-        li.nav-item.ml-md-1.mt-3.mt-md-0
-          a.btn.btn-lg.d-block.text-left.text-md-center(href=l('/dashboard'), class=ctx.pathWithoutLocale.startsWith('/dashboard') ? 'btn-dark' : 'btn-outline-dark')
+        li.nav-item.dropdown.ml-md-1.mt-3.mt-md-0
+          a#navbar-dropdown-dashboard.btn.btn-lg.dropdown-toggle.d-block.text-left.text-md-center(href=l('/dashboard'), data-toggle='dropdown', aria-haspopup='true', aria-expanded='false', class=ctx.pathWithoutLocale.startsWith('/dashboard') ? 'btn-dark' : 'btn-outline-dark')
             = t('Dashboard')
+          .dropdown-menu(aria-labelledby='navbar-dropdown-dashboard')
+            a.dropdown-item(class=ctx.pathWithoutLocale === '/dashboard' ? 'active' : '', href=l('/dashboard'))= t('Overview')
+            a.dropdown-item(class=ctx.pathWithoutLocale === '/dashboard/clients' ? 'active' : '', href=l('/dashboard/clients'))= t('Clients')
         li.nav-item.dropdown.ml-md-1.mt-1.mt-md-0
           a#navbar-dropdown-my-account.btn.btn-lg.dropdown-toggle.d-block.text-left.text-md-center(href=l('/my-account'), data-toggle='dropdown', aria-haspopup='true', aria-expanded='false', class=ctx.pathWithoutLocale.startsWith('/my-account') ? 'btn-dark' : 'btn-outline-dark')
             = t('My Account')
