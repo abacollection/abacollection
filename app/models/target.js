@@ -4,31 +4,38 @@ const mongooseCommonPlugin = require('mongoose-common-plugin');
 // <https://github.com/Automattic/mongoose/issues/5534>
 mongoose.Error.messages = require('@ladjs/mongoose-error-messages');
 
-const Program = new mongoose.Schema({
+const Target = new mongoose.Schema({
   name: {
     type: String,
     required: true,
     index: true
   },
+  data_type: {
+    type: String,
+    enum: ['Frequency']
+  },
   description: {
     type: String,
     required: true
   },
-  creation_date: {
+  start_date: {
+    type: Date,
+    required: true
+  },
+  mastered_date: {
     type: Date,
     required: true
   },
   created_by: [
     { type: mongoose.Schema.ObjectId, ref: 'User'}
   ],
-  client: [
-    { type: mongoose.Schema.ObjectId, ref: 'Client'}
-  ],
-  targets: [
-    { type: mongoose.Schema.ObjectId, ref: 'Target'}
+  program: [
+    { type: mongoose.Schema.ObjectId, ref: 'Program'}
   ]
+  // TODO create mastery criterion setup
+  // TODO add phase categories
 });
 
-Program.plugin(mongooseCommonPlugin, { object: 'program'});
+Target.plugin(mongooseCommonPlugin, { object: 'target'});
 
-module.exports = mongoose.model('Program', Program);
+module.exports = mongoose.model('Target', Target);

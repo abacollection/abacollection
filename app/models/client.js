@@ -1,13 +1,8 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 const mongooseCommonPlugin = require('mongoose-common-plugin');
-
-const Users = require('./user');
 
 // <https://github.com/Automattic/mongoose/issues/5534>
 mongoose.Error.messages = require('@ladjs/mongoose-error-messages');
-
-const config = require('../../config');
 
 const Client = new mongoose.Schema({
   first_name: {
