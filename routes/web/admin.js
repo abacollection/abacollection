@@ -16,4 +16,4 @@ router.put('/users/:id', web.admin.users.update);
 router.post('/users/:id/login', web.admin.users.login);
 router.delete('/users/:id', web.admin.users.remove);
 
-module.exports = router;
+module.exports = router

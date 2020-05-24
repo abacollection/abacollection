@@ -4,6 +4,7 @@ const { Clients } = require('../../../models');
 const config = require('../../../../config');
 
 async function list(ctx) {
+  // TODO add limit to only allow them to see clients they have permissions for
   const [clients, itemCount] = await Promise.all([
     Clients.find({})
       .limit(ctx.query.limit)

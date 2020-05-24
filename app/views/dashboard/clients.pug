@@ -2,6 +2,35 @@
 extends ../layout
 
 block body
+  #modal-add-client(tabindex='-1', role='dialog').modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header.d-block.text-center
+          h5.modal-title= t('Add client')
+        form(action=ctx.path, method='POST').ajax-form.confirm-prompt.mt-3
+          input(type='hidden', name='_method', value='PUT')
+          input(type='hidden', name='_csrf', value=ctx.csrf)
+          input(type='hidden', name='add_client', value='true')
+          .modal-body
+            .form-row
+              .form-group.floating-label.col
+                input#input-first-name(type='text', name='first_name', required, placeholder=" ").form-control
+                label(for='input-first-name')= t('First Name')
+              .form-group.floating-label.col
+                input#input-last-name(type='text', name='last_name', required, placeholder=" ").form-control
+                label(for='input-last-name')= t('Last Name')
+            .form-group.floating-label
+              input#input-dob(type='date', name='dob').form-control
+              label(for='input-dob')= t('Date of Birth')
+            .form-group.floating-label
+              select#input-gender(name='gender').form-control
+                option(value='0')= t('-- Select --')
+                option(value='1')= t('Male')
+                option(value='2')= t('Female')
+              label(for='input-gender')= t('Gender')
+          .modal-footer.text-right
+            button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
+            button(type='submit').btn.btn-primary= t('Submit')
   .container-fluid.py-3
     .row.mt-1
       .col
