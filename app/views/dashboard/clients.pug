@@ -6,4 +6,8 @@ block body
     .row.mt-1
       .col
         include ../_breadcrumbs
-        p= t('testing')
+        .card.card-bg-light
+          .card-body
+            button(data-toggle='modal', data-target='#modal-add-client', type='button').btn.btn-secondary.btn-sm= t('Add Client')
+        if clients.length === 0
+          .alert.alert-info= t('No clients exist yet')
