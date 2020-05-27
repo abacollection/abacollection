@@ -24,9 +24,9 @@ block body
               label(for='input-dob')= t('Date of Birth')
             .form-group.floating-label
               select#input-gender(name='gender').form-control
-                option(value='0')= t('-- Select --')
-                option(value='1')= t('Male')
-                option(value='2')= t('Female')
+                option(value='')= t('-- Select --')
+                option(value='Male')= t('Male')
+                option(value='Female')= t('Female')
               label(for='input-gender')= t('Gender')
           .modal-footer.text-right
             button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
@@ -40,3 +40,20 @@ block body
             button(data-toggle='modal', data-target='#modal-add-client', type='button').btn.btn-secondary.btn-sm= t('Add Client')
         if clients.length === 0
           .alert.alert-info= t('No clients exist yet')
+        else
+          .table-responsive
+            table.table.table-hover.table-bordered
+              thead.thead-dark
+                tr
+                  th(scope='col')= t('First Name')
+                  th(scope='col')= t('Last Name')
+                  th(scope='col')= t('Date of Birth')
+                  th(scope='col')= t('Gender')
+                tbody
+                  each client in clients
+                    tr
+                      td.align-middle= client.first_name
+                      td.align-middle= client.last_name
+                      td.align-middle= moment(client.dob).format('M/D/YY')
+                      td.align-middle= client.gender
+          include ../_pagination
