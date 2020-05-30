@@ -89,4 +89,26 @@ async function retrieveClients(ctx, next) {
   return next();
 }
 
-module.exports = { list, add_client, retrieveClients };
+async function delete_client(ctx) {
+  const client = await Clients.findByIdAndRemove(ctx.params.id);
+  ctx.flash('custom', {
+    title: ctx.request.t('Success'),
+    text: ctx.translate('REQUEST_OK'),
+    type: 'success',
+    toast: true,
+    showConfirmButton: false,
+    timer: 3000,
+    position: 'top'
+  });
+
+  const redirectTo = '/dashboard/clients';
+  if (ctx.accepts('html')) ctx.redirect(redirectTo);
+  else ctx.body = { redirectTo };
+}
+
+module.exports = {
+  list,
+  add_client,
+  retrieveClients,
+  delete_client
+};
