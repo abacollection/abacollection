@@ -21,7 +21,7 @@ const Member = new mongoose.Schema({
 Member.plugin(mongooseCommonPlugin, {
   object: 'member',
   omitCommonFields: false,
-  omitExtraFields: ['_id', '_v'],
+  //omitExtraFields: ['_id', '_v'],
   uniqueID: false
 });
 

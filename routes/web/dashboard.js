@@ -10,7 +10,10 @@ const router = new Router({ prefix: '/dashboard' });
 router.use(policies.ensureLoggedIn);
 router.use(web.breadcrumbs);
 router.get('/', render('dashboard'));
-router.get('/clients', paginate.middleware(10, 50), web.dashboard.clients.list);
+router.get('/clients',
+  paginate.middleware(10, 50),
+  web.dashboard.clients.retrieveClients,
+  web.dashboard.clients.list);
 router.post('/clients', web.dashboard.clients.add_client);
 router.delete('/clients/:id', web.dashboard.clients.delete_client);
 

@@ -59,7 +59,7 @@ block body
                       td.align-middle= client.gender
                       td.align-middle
                         .btn-group(role='group', aria-label=t('Actions'))
-                          form.ajax-form-confirm-prompt.btn-group(action=l('/dashboard/clients/${client.id}'), method="POST", autocomplete="off")
+                          form.ajax-form-confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}`), method="POST", autocomplete="off")
                             input(type='hidden', name='_csrf', value=ctx.csrf)
                             input(type='hidden', name='_method', value='DELETE')
                             button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
