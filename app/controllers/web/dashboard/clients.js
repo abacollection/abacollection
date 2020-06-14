@@ -89,8 +89,30 @@ async function retrieveClients(ctx, next) {
   return next();
 }
 
+async function retrieveClient(ctx, next) {
+  if (!isSANB(ctx.params.client_id) && !isSANB(ctx.request.body.client))
+    return ctx.throw(
+      Boom.badRequest(ctx.translateError('CLIENT_DOES_NOT_EXIST'))
+    );
+
+  const id = isSANB(ctx.params.client_id)
+    ? ctx.params.client_id
+    : ctx.request.body.client;
+
+  ctx.state.client = ctx.state.clients.find(client =>
+    [client.id, client.name].includes(id)
+  );
+
+  if (!ctx.state.client)
+    return ctx.throw(
+      Boom.badRequest(ctx.translateError('CLIENT_DOES_NOT_EXIST'))
+    );
+
+  return next();
+}
+
 async function delete_client(ctx) {
-  const client = await Clients.findByIdAndRemove(ctx.params.id);
+  await Clients.findByIdAndRemove(ctx.state.client._id);
   ctx.flash('custom', {
     title: ctx.request.t('Success'),
     text: ctx.translate('REQUEST_OK'),
@@ -110,5 +132,6 @@ module.exports = {
   list,
   add_client,
   retrieveClients,
+  retrieveClient,
   delete_client
 };

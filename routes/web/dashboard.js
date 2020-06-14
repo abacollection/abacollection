@@ -15,6 +15,8 @@ router.get('/clients',
   web.dashboard.clients.retrieveClients,
   web.dashboard.clients.list);
 router.post('/clients', web.dashboard.clients.add_client);
-router.delete('/clients/:id', web.dashboard.clients.delete_client);
+router.delete('/clients/:client_id',
+  web.dashboard.clients.retrieveClient,
+  web.dashboard.clients.delete_client);
 
 module.exports = router;
