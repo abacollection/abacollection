@@ -51,7 +51,7 @@ async function add_client(ctx) {
       members: [{ user: ctx.state.user._id, group: 'admin' }]
     });
 
-    let redirectTo = '/dashboard/clients';
+    const redirectTo = '/dashboard/clients';
 
     ctx.flash('custom', {
       title: ctx.request.t('Success'),

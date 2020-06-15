@@ -65,5 +65,7 @@ module.exports = {
   PASSPORT_MISSING_USERNAME_ERROR: 'Please enter an email address.',
   PASSPORT_USER_EXISTS_ERROR:
     'A user with the given email address is already registered.  Please try to log in or reset the password if this account belongs to you.',
-  CLIENT_DOES_NOT_EXIST: 'Client does not exist on your account.'
+  CLIENT_DOES_NOT_EXIST: 'Client does not exist on your account.',
+  INVALID_NAME: 'Must provide a client name.',
+  INVALID_DOB: 'Date of Birth must be a date.'
 };
