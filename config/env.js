@@ -4,7 +4,7 @@ const path = require('path');
 // otherwise tests run from the root folder wont work
 const env = require('@ladjs/env')({
   path: path.join(__dirname, '..', '.env'),
-  Idefaults: path.join(__dirname, '..', '.env.defaults'),
+  defaults: path.join(__dirname, '..', '.env.defaults'),
   schema: path.join(__dirname, '..', '.env.schema')
 });
 

@@ -13,6 +13,8 @@ module.exports = {
   INVALID_PASSWORD_CONFIRM: 'Password confirmation did not match new password.',
   INVALID_PASSWORD_STRENGTH: 'Password strength was not strong enough.',
   INVALID_PROVIDER: 'We do not support this authentication provider.',
+  INVALID_RECOVERY_PASSCODE: 'Invalid recovery passcode.',
+  INVALID_RECOVERY_KEY: 'Invalid recovery key.',
   INVALID_RESET_PASSWORD: 'Reset token and email were not valid together.',
   INVALID_RESET_TOKEN: 'Reset token provided was invalid.',
   INVALID_SESSION_SECRET: 'Invalid session secret.',
@@ -22,7 +24,8 @@ module.exports = {
   INVALID_TOKEN: 'Invalid CSRF token.',
   INVALID_VERIFICATION_PIN: 'The verification pin you entered was invalid.',
   EMAIL_VERIFICATION_REQUIRED: 'Please verify your email address to continue.',
-  EMAIL_VERIFICATION_INTERVAL: 'Please wait for %s and try again.',
+  EMAIL_VERIFICATION_INTERVAL:
+    'Please wait for <span class="notranslate">%s</span> and try again.',
   EMAIL_VERIFICATION_SUCCESS:
     'Your email address has been successfully verified.',
   EMAIL_ALREADY_VERIFIED: 'Your email address is already verified.',
@@ -30,19 +33,29 @@ module.exports = {
     'An email verification pin has been sent to your email address.',
   EMAIL_VERIFICATION_EXPIRED:
     'Your current email verification pin has expired and we have sent you a new one to your email address.',
+  INVALID_OTP_PASSCODE: 'Invalid two-factor authentication passcode.',
   IS_NOT_ADMIN: 'You do not belong to the administrative user group.',
+  TWO_FACTOR_REQUIRED:
+    'Please log in with two-factor authentication to view the page you requested.',
   LOGIN_REQUIRED: 'Please log in to view the page you requested.',
   LOGOUT_REQUIRED: 'Please log out to view the page you requested.',
   PASSWORD_RESET_LIMIT:
     'You can only request a password reset every 30 minutes.  Please try again %s.',
   PASSWORD_RESET_SENT:
     'We have sent you an email with a link to reset your password.',
+  EMPTY_RECOVERY_KEYS: 'Empty Recovery Keys',
+  OTP_RECOVERY_RESET:
+    'You have run out of recovery keys. Please download the newly generated recovery keys before continuing.',
+  OTP_RECOVERY_SUCCESS:
+    'Recovery passcode successful. This passcode will no longer be valid.',
   REGISTERED: 'You have successfully registered.',
   REQUEST_OK: 'Your request was successfully completed.',
   REQUEST_TIMED_OUT:
     'Sorry, your request has timed out.  We have been alerted of this issue.  Please try again.',
   RESET_PASSWORD: 'You have successfully reset your password.',
   SIGNED_OUT: 'You have successfully signed out.',
+  PENDING_RECOVERY_VERIFICATION_SUCCESS:
+    'Your email has been successfully verified. You should receive a support email from an admin within the next 3-5 business days.',
   SUPPORT_REQUEST_ERROR:
     'We were unable to send your support request.  We have been alerted of this problem.  Please try again.',
   SUPPORT_REQUEST_LIMIT:
@@ -64,8 +77,5 @@ module.exports = {
   PASSPORT_INCORRECT_USERNAME_ERROR: 'Email address or password is incorrect.',
   PASSPORT_MISSING_USERNAME_ERROR: 'Please enter an email address.',
   PASSPORT_USER_EXISTS_ERROR:
-    'A user with the given email address is already registered.  Please try to log in or reset the password if this account belongs to you.',
-  CLIENT_DOES_NOT_EXIST: 'Client does not exist on your account.',
-  INVALID_NAME: 'Must provide a client name.',
-  INVALID_DOB: 'Date of Birth must be a date.'
+    'A user with the given email address is already registered.  Please try to log in or reset the password if this account belongs to you.'
 };

@@ -16,18 +16,35 @@ const queues = [
     ]
   },
   {
-    name: 'mandarin',
+    name: 'welcome-email',
     options: {
       attempts: 1,
       defaultJobOptions: {
         repeat: {
-          every: ms('5m')
+          every: ms('1m')
         }
       }
     },
     processors: [
       {
-        processor: path.join(__dirname, 'mandarin.js'),
+        processor: path.join(__dirname, 'welcome-email.js'),
+        concurrency: 1
+      }
+    ]
+  },
+  {
+    name: 'account-updates',
+    options: {
+      attempts: 1,
+      defaultJobOptions: {
+        repeat: {
+          every: ms('1m')
+        }
+      }
+    },
+    processors: [
+      {
+        processor: path.join(__dirname, 'account-updates.js'),
         concurrency: 1
       }
     ]
