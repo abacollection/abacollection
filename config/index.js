@@ -8,16 +8,16 @@ const consolidate = require('consolidate');
 const manifestRev = require('manifest-rev');
 const ms = require('ms');
 const nodemailer = require('nodemailer');
-const pino = require('pino');
-const strength = require('strength');
-const { Signale } = require('signale');
+const zxcvbn = require('zxcvbn');
 const { boolean } = require('boolean');
 
 const pkg = require('../package');
 const env = require('./env');
+const filters = require('./filters');
+const i18n = require('./i18n');
+const loggerConfig = require('./logger');
 const meta = require('./meta');
 const phrases = require('./phrases');
-const polyfills = require('./polyfills');
 const utilities = require('./utilities');
 
 const config = {
@@ -47,38 +47,20 @@ const config = {
       insertPreservedExtraCss: false,
       extraCss: false,
       preservePseudos: false
+    },
+    lastLocaleField: 'last_locale',
+    i18n: {
+      ...i18n,
+      autoReload: false,
+      updateFiles: false,
+      syncFiles: false
     }
   },
-  logger: {
-    showStack: env.SHOW_STACK,
-    showMeta: env.SHOW_META,
-    name: env.APP_NAME,
-    level: 'debug',
-    capture: false,
-    logger:
-      env.NODE_ENV === 'production'
-        ? pino({
-            customLevels: {
-              log: 30
-            }
-          })
-        : new Signale()
-  },
-  livereload: {
-    port: env.LIVERELOAD_PORT
-  },
+  logger: loggerConfig,
   appName: env.APP_NAME,
   appColor: env.APP_COLOR,
   twitter: env.TWITTER,
-  i18n: {
-    // see @ladjs/i18n for a list of defaults
-    // <https://github.com/ladjs/i18n>
-    // but for complete configuration reference please see:
-    // <https://github.com/mashpie/i18n-node#list-of-all-configuration-options>
-    phrases,
-    directory: path.join(__dirname, '..', 'locales'),
-    ignoredRedirectGlobs: ['/auth/**/*']
-  },
+  i18n,
 
   // <https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property>
   aws: {},
@@ -109,19 +91,30 @@ const config = {
       // debug: env.NODE_ENV === 'development',
       // compileDebug: env.NODE_ENV === 'development',
       ...utilities,
-      polyfills,
-      filters: {}
+      filters
     }
   },
 
+  // user fields whose account updates create an action (e.g. email)
+  accountUpdateFields: [
+    'passport.fields.otpEnabled',
+    'passport.fields.givenName',
+    'passport.fields.familyName',
+    'passportLocalMongoose.usernameField',
+    'userFields.apiToken'
+  ],
+
   // user fields (change these if you want camel case or whatever)
   userFields: {
+    accountUpdates: 'account_updates',
     fullEmail: 'full_email',
     apiToken: 'api_token',
+    otpRecoveryKeys: 'otp_recovery_keys',
     resetTokenExpiresAt: 'reset_token_expires_at',
     resetToken: 'reset_token',
     hasSetPassword: 'has_set_password',
     hasVerifiedEmail: 'has_verified_email',
+    pendingRecovery: 'pending_recovery',
     verificationPinExpiresAt: 'verification_pin_expires_at',
     verificationPinSentAt: 'verification_pin_sent_at',
     verificationPin: 'verification_pin',
@@ -129,8 +122,15 @@ const config = {
     welcomeEmailSentAt: 'welcome_email_sent_at'
   },
 
+  // dynamic otp routes
+  otpRoutePrefix: '/otp',
+  otpRouteLoginPath: '/login',
+
+  // dynamic otp routes
+  loginOtpRoute: '/otp/login',
+
   // verification pin
-  verificationPath: '/verify',
+  verifyRoute: '/verify',
   verificationPinTimeoutMs: ms(env.VERIFICATION_PIN_TIMEOUT_MS),
   verificationPinEmailIntervalMs: ms(env.VERIFICATION_PIN_EMAIL_INTERVAL_MS),
   verificationPin: { length: 6, characters: '1234567890' },
@@ -151,7 +151,20 @@ const config = {
       googleRefreshToken: 'google_refresh_token',
       githubProfileID: 'github_profile_id',
       githubAccessToken: 'github_access_token',
-      githubRefreshToken: 'github_refresh_token'
+      githubRefreshToken: 'github_refresh_token',
+      otpToken: 'otp_token',
+      otpEnabled: 'otp_enabled'
+    },
+    google: {
+      accessType: 'offline',
+      prompt: 'consent',
+      scope: [
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile'
+      ]
+    },
+    github: {
+      scope: ['user:email']
     }
   },
 
@@ -172,12 +185,8 @@ const config = {
     keylen: 512,
     passwordValidator: (password, fn) => {
       if (env.NODE_ENV === 'development') return fn();
-      const howStrong = strength(password);
-      fn(
-        howStrong < 3
-          ? Boom.badRequest(phrases.INVALID_PASSWORD_STRENGTH)
-          : null
-      );
+      const { score } = zxcvbn(password);
+      fn(score < 3 ? Boom.badRequest(phrases.INVALID_PASSWORD_STRENGTH) : null);
     },
     errorMessages: {
       MissingPasswordError: phrases.PASSPORT_MISSING_PASSWORD_ERROR,
@@ -211,12 +220,11 @@ const config = {
   lastLocaleField: 'last_locale'
 };
 
+// set dynamic login otp route
+config.loginOtpRoute = `${config.otpRoutePrefix}${config.otpRouteLoginPath}`;
+
 // set build dir based off build base dir name
 config.buildDir = path.join(__dirname, '..', config.buildBase);
-
-// add lastLocale configuration path name to both email-templates and i18n
-config.i18n.lastLocaleField = config.lastLocaleField;
-config.email.lastLocaleField = config.lastLocaleField;
 
 // meta support for SEO
 config.meta = meta(config);
@@ -226,12 +234,10 @@ const logger = new Axe(config.logger);
 
 // add manifest helper for rev-manifest.json support
 config.manifest = path.join(config.buildDir, 'rev-manifest.json');
+config.srimanifest = path.join(config.buildDir, 'sri-manifest.json');
 config.views.locals.manifest = manifestRev({
-  prepend:
-    env.AWS_CLOUDFRONT_DOMAIN && env.NODE_ENV === 'production'
-      ? `//${env.AWS_CLOUDFRONT_DOMAIN}/`
-      : '/',
-  manifest: config.manifest
+  prepend: '/',
+  manifest: config.srimanifest
 });
 
 // add global `config` object to be used by views
@@ -253,7 +259,6 @@ config.email.transport = nodemailer.createTransport({
 
 config.email.views = { ...config.views };
 config.email.views.root = path.join(__dirname, '..', 'emails');
-config.email.i18n = config.i18n;
 config.email.juiceResources.webResources = {
   relativeTo: config.buildDir,
   images: true
