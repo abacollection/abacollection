@@ -12,7 +12,7 @@ const {
 const policies = require('../../../helpers/policies');
 const phrases = require('../../../config/phrases');
 
-const { before, beforeEach, afterEach, after } = require('../../_utils');
+const { before, beforeEach, after } = require('../../_utils');
 
 const adapter = new MongooseAdapter();
 const Member = mongoose.model('Member', Clients.Member);
@@ -25,7 +25,9 @@ test.before(async t => {
   // setup members factory
   factory.define('member', Member, buildOptions => {
     return {
-      user: buildOptions.user ? buildOptions.user : factory.assoc('user'),
+      user: buildOptions.user
+        ? buildOptions.user
+        : factory.assoc('user', '_id'),
       group: buildOptions.group
         ? buildOptions.group
         : factory.chance('pickone', ['admin', 'user'])
@@ -42,7 +44,7 @@ test.before(async t => {
       creation_date: new Date(Date.now()),
       members: buildOptions.members
         ? buildOptions.members
-        : factory.assocMany('member', 2)
+        : factory.assocMany('member', 2, '_id')
     };
   });
 
@@ -59,10 +61,14 @@ test.before(async t => {
     return next();
   });
 });
-test.after.always(after);
+test.after.always(async t => {
+  await factory.cleanUp();
+
+  await after(t);
+});
 test.beforeEach(beforeEach);
-test.afterEach.always(async t => {
-  await afterEach(t);
+test.afterEach.always(async () => {
+  sinon.restore();
 
   await Clients.deleteMany({});
   await Member.deleteMany({});
@@ -287,7 +293,10 @@ test.serial('PUT dashboard/clients > fails with invalid dob', async t => {
 
 test.serial('DELETE dashboard/clients > successfully', async t => {
   const { web, user } = t.context;
-  const member = await factory.create('member', { user });
+  const member = await factory.create('member', {
+    user,
+    group: 'admin'
+  });
   const client = await factory.create('client', { members: member });
 
   let query = await Clients.findOne({});
@@ -316,7 +325,7 @@ test.serial(
 );
 
 test.serial(
-  'DELET dashboard/clients > fails if client does not exist',
+  'DELETE dashboard/clients > fails if client does not exist',
   async t => {
     const { web } = t.context;
 
@@ -324,5 +333,28 @@ test.serial(
 
     t.is(res.status, 400);
     t.is(JSON.parse(res.text).message, phrases.CLIENT_DOES_NOT_EXIST);
+  }
+);
+
+test.serial(
+  'DELETE dashboard/clients > fails if user is not admin',
+  async t => {
+    const { web, user } = t.context;
+    const member = await factory.create('member', {
+      user,
+      group: 'user'
+    });
+    const client = await factory.create('client', { members: member });
+
+    let query = await Clients.findOne({});
+    t.is(query.id, client.id);
+
+    const res = await web.delete(`/en/dashboard/clients/${client.id}`);
+
+    t.is(res.status, 400);
+    t.is(JSON.parse(res.text).message, phrases.IS_NOT_ADMIN);
+
+    query = await Clients.findOne({});
+    t.is(query.id, client.id);
   }
 );

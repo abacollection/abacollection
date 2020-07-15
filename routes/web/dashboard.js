@@ -16,12 +16,13 @@ router.get('/', render('dashboard'));
 // clients
 //
 
-router.get('/clients',
-  paginate.middleware(10, 50),
-  web.dashboard.clients.list);
+router.get('/clients', paginate.middleware(10, 50), web.dashboard.clients.list);
 router.put('/clients', web.dashboard.clients.add_client);
-router.delete('/clients/:client_id',
+router.delete(
+  '/clients/:client_id',
   web.dashboard.clients.retrieveClient,
-  web.dashboard.clients.delete_client);
+  web.dashboard.clients.ensureAdmin,
+  web.dashboard.clients.delete_client
+);
 
 module.exports = router;

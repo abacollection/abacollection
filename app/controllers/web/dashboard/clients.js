@@ -36,8 +36,6 @@ async function add_client(ctx) {
   if (ctx.request.body.dob && !isISO8601(ctx.request.body.dob))
     return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DOB')));
 
-  // TODO add check for client already exsisting
-
   try {
     ctx.state.client = await Clients.create({
       first_name: ctx.request.body.first_name,
@@ -79,10 +77,24 @@ async function retrieveClients(ctx, next) {
   };
 
   ctx.state.clients = await Clients.find(query)
-    .populate('members.user')
+    .populate('members.user', 'id')
     .sort('last_name')
     .lean()
     .exec();
+
+  ctx.state.clients = ctx.state.clients.map(client => {
+    // populate a `group` on the client based off the user's association
+    const member = client.members.find(
+      member => member.user.id === ctx.state.user.id
+    );
+
+    const { group } = member ? member : { group: null };
+
+    return {
+      ...client,
+      group
+    };
+  });
 
   return next();
 }
@@ -109,8 +121,12 @@ async function retrieveClient(ctx, next) {
   return next();
 }
 
+async function ensureAdmin(ctx, next) {
+  if (ctx.state.client.group === 'admin') return next();
+  ctx.throw(Boom.badRequest(ctx.translateError('IS_NOT_ADMIN')));
+}
+
 async function delete_client(ctx) {
-  console.log('jungle:', ctx.state.client);
   await Clients.findByIdAndRemove(ctx.state.client._id);
   ctx.flash('custom', {
     title: ctx.request.t('Success'),
@@ -132,5 +148,6 @@ module.exports = {
   add_client,
   retrieveClients,
   retrieveClient,
+  ensureAdmin,
   delete_client
 };

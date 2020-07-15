@@ -1,7 +1,7 @@
 {
-  "name": "lad",
+  "name": "abacollection",
   "description": "Data collection for ABA",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "shadowgate15 <taylorschley@me.com> ()",
   "ava": {
     "verbose": true,

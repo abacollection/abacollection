@@ -283,5 +283,7 @@
   "Name is invalid.": "Name is invalid.",
   "Date of Birth must be in the formate MM/DD/YYYY.": "Date of Birth must be in the formate MM/DD/YYYY.",
   "Client does not exist": "Client does not exist",
-  "Client does not exist.": "Client does not exist."
+  "Client does not exist.": "Client does not exist.",
+  "Good afternoon": "Good afternoon",
+  "You do not belong to the administrative user group.": "You do not belong to the administrative user group."
 }
