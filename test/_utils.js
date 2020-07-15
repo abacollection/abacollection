@@ -47,11 +47,12 @@ exports.beforeEach = async t => {
 
 exports.afterEach = async () => {
   sinon.restore();
+  await factory.cleanUp();
 };
 
 exports.after = async () => {
+  await Users.deleteMany({});
+
   mongoose.disconnect();
   mongod.stop();
-
-  factory.cleanUp();
 };
