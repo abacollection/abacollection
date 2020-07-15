@@ -1,1 +1,22 @@
-// put your custom styles here
+// https://github.com/twbs/bootstrap/issues/24374
+.min-vh-80 {
+  min-height: 80vh !important;
+}
+.min-h-100 {
+  min-height: 100%;
+}
+
+body {
+  padding-top: 77px;
+  text-rendering: optimizeLegibility;
+  font-smoothing: antialiased;
+}
+
+.text-decoration-underline {
+  text-decoration: underline !important;
+}
+
+.dropdown-menu {
+  max-height: 50vh;
+  overflow-y: auto;
+}

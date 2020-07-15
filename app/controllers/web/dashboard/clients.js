@@ -4,10 +4,8 @@ const isSANB = require('is-string-and-not-blank');
 const { isISO8601 } = require('validator');
 
 const { Clients } = require('../../../models');
-const config = require('../../../../config');
 
 async function list(ctx) {
-  // TODO add limit to only allow them to see clients they have permissions for
   const [clients, itemCount] = await Promise.all([
     Clients.find({})
       .limit(ctx.query.limit)
@@ -35,7 +33,7 @@ async function add_client(ctx) {
   )
     return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_NAME')));
 
-  if ( !isISO8601(ctx.request.body.dob))
+  if (ctx.request.body.dob && !isISO8601(ctx.request.body.dob))
     return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DOB')));
 
   // TODO add check for client already exsisting
@@ -51,7 +49,7 @@ async function add_client(ctx) {
       members: [{ user: ctx.state.user._id, group: 'admin' }]
     });
 
-    const redirectTo = '/dashboard/clients';
+    const redirectTo = ctx.state.l('/dashboard/clients');
 
     ctx.flash('custom', {
       title: ctx.request.t('Success'),
@@ -77,7 +75,7 @@ async function retrieveClients(ctx, next) {
   if (!ctx.isAuthenticated()) return next();
 
   const query = {
-    $or: [{'members.user': ctx.state.user._id}]
+    $or: [{ 'members.user': ctx.state.user._id }]
   };
 
   ctx.state.clients = await Clients.find(query)
@@ -112,6 +110,7 @@ async function retrieveClient(ctx, next) {
 }
 
 async function delete_client(ctx) {
+  console.log('jungle:', ctx.state.client);
   await Clients.findByIdAndRemove(ctx.state.client._id);
   ctx.flash('custom', {
     title: ctx.request.t('Success'),
@@ -123,7 +122,7 @@ async function delete_client(ctx) {
     position: 'top'
   });
 
-  const redirectTo = '/dashboard/clients';
+  const redirectTo = ctx.state.l('/dashboard/clients');
   if (ctx.accepts('html')) ctx.redirect(redirectTo);
   else ctx.body = { redirectTo };
 }

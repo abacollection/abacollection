@@ -5,7 +5,9 @@ block body
     .modal-dialog(role='document')
       .modal-content
         .modal-header.d-block.text-center
-          h5.modal-title= t('Change password')
+          h5.modal-title.d-inline-block.ml-4= t('Change password')
+          button(type='button', data-dismiss='modal', aria-label='Close').close
+            span(aria-hidden='true') &times;
         form(action=ctx.path, method='POST').ajax-form.confirm-prompt.mt-3
           input(type='hidden', name='_method', value='PUT')
           input(type="hidden", name="_csrf", value=ctx.csrf)
@@ -13,13 +15,13 @@ block body
           .modal-body
             if user[config.userFields.hasSetPassword]
               .form-group.floating-label
-                input#input-old-password(type='password', name='old_password', required).form-control
+                input#input-old-password(type='password', name='old_password', required, autocomplete='off').form-control
                 label(for='input-old-password')= t('Confirm old password')
             .form-group.floating-label
-              input#input-password(type='password', name='password', required, placeholder=" ").form-control
+              input#input-password(type='password', name='password', required, placeholder=" ", autocomplete='new-password').form-control
               label(for='input-password')= t('Set new password')
             .form-group.floating-label
-              input#input-confirm-password(type='password', name='confirm_password', required, placeholder=" ").form-control
+              input#input-confirm-password(type='password', name='confirm_password', required, placeholder=" ", autocomplete='new-password').form-control
               label(for='input-confirm-password')= t('Confirm new password')
           .modal-footer.text-right
             button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')

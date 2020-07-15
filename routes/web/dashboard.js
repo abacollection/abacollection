@@ -11,6 +11,11 @@ router.use(policies.ensureLoggedIn);
 router.use(web.breadcrumbs);
 router.use(web.dashboard.clients.retrieveClients);
 router.get('/', render('dashboard'));
+
+//
+// clients
+//
+
 router.get('/clients',
   paginate.middleware(10, 50),
   web.dashboard.clients.list);

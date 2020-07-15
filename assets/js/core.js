@@ -1,5 +1,7 @@
 const $ = require('jquery');
 const Popper = require('popper.js');
+const Clipboard = require('clipboard');
+const { randomstring } = require('@sidoshi/random-string');
 
 // load jQuery and Bootstrap
 // <https://stackoverflow.com/a/34340392>
@@ -120,3 +122,80 @@ $body.on('submit.ajaxForm', 'form.ajax-form', ajaxForm);
     waypoint.context.refresh();
   }
   */
+
+// all <code> blocks should have a toggle tooltip and clipboard
+function errorHandler(ev) {
+  ev.clearSelection();
+  $(ev.trigger)
+    .tooltip('dispose')
+    .tooltip({
+      title: 'Please manually copy to clipboard',
+      html: true,
+      placement: 'bottom'
+    })
+    .tooltip('show');
+  $(ev.trigger).on('hidden.bs.tooltip', () => $(ev.trigger).tooltip('dispose'));
+}
+
+function successHandler(ev) {
+  ev.clearSelection();
+  let $container = $(ev.trigger).parents('pre:first');
+  if ($container.length === 0) $container = $(ev.trigger);
+  $container
+    .tooltip('dispose')
+    .tooltip({
+      title: 'Copied!',
+      placement: 'bottom'
+    })
+    .tooltip('show');
+  $container.on('hidden.bs.tooltip', () => {
+    $container.tooltip('dispose');
+  });
+}
+
+if (Clipboard.isSupported()) {
+  $body.on('mouseenter', 'code', function() {
+    let $container = $(this).parents('pre:first');
+    if ($container.length === 0) $container = $(this);
+    $container
+      .css('cursor', 'pointer')
+      .tooltip({
+        title: 'Click to copy',
+        placement: 'bottom',
+        trigger: 'manual'
+      })
+      .tooltip('show');
+  });
+  $body.on('mouseleave', 'code', function() {
+    let $container = $(this).parents('pre:first');
+    if ($container.length === 0) $container = $(this);
+    $container.tooltip('dispose').css('cursor', 'initial');
+  });
+  const clipboard = new Clipboard('code', {
+    text(trigger) {
+      return trigger.textContent;
+    },
+    target(trigger) {
+      return trigger.tagName === 'CODE' ? trigger : trigger.closest('code');
+    }
+  });
+  clipboard.on('success', successHandler);
+  clipboard.on('error', errorHandler);
+}
+
+//
+// generate random alias
+//
+// <https://en.wikipedia.org/wiki/Email_address#Local-part>
+//
+$body.on('click', '.generate-random-alias', function() {
+  const target = $(this).data('target');
+  if (!target) return;
+  const $target = $(target);
+  if ($target.lengh === 0) return;
+  const string = randomstring({
+    characters: 'abcdefghijklmnopqrstuvwxyz0123456789',
+    length: 10
+  });
+  $target.val(string);
+});

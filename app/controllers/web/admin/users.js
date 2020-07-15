@@ -1,4 +1,5 @@
 const paginate = require('koa-ctx-paginate');
+const { boolean } = require('boolean');
 
 const { Users } = require('../../../models');
 const config = require('../../../../config');
@@ -26,21 +27,26 @@ async function list(ctx) {
 
 async function retrieve(ctx) {
   ctx.state.result = await Users.findById(ctx.params.id);
-  if (!ctx.state.result) throw new Error(ctx.translate('INVALID_USER'));
+  if (!ctx.state.result) throw ctx.translateError('INVALID_USER');
   await ctx.render('admin/users/retrieve');
 }
 
 async function update(ctx) {
   const user = await Users.findById(ctx.params.id);
-  if (!user) throw new Error(ctx.translate('INVALID_USER'));
+  if (!user) throw ctx.translateError('INVALID_USER');
   const { body } = ctx.request;
 
   user[config.passport.fields.givenName] =
     body[config.passport.fields.givenName];
   user[config.passport.fields.familyName] =
     body[config.passport.fields.familyName];
+  user[config.passport.fields.otpEnabled] =
+    body[config.passport.fields.otpEnabled];
   user.email = body.email;
   user.group = body.group;
+
+  if (boolean(!body[config.passport.fields.otpEnabled]))
+    user[config.userFields.pendingRecovery] = false;
 
   await user.save();
 
@@ -62,7 +68,7 @@ async function update(ctx) {
 
 async function remove(ctx) {
   const user = await Users.findById(ctx.params.id);
-  if (!user) throw new Error(ctx.translate('INVALID_USER'));
+  if (!user) throw ctx.translateError('INVALID_USER');
   await user.remove();
   ctx.flash('custom', {
     title: ctx.request.t('Success'),
@@ -80,7 +86,7 @@ async function remove(ctx) {
 
 async function login(ctx) {
   const user = await Users.findById(ctx.params.id);
-  if (!user) throw new Error(ctx.translate('INVALID_USER'));
+  if (!user) throw ctx.translateError('INVALID_USER');
 
   ctx.logout();
 

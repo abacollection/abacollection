@@ -21,7 +21,7 @@ const Member = new mongoose.Schema({
 Member.plugin(mongooseCommonPlugin, {
   object: 'member',
   omitCommonFields: false,
-  //omitExtraFields: ['_id', '_v'],
+  // omitExtraFields: ['_id', '_v'],
   uniqueID: false
 });
 
@@ -34,17 +34,16 @@ const Client = new mongoose.Schema({
   last_name: {
     type: String,
     required: true,
-    index:true
+    index: true
   },
   dob: {
-    type: Date,
-    required: true
+    type: Date
   },
   gender: {
     type: String,
     enum: ['Male', 'Female']
   },
-  created_by: { type: mongoose.Schema.ObjectId, ref: 'User'},
+  created_by: { type: mongoose.Schema.ObjectId, ref: 'User' },
   creation_date: {
     type: Date,
     required: true
