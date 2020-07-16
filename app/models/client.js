@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const mongooseCommonPlugin = require('mongoose-common-plugin');
+const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 
 // <https://github.com/Automattic/mongoose/issues/5534>
 mongoose.Error.messages = require('@ladjs/mongoose-error-messages');
@@ -50,7 +51,12 @@ const Client = new mongoose.Schema({
   members: [Member]
 });
 
+Client.virtual('name').get(function() {
+  return `${this.first_name} ${this.last_name}`;
+});
+
 Client.plugin(mongooseCommonPlugin, { object: 'client', uniqueID: true });
+Client.plugin(mongooseLeanVirtuals);
 
 module.exports = mongoose.model('Client', Client);
 module.exports.Member = Member;

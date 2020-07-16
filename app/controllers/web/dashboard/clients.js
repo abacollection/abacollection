@@ -2,6 +2,7 @@ const paginate = require('koa-ctx-paginate');
 const Boom = require('@hapi/boom');
 const isSANB = require('is-string-and-not-blank');
 const { isISO8601 } = require('validator');
+const _ = require('lodash');
 
 const { Clients } = require('../../../models');
 
@@ -79,7 +80,7 @@ async function retrieveClients(ctx, next) {
   ctx.state.clients = await Clients.find(query)
     .populate('members.user', 'id')
     .sort('last_name')
-    .lean()
+    .lean({ virtuals: true })
     .exec();
 
   ctx.state.clients = ctx.state.clients.map(client => {
@@ -118,6 +119,21 @@ async function retrieveClient(ctx, next) {
       Boom.badRequest(ctx.translateError('CLIENT_DOES_NOT_EXIST'))
     );
 
+  //
+  // set breadcrumb
+  //
+  if (ctx.state.breadcrumbs)
+    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map(breadcrumb => {
+      if (!_.isObject(breadcrumb) && breadcrumb === id)
+        return {
+          name: ctx.state.client.name,
+          header: ctx.state.client.name,
+          href: ctx.state.l(`/dashboard/clients/${id}`)
+        };
+
+      return breadcrumb;
+    });
+
   return next();
 }
 
@@ -143,7 +159,7 @@ async function delete_client(ctx) {
   else ctx.body = { redirectTo };
 }
 
-async function edit_client(ctx) {
+async function settings(ctx) {
   if (
     !isSANB(ctx.request.body.first_name) ||
     !isSANB(ctx.request.body.last_name)
@@ -185,5 +201,5 @@ module.exports = {
   retrieveClient,
   ensureAdmin,
   delete_client,
-  edit_client
+  settings
 };

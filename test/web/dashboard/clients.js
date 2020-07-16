@@ -102,11 +102,24 @@ test.serial('retrieveClient > get client information', async t => {
 
   const ctx = {
     params: { client_id: client.id },
-    state: { clients: [client] }
+    state: {
+      clients: [client],
+      breadcrumbs: ['dashboard', 'clients', client.id],
+      l: link => `/en${link}`
+    }
   };
 
   await retrieveClient(ctx, () => {
     t.is(ctx.state.client.id, client.id);
+    t.deepEqual(ctx.state.breadcrumbs, [
+      'dashboard',
+      'clients',
+      {
+        name: client.name,
+        header: client.name,
+        href: `/en/dashboard/clients/${client.id}`
+      }
+    ]);
   });
 });
 

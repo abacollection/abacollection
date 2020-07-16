@@ -2,9 +2,16 @@ nav(aria-label='breadcrumb')
   ol.breadcrumb.justify-content-center.justify-content-md-start
     each breadcrumb, i in breadcrumbs
       if i === breadcrumbs.length - 1
-        li.breadcrumb-item.active(aria-current='page')= t(titleize(humanize(breadcrumb)))
+        li.breadcrumb-item.active(aria-current='page')
+          = _.isObject(breadcrumb) ? breadcrumb.name : t(titleize(humanize(breadcrumb)))
       else
-        li.breadcrumb-item: a(href=`/${breadcrumbs.slice(0, i + 1).join('/')}/`)= t(titleize(humanize(breadcrumb)))
+        li.breadcrumb-item
+          a(href=_.isObject(breadcrumb) ? breadcrumb.href : l(`/${breadcrumbs.slice(0, i + 1).join('/')}/`)).text-dark
+            = _.isObject(breadcrumb) ? breadcrumb.name : t(titleize(humanize(breadcrumb)))
 .text-center.text-md-left
-  h1.text-muted= t(titleize(humanize(breadcrumbs[1] ? breadcrumbs[1] : breadcrumbs[0])))
+  h1.text-muted
+    if breadcrumbs.length > 0
+      = _.isObject(breadcrumbs[breadcrumbs.length - 1]) ? breadcrumbs[breadcrumbs.length - 1].header || breadcrumbs[breadcrumbs.length - 1].name : t(titleize(humanize(breadcrumbs[breadcrumbs.length - 1])))
+    else
+      = _.isObject(breadcrumbs[0]) ? breadcrumbs[0].header || breadcrumbs[0].name : t(titleize(humanize(breadcrumbs[0])))
 hr
