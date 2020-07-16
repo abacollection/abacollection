@@ -34,7 +34,7 @@ nav(class=['/register', '/login', config.verifyRoute].includes(ctx.pathWithoutLo
     ul.navbar-nav.ml-auto
       //- links that show only if you're logged in
       if user
-        li.nav-item.dropdown.ml-md-1.mt-3.mt-md-0
+        li.nav-item.dropdown.ml-md-1.mt-1.mt-md-0
           a#navbar-dropdown-dashboard.btn.btn-lg.dropdown-toggle.d-block.text-left.text-md-center(href=l('/dashboard'), data-toggle='dropdown', aria-haspopup='true', aria-expanded='false', class=ctx.pathWithoutLocale.startsWith('/dashboard') ? 'btn-dark' : 'btn-outline-dark')
             = t('Dashboard')
           .dropdown-menu(aria-labelledby='navbar-dropdown-dashboard')
@@ -43,7 +43,7 @@ nav(class=['/register', '/login', config.verifyRoute].includes(ctx.pathWithoutLo
         li.nav-item.dropdown.ml-md-1.mt-1.mt-md-0
           a#navbar-dropdown-my-account.btn.btn-lg.dropdown-toggle.d-block.text-left.text-md-center(href=l('/my-account'), data-toggle='dropdown', aria-haspopup='true', aria-expanded='false', class=ctx.pathWithoutLocale.startsWith('/my-account') ? 'btn-dark' : 'btn-outline-dark')
             = t('My Account')
-          .dropdown-menu(aria-labelledby='navbar-dropdown-admin')
+          .dropdown-menu(aria-labelledby='navbar-dropdown-my-account')
             a.dropdown-item(class=ctx.pathWithoutLocale === '/my-account' ? 'active' : '', href=l('/my-account'))= t('Profile')
             a.dropdown-item(class=ctx.pathWithoutLocale === '/my-account/security' ? 'active' : '', href=l('/my-account/security'))= t('Security')
         //- links that show if you're an admin

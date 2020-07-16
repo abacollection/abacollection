@@ -129,6 +129,9 @@ const config = {
   // dynamic otp routes
   loginOtpRoute: '/otp/login',
 
+  // dynamic login route
+  loginRoute: '/login',
+
   // verification pin
   verifyRoute: '/verify',
   verificationPinTimeoutMs: ms(env.VERIFICATION_PIN_TIMEOUT_MS),
