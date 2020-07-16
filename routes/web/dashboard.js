@@ -18,6 +18,11 @@ router.get('/', render('dashboard'));
 
 router.get('/clients', paginate.middleware(10, 50), web.dashboard.clients.list);
 router.put('/clients', web.dashboard.clients.add_client);
+router.get(
+  '/clients/:client_id/settings',
+  web.dashboard.clients.retrieveClient,
+  render('dashboard/clients/settings')
+);
 router.delete(
   '/clients/:client_id',
   web.dashboard.clients.retrieveClient,

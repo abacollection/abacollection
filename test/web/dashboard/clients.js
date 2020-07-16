@@ -358,3 +358,13 @@ test.serial(
     t.is(query.id, client.id);
   }
 );
+
+test.serial('GET dashboard/clients/settings > successfully', async t => {
+  const { web, user } = t.context;
+  const member = await factory.create('member', { user });
+  const client = await factory.create('client', { members: member });
+
+  const res = await web.get(`/en/dashboard/clients/${client.id}/settings`);
+
+  t.is(res.status, 200);
+});

@@ -1,0 +1,37 @@
+
+extends ../../layout
+
+block body
+  .container-fluid.py-3
+    .row.mt-1
+      .col
+        include ../../_breadcrumbs
+        form(action=ctx.path, method='POST').ajax-form.confirm-prompt.mt-3
+          input(type='hidden', name='_csrf', value=ctx.csrf)
+          input(type='hidden', name='edit_client', value='true')
+          .form-row
+            .form-group.floating-label.col
+              input#input-first-name(type='text', name='first_name', required, value=client.first_name).form-control
+              label(for='input-first-name')= t('First Name')
+            .form-group.floating-label.col
+              input#input-last-name(type='text', name='last_name', required, value=client.last_name).form-control
+              label(for='input-last-name')= t('Last Name')
+          .form-group.floating-label
+            input#input-dob(type='date', name='dob', value=client.dob.toISOString().split('T')[0]).form-control
+            label(for='input-dob')= t('Date of Birth')
+          .form-group.floating-label
+            select#input-gender(name='gender').form-control
+              if client.gender === 'Male'
+                option(value='')= t('-- Select --')
+                option(value='Male' selected)= t('Male')
+                option(value='Female')= t('Female')
+              else if client.gender === 'Female'
+                option(value='')= t('-- Select --')
+                option(value='Male')= t('Male')
+                option(value='Female' selected)= t('Female')
+              else
+                option(value='')= t('-- Select --')
+                option(value='Male')= t('Male')
+                option(value='Female')= t('Female')
+            label(for='input-gender')= t('Gender')
+          button(type='submit').btn.btn-primary= t('Submit')
