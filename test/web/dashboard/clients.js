@@ -368,3 +368,82 @@ test.serial('GET dashboard/clients/settings > successfully', async t => {
 
   t.is(res.status, 200);
 });
+
+test.serial('POST dashboard/clients/settings > successfully', async t => {
+  const { web, user } = t.context;
+  const member = await factory.create('member', { user });
+  const client = await factory.create('client', { members: member });
+  const newClient = await factory.build('client');
+
+  let query = await Clients.findOne({});
+  t.true(
+    query.id === client.id &&
+      query.first_name === client.first_name &&
+      query.last_name === client.last_name &&
+      query.dob.toISOString() === client.dob.toISOString() &&
+      query.gender === client.gender
+  );
+
+  const res = await web
+    .post(`/en/dashboard/clients/${client.id}/settings`)
+    .send({
+      first_name: newClient.first_name,
+      last_name: newClient.last_name,
+      dob: newClient.dob,
+      gender: newClient.gender
+    });
+
+  t.is(res.status, 302);
+  t.is(res.header.location, `/en/dashboard/clients/${client.id}/settings`);
+
+  query = await Clients.findOne({});
+  t.true(
+    query.id === client.id &&
+      query.first_name === newClient.first_name &&
+      query.last_name === newClient.last_name &&
+      query.dob.toISOString() === newClient.dob.toISOString() &&
+      query.gender === newClient.gender
+  );
+});
+
+test.serial(
+  'POST dashboard/clients/settings > fails if dob is invalid',
+  async t => {
+    const { web, user } = t.context;
+    const member = await factory.create('member', { user });
+    const client = await factory.create('client', { members: member });
+
+    const res = await web
+      .post(`/en/dashboard/clients/${client.id}/settings`)
+      .send({
+        first_name: client.first_name,
+        last_name: client.last_name,
+        dob: 'nonsense',
+        gender: client.gender
+      });
+
+    t.is(res.status, 400);
+    t.is(JSON.parse(res.text).message, phrases.INVALID_DOB);
+  }
+);
+
+test.serial(
+  'POST dashboard/clients/settings > fails if name is invalid',
+  async t => {
+    const { web, user } = t.context;
+    const member = await factory.create('member', { user });
+    const client = await factory.create('client', { members: member });
+
+    const res = await web
+      .post(`/en/dashboard/clients/${client.id}/settings`)
+      .send({
+        first_name: undefined,
+        last_name: client.last_name,
+        dob: client.dob,
+        gender: client.gender
+      });
+
+    t.is(res.status, 400);
+    t.is(JSON.parse(res.text).message, phrases.INVALID_NAME);
+  }
+);

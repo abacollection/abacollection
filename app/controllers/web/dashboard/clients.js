@@ -143,11 +143,47 @@ async function delete_client(ctx) {
   else ctx.body = { redirectTo };
 }
 
+async function edit_client(ctx) {
+  if (
+    !isSANB(ctx.request.body.first_name) ||
+    !isSANB(ctx.request.body.last_name)
+  )
+    return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_NAME')));
+
+  if (ctx.request.body.dob && !isISO8601(ctx.request.body.dob))
+    return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DOB')));
+
+  const { first_name, last_name, dob, gender } = ctx.request.body;
+
+  ctx.state.client = await Clients.findOneAndUpdate(
+    { id: ctx.state.client._id },
+    { first_name, last_name, dob, gender },
+    { new: true, runValidators: true, context: 'query' }
+  );
+
+  ctx.flash('custom', {
+    title: ctx.request.t('Success'),
+    text: ctx.translate('REQUEST_OK'),
+    type: 'success',
+    toast: true,
+    showConfirmButton: false,
+    timer: 3000,
+    position: 'top'
+  });
+
+  const redirectTo = ctx.state.l(
+    `/dashboard/clients/${ctx.state.client._id}/settings`
+  );
+  if (ctx.accepts('html')) ctx.redirect(redirectTo);
+  else ctx.body = { redirectTo };
+}
+
 module.exports = {
   list,
   add_client,
   retrieveClients,
   retrieveClient,
   ensureAdmin,
-  delete_client
+  delete_client,
+  edit_client
 };

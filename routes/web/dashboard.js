@@ -23,6 +23,11 @@ router.get(
   web.dashboard.clients.retrieveClient,
   render('dashboard/clients/settings')
 );
+router.post(
+  '/clients/:client_id/settings',
+  web.dashboard.clients.retrieveClient,
+  web.dashboard.clients.edit_client
+);
 router.delete(
   '/clients/:client_id',
   web.dashboard.clients.retrieveClient,

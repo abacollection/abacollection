@@ -21,7 +21,6 @@ const Member = new mongoose.Schema({
 Member.plugin(mongooseCommonPlugin, {
   object: 'member',
   omitCommonFields: false,
-  // omitExtraFields: ['_id', '_v'],
   uniqueID: false
 });
 
@@ -51,7 +50,7 @@ const Client = new mongoose.Schema({
   members: [Member]
 });
 
-Client.plugin(mongooseCommonPlugin, { object: 'client' });
+Client.plugin(mongooseCommonPlugin, { object: 'client', uniqueID: true });
 
 module.exports = mongoose.model('Client', Client);
 module.exports.Member = Member;
