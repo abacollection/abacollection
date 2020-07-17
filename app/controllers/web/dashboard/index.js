@@ -1,3 +1,4 @@
 const clients = require('./clients');
+const programs = require('./programs');
 
-module.exports = { clients };
+module.exports = { clients, programs };

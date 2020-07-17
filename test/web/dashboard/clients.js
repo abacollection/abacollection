@@ -98,6 +98,7 @@ test.serial(
 );
 
 test.serial('retrieveClient > get client information', async t => {
+  t.plan(2);
   const client = await factory.create('client');
 
   const ctx = {
@@ -175,7 +176,6 @@ test.serial('GET dashboard/clients > successfully with no clients', async t => {
 
   const res = await web.get('/en/dashboard/clients');
 
-  t.log(res.text);
   t.is(res.status, 200);
   t.true(res.text.includes('Clients'));
   t.true(res.text.includes('No clients exist yet'));
