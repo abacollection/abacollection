@@ -11,24 +11,17 @@ const Program = new mongoose.Schema({
     index: true
   },
   description: {
-    type: String,
-    required: true
+    type: String
   },
   creation_date: {
     type: Date,
     required: true
   },
-  created_by: [
-    { type: mongoose.Schema.ObjectId, ref: 'User'}
-  ],
-  client: [
-    { type: mongoose.Schema.ObjectId, ref: 'Client'}
-  ],
-  targets: [
-    { type: mongoose.Schema.ObjectId, ref: 'Target'}
-  ]
+  created_by: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
+  client: [{ type: mongoose.Schema.ObjectId, ref: 'Client' }],
+  targets: [{ type: mongoose.Schema.ObjectId, ref: 'Target' }]
 });
 
-Program.plugin(mongooseCommonPlugin, { object: 'program'});
+Program.plugin(mongooseCommonPlugin, { object: 'program' });
 
 module.exports = mongoose.model('Program', Program);

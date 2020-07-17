@@ -83,5 +83,9 @@ module.exports = {
   //
   INVALID_DOB: 'Date of Birth must be in the formate MM/DD/YYYY.',
   INVALID_NAME: 'Name is invalid.',
-  CLIENT_DOES_NOT_EXIST: 'Client does not exist.'
+  CLIENT_DOES_NOT_EXIST: 'Client does not exist.',
+  //
+  // Programs
+  //
+  INVALID_PROGRAM_NAME: 'Program name is invalid.'
 };

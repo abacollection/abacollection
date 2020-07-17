@@ -8,10 +8,25 @@ nav(aria-label='breadcrumb')
         li.breadcrumb-item
           a(href=_.isObject(breadcrumb) ? breadcrumb.href : l(`/${breadcrumbs.slice(0, i + 1).join('/')}/`)).text-dark
             = _.isObject(breadcrumb) ? breadcrumb.name : t(titleize(humanize(breadcrumb)))
-.text-center.text-md-left
-  h1.text-muted
+.text-center.text-md-left.d-md-flex.mb-3
+  h1.text-muted.flex-grow-1.text-left
     if breadcrumbs.length > 0
       = _.isObject(breadcrumbs[breadcrumbs.length - 1]) ? breadcrumbs[breadcrumbs.length - 1].header || breadcrumbs[breadcrumbs.length - 1].name : t(titleize(humanize(breadcrumbs[breadcrumbs.length - 1])))
     else
       = _.isObject(breadcrumbs[0]) ? breadcrumbs[0].header || breadcrumbs[0].name : t(titleize(humanize(breadcrumbs[0])))
-hr
+  .flex-grow-1.ml-md-5.d-md-flex.align-items-center.justify-content-md-end.justify-content-center.mt-3.mt-md-0
+    if client && ctx.pathWithoutLocale === `/dashboard/clients/${client.id}/programs`
+      ul.list-inline.mb-0
+        li.list-inline-item
+          a(data-toggle='modal', data-target='#modal-add-program', role='button').btn.btn-secondary.text-light.text-uppercase.font-weight-bold
+            = t('Add Program')
+            = ' '
+            i.fa.fa-angle-double-right
+    case ctx.pathWithoutLocale
+      when '/dashboard/clients'
+        ul.list-inline.mb-0
+          li.list-inline-item
+            a(data-toggle='modal', data-target='#modal-add-client', role='button').btn.btn-secondary.text-light.text-uppercase.font-weight-bold
+              = t('Add Client')
+              = ' '
+              i.fa.fa-angle-double-right

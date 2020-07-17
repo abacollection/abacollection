@@ -41,6 +41,7 @@ clientRouter.get(
   paginate.middleware(10, 50),
   web.dashboard.programs.list
 );
+clientRouter.put('/programs', web.dashboard.programs.addProgram);
 
 router.use(clientRouter.routes());
 

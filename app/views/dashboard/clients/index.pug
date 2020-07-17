@@ -6,7 +6,7 @@ block body
     .modal-dialog(role='document')
       .modal-content
         .modal-header.d-block.text-center
-          h5.modal-title= t('Add client')
+          h5.modal-title= t('Add Client')
         form(action=ctx.path, method='POST').ajax-form.confirm-prompt.mt-3
           input(type='hidden', name='_method', value='PUT')
           input(type='hidden', name='_csrf', value=ctx.csrf)
@@ -35,9 +35,6 @@ block body
     .row.mt-1
       .col
         include ../../_breadcrumbs
-        .card.card-bg-light
-          .card-body
-            button(data-toggle='modal', data-target='#modal-add-client', type='button').btn.btn-secondary.btn-sm= t('Add Client')
         if clients.length === 0
           .alert.alert-info= t('No clients exist yet')
         else
