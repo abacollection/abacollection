@@ -1,0 +1,49 @@
+
+extends ../../../layout
+
+block body
+  #modal-add-program(tabindex='-1', role='dialog').modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header.d-block.text-center
+          h5.modal-title= t('Add Program')
+        form(action=ctx.path, method='POST').ajax-form.confirm-prompt.mt-3
+          input(type='hidden', name='_method', value='PUT')
+          input(type='hidden', name='_csrf', value=ctx.csrf)
+          input(type='hidden', name='add_program', value='true')
+          .modal-body
+            .form-group.floating-label
+              input#input-name(type='text', name='name', required, placeholder=" ").form-control
+              label(for='input-name')= t('Name')
+            .form-group.floating-label
+              input#input-description(type='text', name='description', placeholder=" ").form-control
+              label(for='input-description')= t('Description')
+          .modal-footer.text-right
+            button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
+            button(type='submit').btn.btn-primary= t('Submit')
+  .container-fluid.py-3
+    .row.mt-1
+      .col
+        include ../../../_breadcrumbs
+        if programs.length === 0
+          .alert.alert-info= t('No programs for this client yet.')
+        else
+          .table-responsive
+            table.table.table-hover.table-bordered
+              thead.thead-dark
+                tr
+                  th(scope='col')= t('Name')
+                  th(scope='col')= t('Description')
+                  th(scope='col')= t('Actions')
+                tbody
+                  each program in programs
+                    tr
+                      td.align-middle= t(program.name)
+                      td.align-middle= t(program.description)
+                      td.align-middle
+                        .btn-group(role='group', aria-label=t('Actions'))
+                          form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}`), method="POST", autocomplete="off")
+                            input(type='hidden', name='_csrf', value=ctx.csrf)
+                            input(type='hidden', name='_method', value='DELETE')
+                            button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
+          include ../../../_pagination
