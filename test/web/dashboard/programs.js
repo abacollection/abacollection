@@ -274,7 +274,7 @@ test.serial(
 );
 
 test.serial(
-  'DELETE dashboard/cliens/programs > fails if user is not admin',
+  'DELETE dashboard/clients/programs > fails if user is not admin',
   async t => {
     const { web, user } = t.context;
 

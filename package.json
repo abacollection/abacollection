@@ -205,7 +205,7 @@
   "engines": {
     "node": ">=10"
   },
-  "homepage": "https://github.com/shadowgate15/blank",
+  "homepage": "https://github.com/shadowgate15/abacollection",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged && npm test",
@@ -213,7 +213,7 @@
     }
   },
   "keywords": [
-    "blank",
+    "abacollection",
     "lad",
     "lad",
     "lass"
