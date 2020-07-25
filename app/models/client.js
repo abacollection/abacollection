@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const mongooseCommonPlugin = require('mongoose-common-plugin');
 const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
 
+const Programs = require('./program');
+
 // <https://github.com/Automattic/mongoose/issues/5534>
 mongoose.Error.messages = require('@ladjs/mongoose-error-messages');
 
@@ -57,6 +59,22 @@ Client.virtual('name').get(function() {
 
 Client.plugin(mongooseCommonPlugin, { object: 'client', uniqueID: true });
 Client.plugin(mongooseLeanVirtuals);
+
+// remove programs when client is removed
+Client.post('findOneAndRemove', async function() {
+  const programs = await Programs.find(
+    {
+      $or: [{ client: this.getQuery()._id }]
+    },
+    '_id'
+  )
+    .lean()
+    .exec();
+
+  programs.forEach(async program => {
+    await Programs.findByIdAndRemove(program._id);
+  });
+});
 
 module.exports = mongoose.model('Client', Client);
 module.exports.Member = Member;

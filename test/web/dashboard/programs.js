@@ -174,12 +174,12 @@ test.serial('retrieveProgram > errors if program does not exist', async t => {
     state: { programs: [] },
     translateError: err => err,
     throw: err => {
-      throw new Error(err);
+      throw err;
     }
   };
 
   await t.throwsAsync(() => retrieveProgram(ctx, () => {}), {
-    message: 'Error: PROGRAM_DOES_NOT_EXIST'
+    message: 'PROGRAM_DOES_NOT_EXIST'
   });
 });
 
@@ -296,3 +296,20 @@ test.serial(
     t.is(query.id, program.id);
   }
 );
+
+test.serial('deletes program when client deleted', async t => {
+  const { web, client } = t.context;
+
+  await factory.createMany('program', 2, { client });
+
+  let query = await Programs.find({});
+  t.is(query.length, 2);
+
+  const res = await web.delete(`/en/dashboard/clients/${client.id}`);
+
+  t.is(res.status, 302);
+  t.is(res.header.location, '/en/dashboard/clients');
+
+  query = await Programs.find({});
+  t.is(query.length, 0);
+});
