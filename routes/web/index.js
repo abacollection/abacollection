@@ -21,13 +21,6 @@ const localeRouter = new Router({ prefix: '/:locale' });
 
 localeRouter
   .get('/', web.auth.homeOrDashboard)
-  .get(
-    '/dashboard',
-    policies.ensureLoggedIn,
-    policies.ensureOtp,
-    web.breadcrumbs,
-    render('dashboard')
-  )
   .get('/about', render('about'))
   .get('/404', render('404'))
   .get('/500', render('500'))
@@ -67,8 +60,8 @@ localeRouter
   )
   .post('/register', policies.ensureLoggedOut, web.auth.register);
 
-localeRouter.use(myAccount.routes());
 localeRouter.use(dashboard.routes());
+localeRouter.use(myAccount.routes());
 localeRouter.use(admin.routes());
 
 if (boolean(process.env.AUTH_OTP_ENABLED)) localeRouter.use(otp.routes());

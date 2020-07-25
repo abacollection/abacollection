@@ -8,9 +8,10 @@ const web = require('../../app/controllers/web');
 const router = new Router({ prefix: '/dashboard' });
 
 router.use(policies.ensureLoggedIn);
+router.use(policies.ensureOtp);
 router.use(web.breadcrumbs);
-router.use(web.dashboard.clients.retrieveClients);
 router.get('/', render('dashboard'));
+router.use(web.dashboard.clients.retrieveClients);
 //
 // clients
 //
