@@ -313,3 +313,31 @@ test.serial('deletes program when client deleted', async t => {
   query = await Programs.find({});
   t.is(query.length, 0);
 });
+
+test.serial(
+  'POST dashbord/clients/program > modifies name and description',
+  async t => {
+    const { web, client } = t.context;
+
+    const program = await factory.create('program', { client });
+    const newProgram = await factory.build('program', { client });
+
+    let query = await Programs.findOne({});
+    t.is(query.name, program.name);
+    t.is(query.description, program.description);
+
+    const res = await web
+      .post(`/en/dashboard/clients/${client.id}/programs/${program.id}`)
+      .send({
+        name: newProgram.name,
+        description: newProgram.description
+      });
+
+    t.is(res.status, 302);
+    t.is(res.header.location, `/en/dashboard/clients/${client.id}/programs`);
+
+    query = await Programs.findOne({});
+    t.is(query.name, newProgram.name);
+    t.is(query.description, newProgram.description);
+  }
+);
