@@ -10,7 +10,6 @@ const {
 } = require('../../../app/controllers/web/dashboard/targets');
 
 const policies = require('../../../helpers/policies');
-const phrases = require('../../../config/phrases');
 
 const { before, beforeEach, after } = require('../../_utils');
 
@@ -129,4 +128,24 @@ test('retrieveTargets > get targets only linked to program', async t => {
     t.is(ctx.state.targets.length, 1);
     t.is(ctx.state.targets[0].id, targets[0].id);
   });
+});
+
+test('GET targets > successfully with no targets', async t => {
+  const { web, root } = t.context;
+
+  const res = await web.get(`${root}/targets`);
+
+  t.is(res.status, 200);
+  t.true(res.text.includes('No targets for this client yet.'));
+});
+
+test('GET targets > successfully with targets', async t => {
+  const { web, root, program } = t.context;
+
+  const target = await factory.create('target', { program });
+
+  const res = await web.get(`${root}/targets`);
+
+  t.is(res.status, 200);
+  t.true(res.text.includes(target.name));
 });

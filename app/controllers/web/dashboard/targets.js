@@ -1,3 +1,5 @@
+const paginate = require('koa-ctx-paginate');
+
 const { Targets } = require('../../../models');
 
 async function retrieveTargets(ctx, next) {
@@ -15,6 +17,28 @@ async function retrieveTargets(ctx, next) {
   return next();
 }
 
+async function list(ctx) {
+  const [targets, itemCount] = await Promise.all([
+    Targets.find({})
+      .limit(ctx.query.limit)
+      .skip(ctx.paginate.skip)
+      .lean()
+      .sort('name')
+      .exec(),
+    Targets.countDocuments({})
+  ]);
+
+  const pageCount = Math.ceil(itemCount / ctx.query.limit);
+
+  await ctx.render('dashboard/clients/programs/targets', {
+    targets,
+    pageCount,
+    itemCount,
+    pages: paginate.getArrayPages(ctx)(3, pageCount, ctx.query.page)
+  });
+}
+
 module.exports = {
-  retrieveTargets
+  retrieveTargets,
+  list
 };

@@ -59,6 +59,12 @@ programRouter.delete(
 //
 programRouter.use(web.dashboard.targets.retrieveTargets);
 
+programRouter.get(
+  '/targets',
+  paginate.middleware(10, 50),
+  web.dashboard.targets.list
+);
+
 clientRouter.use(programRouter.routes());
 router.use(clientRouter.routes());
 
