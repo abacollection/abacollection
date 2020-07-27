@@ -10,6 +10,7 @@ const {
 } = require('../../../app/controllers/web/dashboard/targets');
 
 const policies = require('../../../helpers/policies');
+const phrases = require('../../../config/phrases');
 
 const { before, beforeEach, after } = require('../../_utils');
 
@@ -148,4 +149,36 @@ test('GET targets > successfully with targets', async t => {
 
   t.is(res.status, 200);
   t.true(res.text.includes(target.name));
+});
+
+test('PUT targets > successfully', async t => {
+  const { web, root } = t.context;
+  const target = await factory.build('target');
+
+  let query = await Targets.findOne({});
+  t.is(query, null);
+
+  const res = await web.put(`${root}/targets`).send({
+    name: target.name,
+    description: target.description,
+    data_type: target.data_type
+  });
+
+  t.is(res.status, 302);
+  t.is(res.header.location, `${root}/targets`);
+
+  query = await Targets.findOne({});
+  t.is(query.data_type, target.data_type);
+  t.is(query.name, target.name);
+  t.is(query.description, target.description);
+  t.is(query.data_type, target.data_type);
+});
+
+test('PUT targets >  fails with invalid name', async t => {
+  const { web, root } = t.context;
+
+  const res = await web.put(`${root}/targets`).send({});
+
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.INVALID_TARGET_NAME);
 });

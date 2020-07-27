@@ -64,6 +64,7 @@ programRouter.get(
   paginate.middleware(10, 50),
   web.dashboard.targets.list
 );
+programRouter.put('/targets', web.dashboard.targets.addTarget);
 
 clientRouter.use(programRouter.routes());
 router.use(clientRouter.routes());

@@ -1,4 +1,6 @@
 const paginate = require('koa-ctx-paginate');
+const Boom = require('@hapi/boom');
+const isSANB = require('is-string-and-not-blank');
 
 const { Targets } = require('../../../models');
 
@@ -38,7 +40,44 @@ async function list(ctx) {
   });
 }
 
+async function addTarget(ctx) {
+  if (!isSANB(ctx.request.body.name))
+    return ctx.throw(
+      Boom.badRequest(ctx.translateError('INVALID_TARGET_NAME'))
+    );
+  try {
+    ctx.state.target = await Targets.create({
+      name: ctx.request.body.name,
+      data_type: ctx.request.body.data_type,
+      description: ctx.request.body.description,
+      created_by: ctx.state.user,
+      program: ctx.state.program
+    });
+
+    const redirectTo = ctx.state.l(
+      `/dashboard/clients/${ctx.state.client.id}/programs/${ctx.state.program.id}/targets`
+    );
+
+    ctx.flash('custom', {
+      title: ctx.request.t('Success'),
+      text: ctx.translate('REQUEST_OK'),
+      type: 'success',
+      toast: true,
+      showConfirmButton: false,
+      timer: 3000,
+      position: 'top'
+    });
+
+    if (ctx.accepts('html')) ctx.redirect(redirectTo);
+    else ctx.body = { redirectTo };
+  } catch (err) {
+    ctx.logger.error(err);
+    ctx.throw(Boom.badRequest(err.message));
+  }
+}
+
 module.exports = {
   retrieveTargets,
-  list
+  list,
+  addTarget
 };

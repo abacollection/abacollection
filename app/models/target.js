@@ -12,11 +12,11 @@ const Target = new mongoose.Schema({
   },
   data_type: {
     type: String,
-    enum: ['Frequency']
+    enum: ['Frequency'],
+    required: true
   },
   description: {
-    type: String,
-    required: true
+    type: String
   },
   start_date: {
     type: Date

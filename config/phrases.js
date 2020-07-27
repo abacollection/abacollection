@@ -88,5 +88,9 @@ module.exports = {
   // Programs
   //
   INVALID_PROGRAM_NAME: 'Program name is invalid.',
-  PROGRAM_DOES_NOT_EXIST: 'Program does not exist.'
+  PROGRAM_DOES_NOT_EXIST: 'Program does not exist.',
+  //
+  // Targets
+  //
+  INVALID_TARGET_NAME: 'Target name is invalid.'
 };
