@@ -315,7 +315,7 @@ test.serial('deletes program when client deleted', async t => {
 });
 
 test.serial(
-  'POST dashbord/clients/program > modifies name and description',
+  'POST dashboard/clients/program > modifies name and description',
   async t => {
     const { web, client } = t.context;
 

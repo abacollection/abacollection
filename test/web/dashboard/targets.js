@@ -286,3 +286,19 @@ test('DELETE targets > fails if not admin', async t => {
   query = await Targets.findOne({});
   t.is(query.id, target.id);
 });
+
+test('deletes target when program is deleted', async t => {
+  const { web, program, root } = t.context;
+
+  await factory.createMany('target', 2, { program });
+
+  let query = await Targets.find({});
+  t.is(query.length, 2);
+
+  const res = await web.delete(root);
+
+  t.is(res.status, 302);
+
+  query = await Targets.find({});
+  t.is(query.length, 0);
+});
