@@ -135,10 +135,42 @@ async function deleteProgram(ctx) {
   else ctx.body = { redirectTo };
 }
 
+async function editProgram(ctx) {
+  if (!isSANB(ctx.request.body.name))
+    return ctx.throw(
+      Boom.badRequest(ctx.translateError('INVALID_PROGRAM_NAME'))
+    );
+
+  const { name, description } = ctx.request.body;
+
+  ctx.state.program = await Programs.findOneAndUpdate(
+    { id: ctx.state.program._id },
+    { name, description },
+    { new: true, runValidators: true, context: 'query' }
+  );
+
+  ctx.flash('custom', {
+    title: ctx.request.t('Success'),
+    text: ctx.translate('REQUEST_OK'),
+    type: 'success',
+    toast: true,
+    showConfirmButton: false,
+    timer: 3000,
+    position: 'top'
+  });
+
+  const redirectTo = ctx.state.l(
+    `/dashboard/clients/${ctx.state.client._id}/programs`
+  );
+  if (ctx.accepts('html')) ctx.redirect(redirectTo);
+  else ctx.body = { redirectTo };
+}
+
 module.exports = {
   retrievePrograms,
   retrieveProgram,
   list,
   addProgram,
-  deleteProgram
+  deleteProgram,
+  editProgram
 };

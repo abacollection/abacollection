@@ -48,6 +48,7 @@ clientRouter.put('/programs', web.dashboard.programs.addProgram);
 const programRouter = new Router({ prefix: '/programs/:program_id' });
 programRouter.use(web.dashboard.programs.retrieveProgram);
 
+programRouter.post('/', web.dashboard.programs.editProgram);
 programRouter.delete(
   '/',
   web.dashboard.clients.ensureAdmin,
