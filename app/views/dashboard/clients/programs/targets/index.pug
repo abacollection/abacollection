@@ -18,6 +18,11 @@ block body
             .form-group.floating-label
               input#input-description(type='text', name='description', placeholder=" ").form-control
               label(for='input-description')= t('Description')
+            .form-group.floating-label
+              select#input-data_type(name='data_type').form-control
+                option(value='')= t('-- Select --')
+                option(value='Frequency')= t('Frequency')
+              label(for='data_type')= t('Data Type')
           .modal-footer.text-right
             button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
             button(type='submit').btn.btn-primary= t('Submit')
