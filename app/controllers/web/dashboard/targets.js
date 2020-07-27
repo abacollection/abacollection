@@ -1,6 +1,7 @@
 const paginate = require('koa-ctx-paginate');
 const Boom = require('@hapi/boom');
 const isSANB = require('is-string-and-not-blank');
+const _ = require('lodash');
 
 const { Targets } = require('../../../models');
 
@@ -15,6 +16,45 @@ async function retrieveTargets(ctx, next) {
     .sort('name')
     .lean()
     .exec();
+
+  return next();
+}
+
+async function retrieveTarget(ctx, next) {
+  if (!isSANB(ctx.params.target_id) && !isSANB(ctx.request.body.target))
+    return ctx.throw(
+      Boom.badRequest(ctx.translateError('TARGET_DOES_NOT_EXIST'))
+    );
+
+  const id = isSANB(ctx.params.target_id)
+    ? ctx.params.target_id
+    : ctx.request.body.target;
+
+  ctx.state.target = ctx.state.targets.find(target =>
+    [target.id, target.name].includes(id)
+  );
+
+  if (!ctx.state.target)
+    return ctx.throw(
+      Boom.badRequest(ctx.translateError('TARGET_DOES_NOT_EXIST'))
+    );
+
+  //
+  // set breadcrumb
+  //
+  if (ctx.state.breadcrumbs)
+    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map(breadcrumb => {
+      if (!_.isObject(breadcrumb) && breadcrumb === id)
+        return {
+          name: ctx.state.target.name,
+          header: ctx.state.target.name,
+          href: ctx.state.l(
+            `/dashboard/clients/${ctx.state.client.id}/programs/${id}/targets/${id}`
+          )
+        };
+
+      return breadcrumb;
+    });
 
   return next();
 }
@@ -76,8 +116,29 @@ async function addTarget(ctx) {
   }
 }
 
+async function deleteTarget(ctx) {
+  await Targets.findByIdAndRemove(ctx.state.target._id);
+  ctx.flash('custom', {
+    title: ctx.request.t('Success'),
+    text: ctx.translate('REQUEST_OK'),
+    type: 'success',
+    toast: true,
+    showConfirmButton: false,
+    timer: 3000,
+    position: 'top'
+  });
+
+  const redirectTo = ctx.state.l(
+    `/dashboard/clients/${ctx.state.client.id}/programs/${ctx.state.program.id}/targets`
+  );
+  if (ctx.accepts('html')) ctx.redirect(redirectTo);
+  else ctx.body = { redirectTo };
+}
+
 module.exports = {
   retrieveTargets,
+  retrieveTarget,
   list,
-  addTarget
+  addTarget,
+  deleteTarget
 };

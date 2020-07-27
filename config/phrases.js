@@ -92,5 +92,6 @@ module.exports = {
   //
   // Targets
   //
-  INVALID_TARGET_NAME: 'Target name is invalid.'
+  INVALID_TARGET_NAME: 'Target name is invalid.',
+  TARGET_DOES_NOT_EXIST: 'Target does not exist.'
 };

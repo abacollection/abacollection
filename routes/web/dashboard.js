@@ -65,7 +65,19 @@ programRouter.get(
   web.dashboard.targets.list
 );
 programRouter.put('/targets', web.dashboard.targets.addTarget);
+//
+// target specific routes
+//
+const targetRouter = new Router({ prefix: '/targets/:target_id' });
+targetRouter.use(web.dashboard.targets.retrieveTarget);
 
+targetRouter.delete(
+  '/',
+  web.dashboard.clients.ensureAdmin,
+  web.dashboard.targets.deleteTarget
+);
+
+programRouter.use(targetRouter.routes());
 clientRouter.use(programRouter.routes());
 router.use(clientRouter.routes());
 

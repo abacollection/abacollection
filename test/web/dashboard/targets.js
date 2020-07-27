@@ -6,7 +6,8 @@ const proxyquire = require('proxyquire');
 
 const { Clients, Programs, Targets } = require('../../../app/models');
 const {
-  retrieveTargets
+  retrieveTargets,
+  retrieveTarget
 } = require('../../../app/controllers/web/dashboard/targets');
 
 const policies = require('../../../helpers/policies');
@@ -131,6 +132,62 @@ test('retrieveTargets > get targets only linked to program', async t => {
   });
 });
 
+test('retrieveTarget > get target', async t => {
+  t.plan(2);
+
+  const targets = await factory.createMany('target', 2);
+
+  const ctx = {
+    params: { target_id: targets[0].id },
+    state: {
+      targets,
+      breadcrumbs: [targets[0].id],
+      client: { id: '32' },
+      l: url => `/en${url}`
+    }
+  };
+
+  await retrieveTarget(ctx, () => {
+    t.is(ctx.state.target.id, targets[0].id);
+    t.is(ctx.state.breadcrumbs[0].name, targets[0].name);
+  });
+});
+
+test('retrieveTarget > errors if no params', async t => {
+  const targets = await factory.createMany('target', 2);
+
+  const ctx = {
+    params: { target_id: '' },
+    request: {
+      body: { target: '' }
+    },
+    state: { targets },
+    translateError: err => err,
+    throw: err => {
+      throw err;
+    }
+  };
+
+  await t.throwsAsync(() => retrieveTarget(ctx, () => {}), {
+    message: 'TARGET_DOES_NOT_EXIST'
+  });
+});
+
+test('retrieveTarget > errors if target does not exist', async t => {
+  const ctx = {
+    params: { target_id: '1' },
+    state: { targets: [] },
+    translateError: err => err,
+    throw: err => {
+      throw err;
+    }
+  };
+
+  await t.throwsAsync(() => retrieveTarget(ctx, () => {}), {
+    message: 'TARGET_DOES_NOT_EXIST'
+  });
+});
+
 test('GET targets > successfully with no targets', async t => {
   const { web, root } = t.context;
 
@@ -174,11 +231,58 @@ test('PUT targets > successfully', async t => {
   t.is(query.data_type, target.data_type);
 });
 
-test('PUT targets >  fails with invalid name', async t => {
+test('PUT targets > fails with invalid name', async t => {
   const { web, root } = t.context;
 
   const res = await web.put(`${root}/targets`).send({});
 
   t.is(res.status, 400);
   t.is(JSON.parse(res.text).message, phrases.INVALID_TARGET_NAME);
+});
+
+test('DELETE targets > successfully', async t => {
+  const { web, root, program } = t.context;
+  const target = await factory.create('target', { program });
+
+  let query = await Targets.findOne({});
+  t.is(query.id, target.id);
+
+  const res = await web.delete(`${root}/targets/${target.id}`);
+
+  t.is(res.status, 302);
+  t.is(res.header.location, `${root}/targets`);
+
+  query = await Targets.findOne({});
+  t.is(query, null);
+});
+
+test('DELETE targets > fails if target does not exist', async t => {
+  const { web, root } = t.context;
+
+  const res = await web.delete(`${root}/targets/1`);
+
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.TARGET_DOES_NOT_EXIST);
+});
+
+test('DELETE targets > fails if not admin', async t => {
+  const { web, user } = t.context;
+
+  const member = await factory.create('member', { user, group: 'user' });
+  const client = await factory.create('client', { members: member });
+  const program = await factory.create('program', { client });
+  const target = await factory.create('target', { program });
+
+  let query = await Targets.findOne({});
+  t.is(query.id, target.id);
+
+  const res = await web.delete(
+    `/en/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`
+  );
+
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.IS_NOT_ADMIN);
+
+  query = await Targets.findOne({});
+  t.is(query.id, target.id);
 });

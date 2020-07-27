@@ -47,9 +47,7 @@ block body
                       td.align-middle= t(target.description)
                       td.align-middle
                         .btn-group(role='group', aria-label=t('Actions'))
-                          span#edittargetBtn(data-toggle='modal', data-target='#modal-edit-target', data-id=target.id, data-name=t(target.name), data-description=t(target.description))
-                            a(data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
-                          form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/targets/${target.id}`), method="POST", autocomplete="off")
+                          form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`), method="POST", autocomplete="off")
                             input(type='hidden', name='_csrf', value=ctx.csrf)
                             input(type='hidden', name='_method', value='DELETE')
                             button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
