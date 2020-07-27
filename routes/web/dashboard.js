@@ -54,6 +54,10 @@ programRouter.delete(
   web.dashboard.clients.ensureAdmin,
   web.dashboard.programs.deleteProgram
 );
+//
+// targets
+//
+programRouter.use(web.dashboard.targets.retrieveTargets);
 
 clientRouter.use(programRouter.routes());
 router.use(clientRouter.routes());

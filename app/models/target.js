@@ -19,23 +19,17 @@ const Target = new mongoose.Schema({
     required: true
   },
   start_date: {
-    type: Date,
-    required: true
+    type: Date
   },
   mastered_date: {
-    type: Date,
-    required: true
+    type: Date
   },
-  created_by: [
-    { type: mongoose.Schema.ObjectId, ref: 'User'}
-  ],
-  program: [
-    { type: mongoose.Schema.ObjectId, ref: 'Program'}
-  ]
+  created_by: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
+  program: [{ type: mongoose.Schema.ObjectId, ref: 'Program' }]
   // TODO create mastery criterion setup
   // TODO add phase categories
 });
 
-Target.plugin(mongooseCommonPlugin, { object: 'target'});
+Target.plugin(mongooseCommonPlugin, { object: 'target' });
 
 module.exports = mongoose.model('Target', Target);
