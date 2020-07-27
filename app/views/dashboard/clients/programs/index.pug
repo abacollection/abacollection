@@ -1,6 +1,9 @@
 
 extends ../../../layout
 
+append scripts
+  script(defer, src=manifest('js/programs.js'), integrity=manifest('js/programs.js', 'integrity'), crossorigin='anonymous')
+
 block body
   #modal-add-program(tabindex='-1', role='dialog').modal.fade
     .modal-dialog(role='document')
@@ -17,6 +20,25 @@ block body
               label(for='input-name')= t('Name')
             .form-group.floating-label
               input#input-description(type='text', name='description', placeholder=" ").form-control
+              label(for='input-description')= t('Description')
+          .modal-footer.text-right
+            button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
+            button(type='submit').btn.btn-primary= t('Submit')
+  #modal-edit-program(tabindex='-1', role='dialog').modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header.d-block.text-center
+          h5.modal-title= t('Edit Program')
+        form#edit-form(method='POST').ajax-form.confirm-prompt.mt-3
+          input(type='hidden', name='_method', value='POST')
+          input(type='hidden', name='_csrf', value=ctx.csrf)
+          input(type='hidden', name='edit_program', value='true')
+          .modal-body
+            .form-group.floating-label
+              input#edit-input-name(type='text', name='name', required, placeholder=" ").form-control
+              label(for='input-name')= t('Name')
+            .form-group.floating-label
+              input#edit-input-description(type='text', name='description', placeholder=" ").form-control
               label(for='input-description')= t('Description')
           .modal-footer.text-right
             button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
@@ -42,6 +64,8 @@ block body
                       td.align-middle= t(program.description)
                       td.align-middle
                         .btn-group(role='group', aria-label=t('Actions'))
+                          span#editProgramBtn(data-toggle='modal', data-target='#modal-edit-program', data-id=program.id, data-name=t(program.name), data-description=t(program.description))
+                            a(data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
                           form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}`), method="POST", autocomplete="off")
                             input(type='hidden', name='_csrf', value=ctx.csrf)
                             input(type='hidden', name='_method', value='DELETE')
