@@ -64,8 +64,9 @@ block body
                       td.align-middle= t(program.description)
                       td.align-middle
                         .btn-group(role='group', aria-label=t('Actions'))
-                          span#editProgramBtn(data-toggle='modal', data-target='#modal-edit-program', data-id=program.id, data-name=t(program.name), data-description=t(program.description))
-                            a(data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
+                          #editProgramBtn(data-toggle='modal', data-target='#modal-edit-program', data-id=program.id, data-name=t(program.name), data-description=t(program.description)).btn.btn-secondary
+                            a(data-toggle='tooltip',  data-title=t('Edit')): i.fa.fa-fw.fa-edit
+                          a(href=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets`), data-toggle='tooltip', data-title=t('Targets')).btn.btn-secondary: i.fa.fa-fw.fa-list
                           form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}`), method="POST", autocomplete="off")
                             input(type='hidden', name='_csrf', value=ctx.csrf)
                             input(type='hidden', name='_method', value='DELETE')
