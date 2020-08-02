@@ -17,6 +17,23 @@ async function retrievePrograms(ctx, next) {
     .lean()
     .exec();
 
+  //
+  // set breadcrumb
+  //
+  if (ctx.state.breadcrumbs)
+    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map(breadcrumb => {
+      if (!_.isObject(breadcrumb) && breadcrumb === 'programs')
+        return {
+          name: 'Programs',
+          header: 'Programs',
+          href: ctx.state.l(
+            `/dashboard/clients/${ctx.state.client.id}/programs`
+          )
+        };
+
+      return breadcrumb;
+    });
+
   return next();
 }
 
