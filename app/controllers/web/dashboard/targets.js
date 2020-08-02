@@ -17,6 +17,23 @@ async function retrieveTargets(ctx, next) {
     .lean()
     .exec();
 
+  //
+  // set breadcrumb
+  //
+  if (ctx.state.breadcrumbs)
+    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map(breadcrumb => {
+      if (!_.isObject(breadcrumb) && breadcrumb === 'targets')
+        return {
+          name: 'Targets',
+          header: ctx.state.program.name,
+          href: ctx.state.l(
+            `/dashboard/clients/${ctx.state.client.id}/programs/${ctx.state.program.id}/targets`
+          )
+        };
+
+      return breadcrumb;
+    });
+
   return next();
 }
 
@@ -47,9 +64,9 @@ async function retrieveTarget(ctx, next) {
       if (!_.isObject(breadcrumb) && breadcrumb === id)
         return {
           name: ctx.state.target.name,
-          header: ctx.state.target.name,
+          header: `${ctx.state.program.name}: ${ctx.state.target.name}`,
           href: ctx.state.l(
-            `/dashboard/clients/${ctx.state.client.id}/programs/${id}/targets/${id}`
+            `/dashboard/clients/${ctx.state.client.id}/programs/${ctx.state.program.id}/targets/${id}`
           )
         };
 
