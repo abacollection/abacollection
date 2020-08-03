@@ -61,6 +61,7 @@ async function retrieveTarget(ctx, next) {
   //
   if (ctx.state.breadcrumbs)
     ctx.state.breadcrumbs = ctx.state.breadcrumbs.map(breadcrumb => {
+      console.log('jungle:', ctx.state.program);
       if (!_.isObject(breadcrumb) && breadcrumb === id)
         return {
           name: ctx.state.target.name,
@@ -89,7 +90,7 @@ async function list(ctx) {
 
   const pageCount = Math.ceil(itemCount / ctx.query.limit);
 
-  await ctx.render('dashboard/clients/programs/targets', {
+  await ctx.render('dashboard/clients/targets', {
     targets,
     pageCount,
     itemCount,

@@ -1,5 +1,5 @@
 
-extends ../../../layout
+extends ../../layout
 
 append scripts
   script(defer, src=manifest('js/programs.js'), integrity=manifest('js/programs.js', 'integrity'), crossorigin='anonymous')
@@ -46,7 +46,7 @@ block body
   .container-fluid.py-3
     .row.mt-1
       .col
-        include ../../../_breadcrumbs
+        include ../../_breadcrumbs
         if programs.length === 0
           .alert.alert-info= t('No programs for this client yet.')
         else
@@ -71,4 +71,4 @@ block body
                             input(type='hidden', name='_csrf', value=ctx.csrf)
                             input(type='hidden', name='_method', value='DELETE')
                             button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
-          include ../../../_pagination
+          include ../../_pagination

@@ -1,5 +1,5 @@
 
-extends ../../../../layout
+extends ../../layout
 
 block body
   #modal-add-target(tabindex='-1', role='dialog').modal.fadej
@@ -29,7 +29,7 @@ block body
   .container-fluid.py-3
     .row.mt-1
       .col
-        include ../../../../_breadcrumbs
+        include ../../_breadcrumbs
         if targets.length === 0
           .alert.alert-info= t('No targets for this client yet.')
         else
@@ -51,4 +51,4 @@ block body
                             input(type='hidden', name='_csrf', value=ctx.csrf)
                             input(type='hidden', name='_method', value='DELETE')
                             button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
-          include ../../../../_pagination
+          include ../../_pagination
