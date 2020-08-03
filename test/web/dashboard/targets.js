@@ -1,98 +1,38 @@
 const test = require('ava');
-const { factory, MongooseAdapter } = require('factory-girl');
-const mongoose = require('mongoose');
-const sinon = require('sinon');
-const proxyquire = require('proxyquire');
+const { factory } = require('factory-girl');
 
-const { Clients, Programs, Targets } = require('../../../app/models');
+const config = require('../../../config');
+const { Users, Targets } = require('../../../app/models');
 const {
   retrieveTargets,
   retrieveTarget
 } = require('../../../app/controllers/web/dashboard/targets');
 
-const policies = require('../../../helpers/policies');
 const phrases = require('../../../config/phrases');
 
-const { before, beforeEach, after } = require('../../_utils');
+const utils = require('../../utils');
 
-const adapter = new MongooseAdapter();
-const Member = mongoose.model('Member', Clients.Member);
+test.before(utils.setupMongoose);
+test.before(utils.defineUserFactory);
+test.before(utils.defineClientFactory);
+test.before(utils.defineProgramFactory);
+test.before(utils.defineTargetFactory);
 
-test.before(async t => {
-  // call setup
-  await before(t);
+test.after.always(utils.teardownMongoose);
 
-  factory.setAdapter(adapter);
-  // setup members factory
-  factory.define('member', Member, buildOptions => {
-    return {
-      user: buildOptions.user
-        ? buildOptions.user
-        : factory.assoc('user', '_id'),
-      group: buildOptions.group
-        ? buildOptions.group
-        : factory.chance('pickone', ['admin', 'user'])
-    };
-  });
-
-  // setup client factory
-  factory.define('client', Clients, buildOptions => {
-    return {
-      first_name: factory.chance('first'),
-      last_name: factory.chance('last'),
-      dob: factory.chance('birthday'),
-      gender: factory.chance('gender'),
-      creation_date: new Date(Date.now()),
-      members: buildOptions.members
-        ? buildOptions.members
-        : factory.assocMany('member', 2, '_id')
-    };
-  });
-
-  // setup program factory
-  factory.define('program', Programs, buildOptions => {
-    return {
-      name: factory.chance('word'),
-      description: factory.chance('sentence'),
-      creation_date: new Date(Date.now()),
-      client: buildOptions.client
-        ? buildOptions.client
-        : factory.assoc('client', '_id')
-    };
-  });
-
-  // setup target factory
-  factory.define('target', Targets, buildOptions => {
-    return {
-      name: factory.chance('word'),
-      data_type: 'Frequency',
-      description: factory.chance('sentence'),
-      program: buildOptions.program
-        ? buildOptions.program
-        : factory.assoc('program', '_id')
-    };
-  });
-
-  // stub policies in routes/web/otp
-  t.context.ensureLoggedIn = sinon.stub(policies, 'ensureLoggedIn');
-  proxyquire('../../../routes/web', {
-    '../../helpers': {
-      policies
-    }
-  });
-  t.context.user = await factory.create('user');
-  t.context.ensureLoggedIn.callsFake(async (ctx, next) => {
-    ctx.state.user = t.context.user;
-    return next();
-  });
-});
-test.after.always(async t => {
-  await factory.cleanUp();
-
-  await after(t);
-});
 test.beforeEach(async t => {
-  await beforeEach(t);
+  // set password
+  t.context.password = '!@K#NLK!#N';
+  // create user
+  let user = await factory.build('user');
+  // must register in order for authentication to work
+  user = await Users.register(user, t.context.password);
+  // setup user for otp
+  user[config.userFields.hasSetPassword] = true;
+  t.context.user = await user.save();
+
+  await utils.setupWebServer(t);
+  await utils.loginUser(t);
 
   const member = await factory.create('member', {
     user: t.context.user,
@@ -104,14 +44,6 @@ test.beforeEach(async t => {
   });
 
   t.context.root = `/en/dashboard/clients/${t.context.client.id}/programs/${t.context.program.id}`;
-});
-test.afterEach.always(async () => {
-  sinon.restore();
-
-  await Targets.deleteMany({});
-  await Programs.deleteMany({});
-  await Clients.deleteMany({});
-  await Member.deleteMany({});
 });
 
 test('retrieveTargets > get targets only linked to program', async t => {
@@ -213,7 +145,7 @@ test('PUT targets > successfully', async t => {
   const { web, root } = t.context;
   const target = await factory.build('target');
 
-  let query = await Targets.findOne({});
+  let query = await Targets.findOne({ name: target.name });
   t.is(query, null);
 
   const res = await web.put(`${root}/targets`).send({
@@ -225,7 +157,7 @@ test('PUT targets > successfully', async t => {
   t.is(res.status, 302);
   t.is(res.header.location, `${root}/targets`);
 
-  query = await Targets.findOne({});
+  query = await Targets.findOne({ name: target.name });
   t.is(query.data_type, target.data_type);
   t.is(query.name, target.name);
   t.is(query.description, target.description);
@@ -245,7 +177,7 @@ test('DELETE targets > successfully', async t => {
   const { web, root, program } = t.context;
   const target = await factory.create('target', { program });
 
-  let query = await Targets.findOne({});
+  let query = await Targets.findOne({ id: target.id });
   t.is(query.id, target.id);
 
   const res = await web.delete(`${root}/targets/${target.id}`);
@@ -253,7 +185,7 @@ test('DELETE targets > successfully', async t => {
   t.is(res.status, 302);
   t.is(res.header.location, `${root}/targets`);
 
-  query = await Targets.findOne({});
+  query = await Targets.findOne({ id: target.id });
   t.is(query, null);
 });
 
@@ -274,7 +206,7 @@ test('DELETE targets > fails if not admin', async t => {
   const program = await factory.create('program', { client });
   const target = await factory.create('target', { program });
 
-  let query = await Targets.findOne({});
+  let query = await Targets.findOne({ id: target.id });
   t.is(query.id, target.id);
 
   const res = await web.delete(
@@ -284,7 +216,7 @@ test('DELETE targets > fails if not admin', async t => {
   t.is(res.status, 400);
   t.is(JSON.parse(res.text).message, phrases.IS_NOT_ADMIN);
 
-  query = await Targets.findOne({});
+  query = await Targets.findOne({ id: target.id });
   t.is(query.id, target.id);
 });
 
@@ -293,13 +225,13 @@ test('deletes target when program is deleted', async t => {
 
   await factory.createMany('target', 2, { program });
 
-  let query = await Targets.find({});
+  let query = await Targets.find({ $or: [{ program: program._id }] });
   t.is(query.length, 2);
 
   const res = await web.delete(root);
 
   t.is(res.status, 302);
 
-  query = await Targets.find({});
+  query = await Targets.find({ $or: [{ program: program._id }] });
   t.is(query.length, 0);
 });

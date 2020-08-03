@@ -1,103 +1,58 @@
 const test = require('ava');
-const { factory, MongooseAdapter } = require('factory-girl');
-const mongoose = require('mongoose');
-const sinon = require('sinon');
-const proxyquire = require('proxyquire');
+const { factory } = require('factory-girl');
 
-const { Clients } = require('../../../app/models');
+const config = require('../../../config');
+const { Clients, Users } = require('../../../app/models');
 const {
   retrieveClients,
   retrieveClient
 } = require('../../../app/controllers/web/dashboard/clients');
-const policies = require('../../../helpers/policies');
 const phrases = require('../../../config/phrases');
 
-const { before, beforeEach, after } = require('../../_utils');
+const utils = require('../../utils');
 
-const adapter = new MongooseAdapter();
-const Member = mongoose.model('Member', Clients.Member);
+test.before(utils.setupMongoose);
+test.before(utils.defineUserFactory);
+test.before(utils.defineClientFactory);
 
-test.before(async t => {
-  // call setup
-  await before(t);
+test.after.always(utils.teardownMongoose);
 
-  factory.setAdapter(adapter);
-  // setup members factory
-  factory.define('member', Member, buildOptions => {
-    return {
-      user: buildOptions.user
-        ? buildOptions.user
-        : factory.assoc('user', '_id'),
-      group: buildOptions.group
-        ? buildOptions.group
-        : factory.chance('pickone', ['admin', 'user'])
-    };
-  });
+test.beforeEach(async t => {
+  // set password
+  t.context.password = '!@K#NLK!#N';
+  // create user
+  let user = await factory.build('user');
+  // must register in order for authentication to work
+  user = await Users.register(user, t.context.password);
+  // setup user for otp
+  user[config.userFields.hasSetPassword] = true;
+  t.context.user = await user.save();
 
-  // setup client factory
-  factory.define('client', Clients, buildOptions => {
-    return {
-      first_name: factory.chance('first'),
-      last_name: factory.chance('last'),
-      dob: factory.chance('birthday'),
-      gender: factory.chance('gender'),
-      creation_date: new Date(Date.now()),
-      members: buildOptions.members
-        ? buildOptions.members
-        : factory.assocMany('member', 2, '_id')
-    };
-  });
-
-  // stub policies in routes/web/otp
-  t.context.ensureLoggedIn = sinon.stub(policies, 'ensureLoggedIn');
-  proxyquire('../../../routes/web', {
-    '../../helpers': {
-      policies
-    }
-  });
-  t.context.user = await factory.create('user');
-  t.context.ensureLoggedIn.callsFake(async (ctx, next) => {
-    ctx.state.user = t.context.user;
-    return next();
-  });
-});
-test.after.always(async t => {
-  await factory.cleanUp();
-
-  await after(t);
-});
-test.beforeEach(beforeEach);
-test.afterEach.always(async () => {
-  sinon.restore();
-
-  await Clients.deleteMany({});
-  await Member.deleteMany({});
+  await utils.setupWebServer(t);
+  await utils.loginUser(t);
 });
 
-test.serial(
-  'retrieveClients > get clients that only the user has permissions for',
-  async t => {
-    t.plan(2);
+test('retrieveClients > get clients that only the user has permissions for', async t => {
+  t.plan(2);
 
-    const members = await factory.createMany('member', 2);
-    const clients = await factory.createMany('client', [
-      { members: [members[0]] },
-      { members: [members[1]] }
-    ]);
+  const members = await factory.createMany('member', 2);
+  const clients = await factory.createMany('client', [
+    { members: [members[0]] },
+    { members: [members[1]] }
+  ]);
 
-    const ctx = {
-      isAuthenticated: () => true,
-      state: { user: members[0].user }
-    };
+  const ctx = {
+    isAuthenticated: () => true,
+    state: { user: members[0].user }
+  };
 
-    await retrieveClients(ctx, () => {
-      t.is(ctx.state.clients[0].id, clients[0].id);
-      t.is(typeof ctx.state.clients[1], 'undefined');
-    });
-  }
-);
+  await retrieveClients(ctx, () => {
+    t.is(ctx.state.clients[0].id, clients[0].id);
+    t.is(typeof ctx.state.clients[1], 'undefined');
+  });
+});
 
-test.serial('retrieveClient > get client information', async t => {
+test('retrieveClient > get client information', async t => {
   t.plan(2);
   const client = await factory.create('client');
 
@@ -162,7 +117,7 @@ test('retrieveClient > errors if client_id !isSANB and req.body.client !isSANB',
   );
 });
 
-test.serial('GET dashboard > successfully', async t => {
+test('GET dashboard > successfully', async t => {
   const { web } = t.context;
 
   const res = await web.get('/en/dashboard');
@@ -171,7 +126,7 @@ test.serial('GET dashboard > successfully', async t => {
   t.true(res.text.includes('Dashboard'));
 });
 
-test.serial('GET dashboard/clients > successfully with no clients', async t => {
+test('GET dashboard/clients > successfully with no clients', async t => {
   const { web } = t.context;
 
   const res = await web.get('/en/dashboard/clients');
@@ -181,7 +136,7 @@ test.serial('GET dashboard/clients > successfully with no clients', async t => {
   t.true(res.text.includes('No clients exist yet'));
 });
 
-test.serial('GET dashboard/clients > successfully with clients', async t => {
+test('GET dashboard/clients > successfully with clients', async t => {
   const { web, user } = t.context;
   const member = await factory.create('member', { user });
   const client = await factory.create('client', { members: member });
@@ -193,7 +148,7 @@ test.serial('GET dashboard/clients > successfully with clients', async t => {
   t.true(res.text.includes(client.first_name));
 });
 
-test.serial('PUT dashboard/clients > successfully with name', async t => {
+test('PUT dashboard/clients > successfully with name', async t => {
   const { web } = t.context;
   const client = await factory.build('client');
 
@@ -205,84 +160,87 @@ test.serial('PUT dashboard/clients > successfully with name', async t => {
   t.is(res.status, 302);
   t.is(res.header.location, '/en/dashboard/clients');
 
-  const query = await Clients.findOne({});
+  const query = await Clients.findOne({
+    first_name: client.first_name,
+    last_name: client.last_name
+  });
   t.is(query.first_name, client.first_name);
   t.is(query.last_name, client.last_name);
   t.is(query.gender, undefined);
   t.is(query.dob, undefined);
 });
 
-test.serial(
-  'PUT dashboard/clients > successfully with name and gender',
-  async t => {
-    const { web } = t.context;
-    const client = await factory.build('client');
+test('PUT dashboard/clients > successfully with name and gender', async t => {
+  const { web } = t.context;
+  const client = await factory.build('client');
 
-    const res = await web.put('/en/dashboard/clients').send({
-      first_name: client.first_name,
-      last_name: client.last_name,
-      gender: client.gender
-    });
+  const res = await web.put('/en/dashboard/clients').send({
+    first_name: client.first_name,
+    last_name: client.last_name,
+    gender: client.gender
+  });
 
-    t.is(res.status, 302);
-    t.is(res.header.location, '/en/dashboard/clients');
+  t.is(res.status, 302);
+  t.is(res.header.location, '/en/dashboard/clients');
 
-    const query = await Clients.findOne({});
-    t.is(query.first_name, client.first_name);
-    t.is(query.last_name, client.last_name);
-    t.is(query.gender, client.gender);
-    t.is(query.dob, undefined);
-  }
-);
+  const query = await Clients.findOne({
+    first_name: client.first_name,
+    last_name: client.last_name
+  });
+  t.is(query.first_name, client.first_name);
+  t.is(query.last_name, client.last_name);
+  t.is(query.gender, client.gender);
+  t.is(query.dob, undefined);
+});
 
-test.serial(
-  'PUT dashbaord/clients > successfully with name and dob',
-  async t => {
-    const { web } = t.context;
-    const client = await factory.build('client');
+test('PUT dashbaord/clients > successfully with name and dob', async t => {
+  const { web } = t.context;
+  const client = await factory.build('client');
 
-    const res = await web.put('/en/dashboard/clients').send({
-      first_name: client.first_name,
-      last_name: client.last_name,
-      dob: client.dob
-    });
+  const res = await web.put('/en/dashboard/clients').send({
+    first_name: client.first_name,
+    last_name: client.last_name,
+    dob: client.dob
+  });
 
-    t.is(res.status, 302);
-    t.is(res.header.location, '/en/dashboard/clients');
+  t.is(res.status, 302);
+  t.is(res.header.location, '/en/dashboard/clients');
 
-    const query = await Clients.findOne({});
-    t.is(query.first_name, client.first_name);
-    t.is(query.last_name, client.last_name);
-    t.is(query.gender, undefined);
-    t.deepEqual(query.dob, client.dob);
-  }
-);
+  const query = await Clients.findOne({
+    first_name: client.first_name,
+    last_name: client.last_name
+  });
+  t.is(query.first_name, client.first_name);
+  t.is(query.last_name, client.last_name);
+  t.is(query.gender, undefined);
+  t.deepEqual(query.dob, client.dob);
+});
 
-test.serial(
-  'PUT dashbaord/clients > successfully with name, gender, and dob',
-  async t => {
-    const { web } = t.context;
-    const client = await factory.build('client');
+test('PUT dashbaord/clients > successfully with name, gender, and dob', async t => {
+  const { web } = t.context;
+  const client = await factory.build('client');
 
-    const res = await web.put('/en/dashboard/clients').send({
-      first_name: client.first_name,
-      last_name: client.last_name,
-      gender: client.gender,
-      dob: client.dob
-    });
+  const res = await web.put('/en/dashboard/clients').send({
+    first_name: client.first_name,
+    last_name: client.last_name,
+    gender: client.gender,
+    dob: client.dob
+  });
 
-    t.is(res.status, 302);
-    t.is(res.header.location, '/en/dashboard/clients');
+  t.is(res.status, 302);
+  t.is(res.header.location, '/en/dashboard/clients');
 
-    const query = await Clients.findOne({});
-    t.is(query.first_name, client.first_name);
-    t.is(query.last_name, client.last_name);
-    t.is(query.gender, client.gender);
-    t.deepEqual(query.dob, client.dob);
-  }
-);
+  const query = await Clients.findOne({
+    first_name: client.first_name,
+    last_name: client.last_name
+  });
+  t.is(query.first_name, client.first_name);
+  t.is(query.last_name, client.last_name);
+  t.is(query.gender, client.gender);
+  t.deepEqual(query.dob, client.dob);
+});
 
-test.serial('PUT dashboard/clients > fails with no name', async t => {
+test('PUT dashboard/clients > fails with no name', async t => {
   const { web } = t.context;
 
   const res = await web.put('/en/dashboard/clients').send({});
@@ -291,7 +249,7 @@ test.serial('PUT dashboard/clients > fails with no name', async t => {
   t.is(JSON.parse(res.text).message, phrases.INVALID_NAME);
 });
 
-test.serial('PUT dashboard/clients > fails with invalid dob', async t => {
+test('PUT dashboard/clients > fails with invalid dob', async t => {
   const { web } = t.context;
 
   const res = await web.put('/en/dashboard/clients').send({
@@ -304,7 +262,7 @@ test.serial('PUT dashboard/clients > fails with invalid dob', async t => {
   t.is(JSON.parse(res.text).message, phrases.INVALID_DOB);
 });
 
-test.serial('DELETE dashboard/clients > successfully', async t => {
+test('DELETE dashboard/clients > successfully', async t => {
   const { web, user } = t.context;
   const member = await factory.create('member', {
     user,
@@ -312,7 +270,7 @@ test.serial('DELETE dashboard/clients > successfully', async t => {
   });
   const client = await factory.create('client', { members: member });
 
-  let query = await Clients.findOne({});
+  let query = await Clients.findOne({ id: client.id });
   t.is(query.id, client.id);
 
   const res = await web.delete(`/en/dashboard/clients/${client.id}`);
@@ -320,59 +278,50 @@ test.serial('DELETE dashboard/clients > successfully', async t => {
   t.is(res.status, 302);
   t.is(res.header.location, '/en/dashboard/clients');
 
-  query = await Clients.findOne({});
+  query = await Clients.findOne({ id: client.id });
   t.is(query, null);
 });
 
-test.serial(
-  'DELETE dashboard/clients > fails if user does not have permissions',
-  async t => {
-    const { web } = t.context;
-    const client = await factory.create('client');
+test('DELETE dashboard/clients > fails if user does not have permissions', async t => {
+  const { web } = t.context;
+  const client = await factory.create('client');
 
-    const res = await web.delete(`/en/dashboard/clients/${client.id}`);
+  const res = await web.delete(`/en/dashboard/clients/${client.id}`);
 
-    t.is(res.status, 400);
-    t.is(JSON.parse(res.text).message, phrases.CLIENT_DOES_NOT_EXIST);
-  }
-);
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.CLIENT_DOES_NOT_EXIST);
+});
 
-test.serial(
-  'DELETE dashboard/clients > fails if client does not exist',
-  async t => {
-    const { web } = t.context;
+test('DELETE dashboard/clients > fails if client does not exist', async t => {
+  const { web } = t.context;
 
-    const res = await web.delete('/en/dashboard/clients/1');
+  const res = await web.delete('/en/dashboard/clients/1');
 
-    t.is(res.status, 400);
-    t.is(JSON.parse(res.text).message, phrases.CLIENT_DOES_NOT_EXIST);
-  }
-);
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.CLIENT_DOES_NOT_EXIST);
+});
 
-test.serial(
-  'DELETE dashboard/clients > fails if user is not admin',
-  async t => {
-    const { web, user } = t.context;
-    const member = await factory.create('member', {
-      user,
-      group: 'user'
-    });
-    const client = await factory.create('client', { members: member });
+test('DELETE dashboard/clients > fails if user is not admin', async t => {
+  const { web, user } = t.context;
+  const member = await factory.create('member', {
+    user,
+    group: 'user'
+  });
+  const client = await factory.create('client', { members: member });
 
-    let query = await Clients.findOne({});
-    t.is(query.id, client.id);
+  let query = await Clients.findOne({ id: client.id });
+  t.is(query.id, client.id);
 
-    const res = await web.delete(`/en/dashboard/clients/${client.id}`);
+  const res = await web.delete(`/en/dashboard/clients/${client.id}`);
 
-    t.is(res.status, 400);
-    t.is(JSON.parse(res.text).message, phrases.IS_NOT_ADMIN);
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.IS_NOT_ADMIN);
 
-    query = await Clients.findOne({});
-    t.is(query.id, client.id);
-  }
-);
+  query = await Clients.findOne({ id: client.id });
+  t.is(query.id, client.id);
+});
 
-test.serial('GET dashboard/clients/settings > successfully', async t => {
+test('GET dashboard/clients/settings > successfully', async t => {
   const { web, user } = t.context;
   const member = await factory.create('member', { user });
   const client = await factory.create('client', { members: member });
@@ -382,13 +331,13 @@ test.serial('GET dashboard/clients/settings > successfully', async t => {
   t.is(res.status, 200);
 });
 
-test.serial('POST dashboard/clients/settings > successfully', async t => {
+test('POST dashboard/clients/settings > successfully', async t => {
   const { web, user } = t.context;
   const member = await factory.create('member', { user });
   const client = await factory.create('client', { members: member });
   const newClient = await factory.build('client');
 
-  let query = await Clients.findOne({});
+  let query = await Clients.findOne({ id: client.id });
   t.true(
     query.id === client.id &&
       query.first_name === client.first_name &&
@@ -409,7 +358,7 @@ test.serial('POST dashboard/clients/settings > successfully', async t => {
   t.is(res.status, 302);
   t.is(res.header.location, `/en/dashboard/clients/${client.id}/settings`);
 
-  query = await Clients.findOne({});
+  query = await Clients.findOne({ id: client.id });
   t.true(
     query.id === client.id &&
       query.first_name === newClient.first_name &&
@@ -419,44 +368,38 @@ test.serial('POST dashboard/clients/settings > successfully', async t => {
   );
 });
 
-test.serial(
-  'POST dashboard/clients/settings > fails if dob is invalid',
-  async t => {
-    const { web, user } = t.context;
-    const member = await factory.create('member', { user });
-    const client = await factory.create('client', { members: member });
+test('POST dashboard/clients/settings > fails if dob is invalid', async t => {
+  const { web, user } = t.context;
+  const member = await factory.create('member', { user });
+  const client = await factory.create('client', { members: member });
 
-    const res = await web
-      .post(`/en/dashboard/clients/${client.id}/settings`)
-      .send({
-        first_name: client.first_name,
-        last_name: client.last_name,
-        dob: 'nonsense',
-        gender: client.gender
-      });
+  const res = await web
+    .post(`/en/dashboard/clients/${client.id}/settings`)
+    .send({
+      first_name: client.first_name,
+      last_name: client.last_name,
+      dob: 'nonsense',
+      gender: client.gender
+    });
 
-    t.is(res.status, 400);
-    t.is(JSON.parse(res.text).message, phrases.INVALID_DOB);
-  }
-);
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.INVALID_DOB);
+});
 
-test.serial(
-  'POST dashboard/clients/settings > fails if name is invalid',
-  async t => {
-    const { web, user } = t.context;
-    const member = await factory.create('member', { user });
-    const client = await factory.create('client', { members: member });
+test('POST dashboard/clients/settings > fails if name is invalid', async t => {
+  const { web, user } = t.context;
+  const member = await factory.create('member', { user });
+  const client = await factory.create('client', { members: member });
 
-    const res = await web
-      .post(`/en/dashboard/clients/${client.id}/settings`)
-      .send({
-        first_name: undefined,
-        last_name: client.last_name,
-        dob: client.dob,
-        gender: client.gender
-      });
+  const res = await web
+    .post(`/en/dashboard/clients/${client.id}/settings`)
+    .send({
+      first_name: undefined,
+      last_name: client.last_name,
+      dob: client.dob,
+      gender: client.gender
+    });
 
-    t.is(res.status, 400);
-    t.is(JSON.parse(res.text).message, phrases.INVALID_NAME);
-  }
-);
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.INVALID_NAME);
+});

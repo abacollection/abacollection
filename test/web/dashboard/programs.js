@@ -1,86 +1,37 @@
 const test = require('ava');
-const { factory, MongooseAdapter } = require('factory-girl');
-const mongoose = require('mongoose');
-const sinon = require('sinon');
-const proxyquire = require('proxyquire');
+const { factory } = require('factory-girl');
 
-const { Clients, Programs } = require('../../../app/models');
+const config = require('../../../config');
+const { Users, Programs } = require('../../../app/models');
 const {
   retrievePrograms,
   retrieveProgram
 } = require('../../../app/controllers/web').dashboard.programs;
 
-const policies = require('../../../helpers/policies');
 const phrases = require('../../../config/phrases');
 
-const { before, beforeEach, after } = require('../../_utils');
+const utils = require('../../utils');
 
-const adapter = new MongooseAdapter();
-const Member = mongoose.model('Member', Clients.Member);
+test.before(utils.setupMongoose);
+test.before(utils.defineUserFactory);
+test.before(utils.defineClientFactory);
+test.before(utils.defineProgramFactory);
 
-test.before(async t => {
-  // call setup
-  await before(t);
+test.after.always(utils.teardownMongoose);
 
-  factory.setAdapter(adapter);
-  // setup members factory
-  factory.define('member', Member, buildOptions => {
-    return {
-      user: buildOptions.user
-        ? buildOptions.user
-        : factory.assoc('user', '_id'),
-      group: buildOptions.group
-        ? buildOptions.group
-        : factory.chance('pickone', ['admin', 'user'])
-    };
-  });
-
-  // setup client factory
-  factory.define('client', Clients, buildOptions => {
-    return {
-      first_name: factory.chance('first'),
-      last_name: factory.chance('last'),
-      dob: factory.chance('birthday'),
-      gender: factory.chance('gender'),
-      creation_date: new Date(Date.now()),
-      members: buildOptions.members
-        ? buildOptions.members
-        : factory.assocMany('member', 2, '_id')
-    };
-  });
-
-  // setup program factory
-  factory.define('program', Programs, buildOptions => {
-    return {
-      name: factory.chance('word'),
-      description: factory.chance('sentence'),
-      creation_date: new Date(Date.now()),
-      client: buildOptions.client
-        ? buildOptions.client
-        : factory.assoc('client', '_id')
-    };
-  });
-
-  // stub policies in routes/web/otp
-  t.context.ensureLoggedIn = sinon.stub(policies, 'ensureLoggedIn');
-  proxyquire('../../../routes/web', {
-    '../../helpers': {
-      policies
-    }
-  });
-  t.context.user = await factory.create('user');
-  t.context.ensureLoggedIn.callsFake(async (ctx, next) => {
-    ctx.state.user = t.context.user;
-    return next();
-  });
-});
-test.after.always(async t => {
-  await factory.cleanUp();
-
-  await after(t);
-});
 test.beforeEach(async t => {
-  await beforeEach(t);
+  // set password
+  t.context.password = '!@K#NLK!#N';
+  // create user
+  let user = await factory.build('user');
+  // must register in order for authentication to work
+  user = await Users.register(user, t.context.password);
+  // setup user for otp
+  user[config.userFields.hasSetPassword] = true;
+  t.context.user = await user.save();
+
+  await utils.setupWebServer(t);
+  await utils.loginUser(t);
 
   const member = await factory.create('member', {
     user: t.context.user,
@@ -90,44 +41,34 @@ test.beforeEach(async t => {
 
   t.context.root = `/en/dashboard/clients/${t.context.client.id}`;
 });
-test.afterEach.always(async () => {
-  sinon.restore();
 
-  await Programs.deleteMany({});
-  await Clients.deleteMany({});
-  await Member.deleteMany({});
+test('retrievePrograms > get programs only linked to the client', async t => {
+  t.plan(2);
+
+  const members = await factory.createMany('member', 2);
+  const clients = await factory.createMany('client', [
+    { members: members[0] },
+    { members: members[1] }
+  ]);
+  const programs = await factory.createMany('program', [
+    { client: clients[0] },
+    { client: clients[1] }
+  ]);
+
+  const ctx = {
+    state: {
+      user: members[0].user,
+      client: clients[0]
+    }
+  };
+
+  await retrievePrograms(ctx, () => {
+    t.is(ctx.state.programs.length, 1);
+    t.is(ctx.state.programs[0].id, programs[0].id);
+  });
 });
 
-test.serial(
-  'retrievePrograms > get programs only linked to the client',
-  async t => {
-    t.plan(2);
-
-    const members = await factory.createMany('member', 2);
-    const clients = await factory.createMany('client', [
-      { members: members[0] },
-      { members: members[1] }
-    ]);
-    const programs = await factory.createMany('program', [
-      { client: clients[0] },
-      { client: clients[1] }
-    ]);
-
-    const ctx = {
-      state: {
-        user: members[0].user,
-        client: clients[0]
-      }
-    };
-
-    await retrievePrograms(ctx, () => {
-      t.is(ctx.state.programs.length, 1);
-      t.is(ctx.state.programs[0].id, programs[0].id);
-    });
-  }
-);
-
-test.serial('retrieveProgram > get program', async t => {
+test('retrieveProgram > get program', async t => {
   t.plan(2);
 
   const programs = await factory.createMany('program', 2);
@@ -148,7 +89,7 @@ test.serial('retrieveProgram > get program', async t => {
   });
 });
 
-test.serial('retrieveProgram > errors if no params', async t => {
+test('retrieveProgram > errors if no params', async t => {
   const programs = await factory.createMany('program', 2);
 
   const ctx = {
@@ -168,7 +109,7 @@ test.serial('retrieveProgram > errors if no params', async t => {
   });
 });
 
-test.serial('retrieveProgram > errors if program does not exist', async t => {
+test('retrieveProgram > errors if program does not exist', async t => {
   const ctx = {
     params: { program_id: '1' },
     state: { programs: [] },
@@ -183,36 +124,30 @@ test.serial('retrieveProgram > errors if program does not exist', async t => {
   });
 });
 
-test.serial(
-  'GET dashboard/clients/programs > successfully with no programs',
-  async t => {
-    const { web, root } = t.context;
+test('GET dashboard/clients/programs > successfully with no programs', async t => {
+  const { web, root } = t.context;
 
-    const res = await web.get(`${root}/programs`);
+  const res = await web.get(`${root}/programs`);
 
-    t.is(res.status, 200);
-    t.true(res.text.includes('No programs for this client yet.'));
-  }
-);
+  t.is(res.status, 200);
+  t.true(res.text.includes('No programs for this client yet.'));
+});
 
-test.serial(
-  'GET dashboard/clients/programs > successfully with programs',
-  async t => {
-    const { web, client, root } = t.context;
-    const program = await factory.create('program', { client });
+test('GET dashboard/clients/programs > successfully with programs', async t => {
+  const { web, client, root } = t.context;
+  const program = await factory.create('program', { client });
 
-    const res = await web.get(`${root}/programs`);
+  const res = await web.get(`${root}/programs`);
 
-    t.is(res.status, 200);
-    t.true(res.text.includes(program.name));
-  }
-);
+  t.is(res.status, 200);
+  t.true(res.text.includes(program.name));
+});
 
-test.serial('PUT dashboard/clients/programs > successfully', async t => {
+test('PUT dashboard/clients/programs > successfully', async t => {
   const { web, root } = t.context;
   const program = await factory.build('program');
 
-  let query = await Programs.findOne({});
+  let query = await Programs.findOne({ name: program.name });
   t.is(query, null);
 
   const res = await web.put(`${root}/programs`).send({
@@ -223,16 +158,17 @@ test.serial('PUT dashboard/clients/programs > successfully', async t => {
   t.is(res.status, 302);
   t.is(res.header.location, `${root}/programs`);
 
-  query = await Programs.findOne({});
+  query = await Programs.findOne({ name: program.name });
   t.true(
     query.name === program.name && query.description === program.description
   );
 });
 
-test.serial('PUT dashboard/clients/programs > fails with no name', async t => {
+test('PUT dashboard/clients/programs > fails with no name', async t => {
   const { web, root } = t.context;
+  const program = await factory.build('program');
 
-  let query = await Programs.findOne({});
+  let query = await Programs.findOne({ name: program.name });
   t.is(query, null);
 
   const res = await web.put(`${root}/programs`);
@@ -240,16 +176,16 @@ test.serial('PUT dashboard/clients/programs > fails with no name', async t => {
   t.is(res.status, 400);
   t.is(JSON.parse(res.text).message, phrases.INVALID_PROGRAM_NAME);
 
-  query = await Programs.findOne({});
+  query = await Programs.findOne({ name: program.name });
   t.is(query, null);
 });
 
-test.serial('DELETE dashboard/clients/programs > successfully', async t => {
+test('DELETE dashboard/clients/programs > successfully', async t => {
   const { web, client, root } = t.context;
 
   const program = await factory.create('program', { client });
 
-  let query = await Programs.findOne({});
+  let query = await Programs.findOne({ id: program.id });
   t.is(query.id, program.id);
 
   const res = await web.delete(`${root}/programs/${program.id}`);
@@ -257,52 +193,46 @@ test.serial('DELETE dashboard/clients/programs > successfully', async t => {
   t.is(res.status, 302);
   t.is(res.header.location, `${root}/programs`);
 
-  query = await Programs.findOne({});
+  query = await Programs.findOne({ id: program.id });
   t.is(query, null);
 });
 
-test.serial(
-  'DELETE dashboard/clients/programs > fails if program does not exist',
-  async t => {
-    const { web, root } = t.context;
+test('DELETE dashboard/clients/programs > fails if program does not exist', async t => {
+  const { web, root } = t.context;
 
-    const res = await web.delete(`${root}/programs/1`);
+  const res = await web.delete(`${root}/programs/1`);
 
-    t.is(res.status, 400);
-    t.is(JSON.parse(res.text).message, phrases.PROGRAM_DOES_NOT_EXIST);
-  }
-);
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.PROGRAM_DOES_NOT_EXIST);
+});
 
-test.serial(
-  'DELETE dashboard/clients/programs > fails if user is not admin',
-  async t => {
-    const { web, user } = t.context;
+test('DELETE dashboard/clients/programs > fails if user is not admin', async t => {
+  const { web, user } = t.context;
 
-    const member = await factory.create('member', { user, group: 'user' });
-    const client = await factory.create('client', { members: member });
-    const program = await factory.create('program', { client });
+  const member = await factory.create('member', { user, group: 'user' });
+  const client = await factory.create('client', { members: member });
+  const program = await factory.create('program', { client });
 
-    let query = await Programs.findOne({});
-    t.is(query.id, program.id);
+  let query = await Programs.findOne({ id: program.id });
+  t.is(query.id, program.id);
 
-    const res = await web.delete(
-      `/en/dashboard/clients/${client.id}/programs/${program.id}`
-    );
+  const res = await web.delete(
+    `/en/dashboard/clients/${client.id}/programs/${program.id}`
+  );
 
-    t.is(res.status, 400);
-    t.is(JSON.parse(res.text).message, phrases.IS_NOT_ADMIN);
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.IS_NOT_ADMIN);
 
-    query = await Programs.findOne({});
-    t.is(query.id, program.id);
-  }
-);
+  query = await Programs.findOne({ id: program.id });
+  t.is(query.id, program.id);
+});
 
-test.serial('deletes program when client deleted', async t => {
+test('deletes program when client deleted', async t => {
   const { web, client } = t.context;
 
   await factory.createMany('program', 2, { client });
 
-  let query = await Programs.find({});
+  let query = await Programs.find({ $or: [{ client: client._id }] });
   t.is(query.length, 2);
 
   const res = await web.delete(`/en/dashboard/clients/${client.id}`);
@@ -310,34 +240,31 @@ test.serial('deletes program when client deleted', async t => {
   t.is(res.status, 302);
   t.is(res.header.location, '/en/dashboard/clients');
 
-  query = await Programs.find({});
+  query = await Programs.find({ $or: [{ client: client._id }] });
   t.is(query.length, 0);
 });
 
-test.serial(
-  'POST dashboard/clients/program > modifies name and description',
-  async t => {
-    const { web, client } = t.context;
+test('POST dashboard/clients/program > modifies name and description', async t => {
+  const { web, client } = t.context;
 
-    const program = await factory.create('program', { client });
-    const newProgram = await factory.build('program', { client });
+  const program = await factory.create('program', { client });
+  const newProgram = await factory.build('program', { client });
 
-    let query = await Programs.findOne({});
-    t.is(query.name, program.name);
-    t.is(query.description, program.description);
+  let query = await Programs.findOne({ name: program.name });
+  t.is(query.name, program.name);
+  t.is(query.description, program.description);
 
-    const res = await web
-      .post(`/en/dashboard/clients/${client.id}/programs/${program.id}`)
-      .send({
-        name: newProgram.name,
-        description: newProgram.description
-      });
+  const res = await web
+    .post(`/en/dashboard/clients/${client.id}/programs/${program.id}`)
+    .send({
+      name: newProgram.name,
+      description: newProgram.description
+    });
 
-    t.is(res.status, 302);
-    t.is(res.header.location, `/en/dashboard/clients/${client.id}/programs`);
+  t.is(res.status, 302);
+  t.is(res.header.location, `/en/dashboard/clients/${client.id}/programs`);
 
-    query = await Programs.findOne({});
-    t.is(query.name, newProgram.name);
-    t.is(query.description, newProgram.description);
-  }
-);
+  query = await Programs.findOne({ name: newProgram.name });
+  t.is(query.name, newProgram.name);
+  t.is(query.description, newProgram.description);
+});
