@@ -153,10 +153,42 @@ async function deleteTarget(ctx) {
   else ctx.body = { redirectTo };
 }
 
+async function editTarget(ctx) {
+  if (!isSANB(ctx.request.body.name))
+    return ctx.throw(
+      Boom.badRequest(ctx.translateError('INVALID_TARGET_NAME'))
+    );
+
+  const { name, description } = ctx.request.body;
+
+  ctx.state.target = await Targets.findOneAndUpdate(
+    { id: ctx.state.target._id },
+    { name, description },
+    { new: true, runValidators: true, context: 'query' }
+  );
+
+  ctx.flash('custom', {
+    title: ctx.request.t('Success'),
+    text: ctx.translate('REQUEST_OK'),
+    type: 'success',
+    toast: true,
+    showConfirmButton: false,
+    timer: 3000,
+    position: 'top'
+  });
+
+  const redirectTo = ctx.state.l(
+    `/dashboard/clients/${ctx.state.client._id}/programs/${ctx.state.program._id}/targets`
+  );
+  if (ctx.accepts('html')) ctx.redirect(redirectTo);
+  else ctx.body = { redirectTo };
+}
+
 module.exports = {
   retrieveTargets,
   retrieveTarget,
   list,
   addTarget,
-  deleteTarget
+  deleteTarget,
+  editTarget
 };

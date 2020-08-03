@@ -71,6 +71,7 @@ programRouter.put('/targets', web.dashboard.targets.addTarget);
 const targetRouter = new Router({ prefix: '/targets/:target_id' });
 targetRouter.use(web.dashboard.targets.retrieveTarget);
 
+targetRouter.post('/', web.dashboard.targets.editTarget);
 targetRouter.delete(
   '/',
   web.dashboard.clients.ensureAdmin,

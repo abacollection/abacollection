@@ -1,13 +1,16 @@
 
 extends ../../layout
 
+append scripts
+  script(defer, src=manifest('js/targets.js'), integrity=manifest('js/targets.js', 'integrity'), crossorigin='anonymous')
+
 block body
-  #modal-add-target(tabindex='-1', role='dialog').modal.fadej
+  #modal-add-target(tabindex='-1', role='dialog').modal.fade
     .modal-dialog(role='document')
       .modal-content
         .modal-header.d-block.text-center
           h5.modal-title= t('Add target')
-        form(action=ctx.path, method='POST').ajax-form.confirm-prompt.mt-3
+        form(action=ctx.path, method='POST').ajax-form.mt-3
           input(type='hidden', name='_method', value='PUT')
           input(type='hidden', name='_csrf', value=ctx.csrf)
           input(type='hidden', name='add_target', value='true')
@@ -23,6 +26,25 @@ block body
                 option(value='')= t('-- Select --')
                 option(value='Frequency')= t('Frequency')
               label(for='data_type')= t('Data Type')
+          .modal-footer.text-right
+            button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
+            button(type='submit').btn.btn-primary= t('Submit')
+  #modal-edit-target(tabindex='-1', role='dialog').modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header.d-block.text-center
+          h5.modal-title= t('Edit Program')
+        form#edit-form(method='POST').ajax-form.confirm-prompt.mt-3
+          input(type='hidden', name='_method', value='POST')
+          input(type='hidden', name='_csrf', value=ctx.csrf)
+          input(type='hidden', name='edit_program', value='true')
+          .modal-body
+            .form-group.floating-label
+              input#edit-input-name(type='text', name='name', required, placeholder=" ").form-control
+              label(for='input-name')= t('Name')
+            .form-group.floating-label
+              input#edit-input-description(type='text', name='description', placeholder=" ").form-control
+              label(for='input-description')= t('Description')
           .modal-footer.text-right
             button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
             button(type='submit').btn.btn-primary= t('Submit')
@@ -47,6 +69,8 @@ block body
                       td.align-middle= t(target.description)
                       td.align-middle
                         .btn-group(role='group', aria-label=t('Actions'))
+                          #editTargetBtn(data-toggle='modal', data-target='#modal-edit-target', data-id=target.id, data-name=t(target.name), data-description=t(target.description)).btn.btn-secondary
+                            a(data-toggle='tooltip',  data-title=t('Edit')): i.fa.fa-fw.fa-edit
                           form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`), method="POST", autocomplete="off")
                             input(type='hidden', name='_csrf', value=ctx.csrf)
                             input(type='hidden', name='_method', value='DELETE')

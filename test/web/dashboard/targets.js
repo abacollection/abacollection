@@ -235,3 +235,33 @@ test('deletes target when program is deleted', async t => {
   query = await Targets.find({ $or: [{ program: program._id }] });
   t.is(query.length, 0);
 });
+
+test('POST targets > modifies name and description', async t => {
+  const { web, client, program } = t.context;
+
+  const target = await factory.create('target', { program });
+  const newTarget = await factory.build('target', { program });
+
+  let query = await Targets.findOne({ name: target.name });
+  t.is(query.name, target.name);
+  t.is(query.description, target.description);
+
+  const res = await web
+    .post(
+      `/en/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`
+    )
+    .send({
+      name: newTarget.name,
+      description: newTarget.description
+    });
+
+  t.is(res.status, 302);
+  t.is(
+    res.header.location,
+    `/en/dashboard/clients/${client.id}/programs/${program.id}/targets`
+  );
+
+  query = await Targets.findOne({ name: newTarget.name });
+  t.is(query.name, newTarget.name);
+  t.is(query.description, newTarget.description);
+});
