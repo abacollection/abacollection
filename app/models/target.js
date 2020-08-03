@@ -12,7 +12,16 @@ const Target = new mongoose.Schema({
   },
   data_type: {
     type: String,
-    enum: ['Frequency'],
+    enum: [
+      'Frequency',
+      'Rate',
+      'Duration',
+      'Percent Correct',
+      'Task Analysis',
+      'Momentary Time Sampling',
+      'Whole Interval',
+      'Partial Interval'
+    ],
     required: true
   },
   description: {

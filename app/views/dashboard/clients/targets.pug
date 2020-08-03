@@ -25,6 +25,13 @@ block body
               select#input-data_type(name='data_type').form-control
                 option(value='')= t('-- Select --')
                 option(value='Frequency')= t('Frequency')
+                option(value='Rate')= t('Rate')
+                option(value='Duration')= t('Duration')
+                option(value='Percent Correct')= t('Percent Correct')
+                option(value='Task Analysis')= t('Task Analysis')
+                option(value='Momentary Time Sampling')= t('Momentary Time Sampling')
+                option(value='Whole Interval')= t('Whole Interval')
+                option(value='Partial Interval')= t('Partial Interval')
               label(for='data_type')= t('Data Type')
           .modal-footer.text-right
             button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
