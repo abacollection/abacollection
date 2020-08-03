@@ -11,6 +11,7 @@ const auth = require('./auth');
 const myAccount = require('./my-account');
 const otp = require('./otp');
 const dashboard = require('./dashboard');
+const dataCollection = require('./data-collection.js');
 
 const router = new Router();
 
@@ -63,6 +64,7 @@ localeRouter
 localeRouter.use(dashboard.routes());
 localeRouter.use(myAccount.routes());
 localeRouter.use(admin.routes());
+localeRouter.use(dataCollection.routes());
 
 if (boolean(process.env.AUTH_OTP_ENABLED)) localeRouter.use(otp.routes());
 

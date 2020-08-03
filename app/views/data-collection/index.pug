@@ -1,0 +1,18 @@
+
+extends ../layout
+
+block body
+  .container-fluid.py-3
+    .row.row-cols-1.row-cols-sm-2.row-cols-md-3.row-cols-lg-4
+      for target in targets
+        .col.mb-3
+          .card
+            .card-header
+              h6.card-subtitle.text-muted.small
+                = t(target.program[0].name)
+              h5.card-title
+                = t(target.name)
+              h6.card-subtitle.text-muted
+                = t('Phase')
+            .card-body
+              = t(target.data_type)

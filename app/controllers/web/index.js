@@ -13,6 +13,7 @@ const support = require('./support');
 const otp = require('./otp');
 const report = require('./report');
 const dashboard = require('./dashboard');
+const dataCollection = require('./data-collection.js');
 
 function breadcrumbs(ctx, next) {
   // return early if its not a pure path (e.g. ignore static assets)
@@ -44,5 +45,6 @@ module.exports = {
   breadcrumbs,
   otp,
   report,
-  dashboard
+  dashboard,
+  dataCollection
 };
