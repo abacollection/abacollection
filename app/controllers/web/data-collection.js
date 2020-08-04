@@ -7,7 +7,6 @@ async function retrieveTargets(ctx, next) {
     .in(ctx.state.programs)
     .populate('program')
     .exec();
-  console.log('jungle', ctx.state.targets);
 
   return next();
 }

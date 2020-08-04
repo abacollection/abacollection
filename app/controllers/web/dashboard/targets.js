@@ -61,7 +61,6 @@ async function retrieveTarget(ctx, next) {
   //
   if (ctx.state.breadcrumbs)
     ctx.state.breadcrumbs = ctx.state.breadcrumbs.map(breadcrumb => {
-      console.log('jungle:', ctx.state.program);
       if (!_.isObject(breadcrumb) && breadcrumb === id)
         return {
           name: ctx.state.target.name,
