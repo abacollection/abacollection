@@ -3,10 +3,10 @@ extends ../layout
 
 block body
   .container-fluid.py-3
-    .row.row-cols-1.row-cols-sm-2.row-cols-md-3.row-cols-lg-4
+    .row.d-flex
       for target in targets
-        .col.mb-3
-          .card
+        .col-xs-12.col-sm-6.col-md-4.mb-3
+          .card.h-100
             .card-header
               h6.card-subtitle.text-muted.small
                 = t(target.program[0].name)
@@ -14,5 +14,42 @@ block body
                 = t(target.name)
               h6.card-subtitle.text-muted
                 = t('Phase')
-            .card-body
-              = t(target.data_type)
+            .card-body.d-flex.justify-content-around.align-items-center
+              case target.data_type
+                when 'Frequency'
+                  ul.list-group.list-unstyled.list-group-flush
+                    li.list-group-item
+                      .btn-group
+                        .btn: i.fas.fa-plus
+                        .mx-auto.my-auto.font-weight-bold#frequency 0
+                        .btn: i.fas.fa-minus
+                when 'Rate'
+                  ul.list-group.list-unstyled.list-group-flush
+                    li.list-group-item.mx-auto
+                      = t('Correct')
+                    li.list-group-item
+                      .btn-group
+                        .btn: i.fas.fa-plus
+                        .mx-auto.my-auto.font-weight-bold#frequency 0
+                        .btn: i.fas.fa-minus
+                  ul.list-group.list-unstyled.list-group-flush
+                    li.list-group-item.mx-auto
+                      = t('Incorrect')
+                    li.list-group-item
+                      .btn-group
+                        .btn: i.fas.fa-plus
+                        .mx-auto.my-auto.font-weight-bold#frequency 0
+                        .btn: i.fas.fa-minus
+                when 'Duration'
+                  ul.list-group.list-unstyled.list-group-flush
+                    li.list-group-item
+                      ul.list-group.list-group-horizontal
+                        li#hours.list-group-item.flex-fill.border-top-0.border-left-0.border-bottom-0 0
+                        li#minutes.list-group-item.flex-fill.border-top-0.border-bottom-0 0
+                        li#seconds.list-group-item.flex-fill.border-top-0.border-bottom-0.border-right-0 0
+                    li.list-group-item.mx-auto
+                      .btn-group
+                        .btn: i.fas.fa-play
+                        .btn: i.fas.fa-stop
+                default
+                  = t(`${target.data_type} not implemented yet.`)
