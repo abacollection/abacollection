@@ -19,8 +19,8 @@ const Program = new mongoose.Schema({
     type: Date,
     required: true
   },
-  created_by: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
-  client: [{ type: mongoose.Schema.ObjectId, ref: 'Client' }]
+  created_by: { type: mongoose.Schema.ObjectId, ref: 'User' },
+  client: { type: mongoose.Schema.ObjectId, ref: 'Client' }
 });
 
 Program.plugin(mongooseCommonPlugin, { object: 'program' });

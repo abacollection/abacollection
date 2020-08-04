@@ -33,8 +33,8 @@ const Target = new mongoose.Schema({
   mastered_date: {
     type: Date
   },
-  created_by: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
-  program: [{ type: mongoose.Schema.ObjectId, ref: 'Program' }]
+  created_by: { type: mongoose.Schema.ObjectId, ref: 'User' },
+  program: { type: mongoose.Schema.ObjectId, ref: 'Program' }
   // TODO create mastery criterion setup
   // TODO add phase categories
 });

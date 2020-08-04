@@ -73,7 +73,7 @@ test('retrieveTarget > get target', async t => {
     params: { target_id: targets[0].id },
     state: {
       targets,
-      program: targets[0].program[0],
+      program: targets[0].program,
       breadcrumbs: [targets[0].id],
       client: { id: '32' },
       l: url => `/en${url}`
