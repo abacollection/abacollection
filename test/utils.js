@@ -10,7 +10,7 @@ factory.setAdapter(new MongooseAdapter());
 
 // Models and server
 const config = require('../config');
-const { Users, Clients, Programs, Targets } = require('../app/models');
+const { Users, Clients, Programs, Targets, Datas } = require('../app/models');
 const Member = mongoose.model('Member', Clients.Member);
 
 const mongod = new MongodbMemoryServer();
@@ -129,6 +129,17 @@ exports.defineTargetFactory = async () => {
       program: buildOptions.program
         ? buildOptions.program
         : factory.assoc('program', '_id')
+    };
+  });
+};
+
+exports.defineDataFactory = async () => {
+  factory.define('data', Datas, buildOptions => {
+    return {
+      value: factory.chance('floating', { min: 0, max: 100 }),
+      target: buildOptions.target
+        ? buildOptions.target
+        : factory.assoc('target', '_id')
     };
   });
 };

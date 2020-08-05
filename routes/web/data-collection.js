@@ -1,5 +1,4 @@
 const Router = require('@koa/router');
-const render = require('koa-views-render');
 
 const policies = require('../../helpers/policies');
 const web = require('../../app/controllers/web');
@@ -15,7 +14,7 @@ router.get(
   web.dashboard.clients.retrieveClient,
   web.dashboard.programs.retrievePrograms,
   web.dataCollection.retrieveTargets,
-  render('data-collection')
+  web.dataCollection.getUpdates
 );
 
 module.exports = router;

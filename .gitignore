@@ -67,3 +67,4 @@ package-lock.json
 *-ZH.md
 locales
 .chglog
+dev-data.js

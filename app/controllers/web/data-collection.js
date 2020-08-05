@@ -5,12 +5,18 @@ async function retrieveTargets(ctx, next) {
 
   ctx.state.targets = await Targets.where('program')
     .in(ctx.state.programs)
-    .populate('program')
+    .populate('program', 'name')
     .exec();
 
   return next();
 }
 
+async function getUpdates(ctx) {
+  if (ctx.accepts('html')) return ctx.render('data-collection');
+  // TODO add updating of data on page
+}
+
 module.exports = {
-  retrieveTargets
+  retrieveTargets,
+  getUpdates
 };

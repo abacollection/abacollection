@@ -14,6 +14,7 @@ test.before(utils.defineUserFactory);
 test.before(utils.defineClientFactory);
 test.before(utils.defineProgramFactory);
 test.before(utils.defineTargetFactory);
+test.before(utils.defineDataFactory);
 
 test.after.always(utils.teardownMongoose);
 
