@@ -66,3 +66,11 @@ test('retrieveTargets > successfully', async t => {
     t.is(ctx.state.targets.length, 9);
   });
 });
+
+test('GET collection page', async t => {
+  const { web, root } = t.context;
+
+  const res = await web.get(root);
+
+  t.is(res.status, 200);
+});
