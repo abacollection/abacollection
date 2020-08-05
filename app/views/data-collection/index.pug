@@ -4,6 +4,10 @@ extends ../layout
 block body
   .container-fluid.py-3
     .row.d-flex
+      if targets.length === 0
+        .col
+          p
+            = t('No targets exist for this client yet.')
       for target in targets
         .col-xs-12.col-sm-6.col-md-4.mb-3
           .card.h-100

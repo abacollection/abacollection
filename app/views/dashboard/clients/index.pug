@@ -7,7 +7,7 @@ block body
       .modal-content
         .modal-header.d-block.text-center
           h5.modal-title= t('Add Client')
-        form(action=ctx.path, method='POST').ajax-form.confirm-prompt.mt-3
+        form(action=ctx.path, method='POST').ajax-form.mt-3
           input(type='hidden', name='_method', value='PUT')
           input(type='hidden', name='_csrf', value=ctx.csrf)
           input(type='hidden', name='add_client', value='true')
