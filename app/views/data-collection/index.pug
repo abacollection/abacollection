@@ -1,16 +1,25 @@
 
 extends ../layout
 
+mixin clicker(target)
+  .btn-group.clicker
+    button.btn.clicker-plus: i.fas.fa-plus
+    .my-auto.px-3.font-weight-bold.clicker-label 0
+    button.btn.clicker-minus(disabled): i.fas.fa-minus
+
+append scripts
+  script(defer, src=manifest('js/data-collection.js'), integrity=manifest('js/data-collection.js', 'integrity'), crossorigin='anonymous')
+
 block body
   .container-fluid.py-3
-    .row.d-flex
+    .row
       if targets.length === 0
         .col
           p
             = t('No targets exist for this client yet.')
       for target in targets
         .col-xs-12.col-sm-6.col-md-4.mb-3
-          .card.h-100
+          .card.h-100(id=target.id)
             .card-header
               h6.card-subtitle.text-muted.small
                 = t(target.program.name)
@@ -18,42 +27,38 @@ block body
                 = t(target.name)
               h6.card-subtitle.text-muted
                 = t('Phase')
-            .card-body.d-flex.justify-content-around.align-items-center
+            .card-body
               case target.data_type
                 when 'Frequency'
-                  ul.list-group.list-unstyled.list-group-flush
-                    li.list-group-item
-                      .btn-group
-                        .btn: i.fas.fa-plus
-                        .mx-auto.my-auto.font-weight-bold#frequency 0
-                        .btn: i.fas.fa-minus
-                when 'Rate'
-                  ul.list-group.list-unstyled.list-group-flush
-                    li.list-group-item.mx-auto
-                      = t('Correct')
-                    li.list-group-item
-                      .btn-group
-                        .btn: i.fas.fa-plus
-                        .mx-auto.my-auto.font-weight-bold#frequency 0
-                        .btn: i.fas.fa-minus
-                  ul.list-group.list-unstyled.list-group-flush
-                    li.list-group-item.mx-auto
-                      = t('Incorrect')
-                    li.list-group-item
-                      .btn-group
-                        .btn: i.fas.fa-plus
-                        .mx-auto.my-auto.font-weight-bold#frequency 0
-                        .btn: i.fas.fa-minus
+                  .row.text-center.frequency
+                    .col
+                      +clicker(target)
                 when 'Duration'
-                  ul.list-group.list-unstyled.list-group-flush
-                    li.list-group-item
-                      ul.list-group.list-group-horizontal
-                        li#hours.list-group-item.flex-fill.border-top-0.border-left-0.border-bottom-0 0
-                        li#minutes.list-group-item.flex-fill.border-top-0.border-bottom-0 0
-                        li#seconds.list-group-item.flex-fill.border-top-0.border-bottom-0.border-right-0 0
-                    li.list-group-item.mx-auto
+                  .row.justify-content-center.timer
+                    .col-auto
+                      .timer-hour 0
+                    .col-auto.border-right.border-left
+                      .timer-minute 0
+                    .col-auto
+                      .timer-second 0
+                    .w-100
+                    .col.text-center
                       .btn-group
-                        .btn: i.fas.fa-play
-                        .btn: i.fas.fa-stop
+                        button.btn.timer-play: i.fas.fa-play
+                        button.btn.timer-stop(disabled): i.fas.fa-stop
+                        button.btn.timer-reset(disabled): i.fas.fa-sync-alt
+                when 'Percent Correct'
+                  .row.percent-correct
+                    .col
+                      button.btn.percent-correct-previous(disabled): i.fas.fa-chevron-left
+                    .col-6
+                      .row.text-center
+                        .col
+                          .text-muted.small.percent-correct-label(data-trial='1', data-total='1') 1 / 1
+                        .w-100
+                        .col
+                          include ./_percent-correct
+                    .col
+                      button.btn.percent-correct-next(disabled): i.fas.fa-chevron-right
                 default
                   = t(`${target.data_type} not implemented yet.`)
