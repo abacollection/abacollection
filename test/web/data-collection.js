@@ -100,6 +100,7 @@ test('POST collection page > frequency > adds data', async t => {
   const query = await Targets.findOne({ id: target.id })
     .populate('data')
     .exec();
+  t.is(query.data.length, 1);
   t.is(query.data[0].value, 2);
 });
 
@@ -144,7 +145,7 @@ test('POST collection page > duration > adds data', async t => {
     .send({
       targets: {
         [target.id]: {
-          value: 2
+          value: 1000
         }
       }
     });
@@ -154,5 +155,6 @@ test('POST collection page > duration > adds data', async t => {
   const query = await Targets.findOne({ id: target.id })
     .populate('data')
     .exec();
-  t.is(query.data[0].value, 2);
+  t.is(query.data.length, 1);
+  t.is(query.data[0].value, 1000);
 });

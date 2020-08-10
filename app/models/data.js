@@ -31,4 +31,16 @@ const frequencySchema = new mongoose.Schema(
 
 Data.discriminator('Frequency', frequencySchema);
 
+//
+// Duration model
+//
+const durationSchema = new mongoose.Schema(
+  {
+    value: { type: Number } // value is in milliseconds
+  },
+  options
+);
+
+Data.discriminator('Duration', durationSchema);
+
 module.exports = Data;
