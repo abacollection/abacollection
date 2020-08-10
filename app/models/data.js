@@ -43,4 +43,20 @@ const durationSchema = new mongoose.Schema(
 
 Data.discriminator('Duration', durationSchema);
 
+//
+// Percent Correct model
+//
+const percentCorrectSchema = new mongoose.Schema(
+  {
+    value: {
+      correct: { type: Number },
+      approximation: { type: Number },
+      incorrect: { type: Number }
+    }
+  },
+  options
+);
+
+Data.discriminator('Percent Correct', percentCorrectSchema);
+
 module.exports = Data;
