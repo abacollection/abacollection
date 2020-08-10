@@ -59,4 +59,20 @@ const percentCorrectSchema = new mongoose.Schema(
 
 Data.discriminator('Percent Correct', percentCorrectSchema);
 
+//
+// Rate model
+//
+const rateSchema = new mongoose.Schema(
+  {
+    value: {
+      correct: { type: Number },
+      incorrect: { type: Number },
+      counting_time: { type: Number } // in milliseconds
+    }
+  },
+  options
+);
+
+Data.discriminator('Rate', rateSchema);
+
 module.exports = Data;

@@ -192,3 +192,37 @@ test('POST collection page > Percent Correct > adds data', async t => {
   t.is(query.data[0].value.approximation, 3);
   t.is(query.data[0].value.incorrect, 1);
 });
+
+test('POST collection page > Rate > adds data', async t => {
+  const { web, root, programs } = t.context;
+  const program = programs[0];
+  const target = await factory.create('target', {
+    program,
+    data_type: 'Rate'
+  });
+
+  const res = await web
+    .post(root)
+    .set('Accept', 'application/json')
+    .send({
+      targets: {
+        [target.id]: {
+          value: {
+            correct: 1,
+            incorrect: 2,
+            counting_time: 1000
+          }
+        }
+      }
+    });
+
+  t.is(res.status, 200);
+
+  const query = await Targets.findOne({ id: target.id })
+    .populate('data')
+    .exec();
+  t.is(query.data.length, 1);
+  t.is(query.data[0].value.correct, 1);
+  t.is(query.data[0].value.incorrect, 2);
+  t.is(query.data[0].value.counting_time, 1000);
+});
