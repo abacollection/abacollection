@@ -4,12 +4,31 @@ const mongooseCommonPlugin = require('mongoose-common-plugin');
 // <https://github.com/Automattic/mongoose/issues/5534>
 mongoose.Error.messages = require('@ladjs/mongoose-error-messages');
 
-const Data = new mongoose.Schema({
-  value: { type: Number },
-  target: { type: mongoose.Schema.ObjectId, ref: 'Target' },
-  created_by: { type: mongoose.Schema.ObjectId, ref: 'User' }
-});
+// discrimanator key
+const options = { discriminatorKey: 'data_type' };
 
-Data.plugin(mongooseCommonPlugin, { object: 'data' });
+const dataSchema = new mongoose.Schema(
+  {
+    target: { type: mongoose.Schema.ObjectId, ref: 'Target' },
+    created_by: { type: mongoose.Schema.ObjectId, ref: 'User' }
+  },
+  options
+);
 
-module.exports = mongoose.model('Data', Data);
+dataSchema.plugin(mongooseCommonPlugin, { object: 'data' });
+
+const Data = mongoose.model('Data', dataSchema);
+
+//
+// Frequency model
+//
+const frequencySchema = new mongoose.Schema(
+  {
+    value: { type: Number }
+  },
+  options
+);
+
+Data.discriminator('Frequency', frequencySchema);
+
+module.exports = Data;

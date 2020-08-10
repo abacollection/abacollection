@@ -65,7 +65,11 @@ module.exports = function(config) {
       `Page not found ${lad}`,
       'The page you requested could not be found'
     ],
-    '/500': [`Server error ${lad}`, 'A server error has unfortunately occurred']
+    '/500': [
+      `Server error ${lad}`,
+      'A server error has unfortunately occurred'
+    ],
+    '/collection': [`Data Collection ${lad}`, 'Collect data here']
   };
   meta[config.loginRoute] = [`Sign in ${lad}`, 'Sign in to your account'];
   meta[config.verifyRoute] = [

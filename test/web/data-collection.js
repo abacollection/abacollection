@@ -2,7 +2,7 @@ const test = require('ava');
 const { factory } = require('factory-girl');
 
 const config = require('../../config');
-const { Users } = require('../../app/models');
+const { Users, Targets } = require('../../app/models');
 const {
   retrieveTargets
 } = require('../../app/controllers/web/data-collection');
@@ -68,10 +68,91 @@ test('retrieveTargets > successfully', async t => {
   });
 });
 
-test('GET collection page', async t => {
+test('GET(HTML) collection page', async t => {
   const { web, root } = t.context;
 
   const res = await web.get(root);
 
   t.is(res.status, 200);
+});
+
+test('POST collection page > frequency > adds data', async t => {
+  const { web, root, programs } = t.context;
+  const program = programs[0];
+  const target = await factory.create('target', {
+    program,
+    data_type: 'Frequency'
+  });
+
+  const res = await web
+    .post(root)
+    .set('Accept', 'application/json')
+    .send({
+      targets: {
+        [target.id]: {
+          value: 2
+        }
+      }
+    });
+
+  t.is(res.status, 200);
+
+  const query = await Targets.findOne({ id: target.id })
+    .populate('data')
+    .exec();
+  t.is(query.data[0].value, 2);
+});
+
+test('POST collction page > data is 0, no changes', async t => {
+  const { web, root, programs } = t.context;
+  const program = programs[0];
+  const target = await factory.create('target', {
+    program,
+    data_type: 'Frequency'
+  });
+
+  const res = await web
+    .post(root)
+    .set('Accept', 'application/json')
+    .send({
+      targets: {
+        [target.id]: {
+          value: 0
+        }
+      }
+    });
+
+  t.is(res.status, 200);
+
+  const query = await Targets.findOne({ id: target.id })
+    .populate('data')
+    .exec();
+  t.is(query.data.length, 0);
+});
+
+test('POST collection page > duration > adds data', async t => {
+  const { web, root, programs } = t.context;
+  const program = programs[0];
+  const target = await factory.create('target', {
+    program,
+    data_type: 'Duration'
+  });
+
+  const res = await web
+    .post(root)
+    .set('Accept', 'application/json')
+    .send({
+      targets: {
+        [target.id]: {
+          value: 2
+        }
+      }
+    });
+
+  t.is(res.status, 200);
+
+  const query = await Targets.findOne({ id: target.id })
+    .populate('data')
+    .exec();
+  t.is(query.data[0].value, 2);
 });
