@@ -53,4 +53,14 @@ Target.method('getCurrentData', function() {
 
 Target.plugin(mongooseCommonPlugin, { object: 'target' });
 
+Target.post('findOneAndRemove', async function() {
+  const datas = await Datas.find({ target: this.getQuery()._id })
+    .lean()
+    .exec();
+
+  datas.forEach(async data => {
+    await Datas.findByIdAndRemove(data._id);
+  });
+});
+
 module.exports = mongoose.model('Target', Target);
