@@ -304,3 +304,7 @@ async function postData() {
 setInterval(async () => {
   await postData();
 }, ms('30s'));
+
+window.addEventListener('beforeunload', async () => {
+  await postData();
+});
