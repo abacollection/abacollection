@@ -63,9 +63,9 @@ $('.timer-play').click(function() {
     .parents('.card')
     .prop('id');
 
-  // disable play button and enable stop button
+  // disable play button and enable pause button
   $(this).prop('disabled', true);
-  $timer.find('.timer-stop').prop('disabled', false);
+  $timer.find('.timer-pause').prop('disabled', false);
   $timer.find('.timer-reset').prop('disabled', true);
   $timer.find('.timer-save').prop('disabled', true);
 
@@ -92,15 +92,15 @@ $('.timer-play').click(function() {
   }, ms('1s'));
 });
 
-// stop button
-$('.timer-stop').click(function() {
+// pause button
+$('.timer-pause').click(function() {
   // get timer selectors
   const $timer = $(this).parents('.timer');
   const id = $(this)
     .parents('.card')
     .prop('id');
 
-  // disable stop button and enable play button
+  // disable pause button and enable play button
   $(this).prop('disabled', true);
   $timer.find('.timer-play').prop('disabled', false);
   $timer.find('.timer-reset').prop('disabled', false);
