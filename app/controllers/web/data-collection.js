@@ -21,7 +21,28 @@ async function update(ctx) {
   ctx.state.targets = ctx.state.targets.map(async target => {
     if (!targets[target._id]) return target;
 
-    if (targets[target._id].value !== 0) {
+    if (Array.isArray(targets[target._id])) {
+      await target.populate('data').execPopulate();
+
+      const data = targets[target._id].map((d, i) => {
+        let result;
+        if (target.data[i]) {
+          target.data[i].value = d.value ? d.value : d;
+          result = target.data[i].save();
+        } else {
+          result = Datas.create({
+            value: d.value ? d.value : d,
+            target: target._id,
+            user: ctx.state.user._id,
+            data_type: target.data_type
+          });
+        }
+
+        return result;
+      });
+
+      target.data = await Promise.all(data);
+    } else if (targets[target._id].value !== 0) {
       const data = await Datas.create({
         value: targets[target._id].value,
         target: target._id,

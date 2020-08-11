@@ -48,11 +48,7 @@ Data.discriminator('Duration', durationSchema);
 //
 const percentCorrectSchema = new mongoose.Schema(
   {
-    value: {
-      correct: { type: Number },
-      approximation: { type: Number },
-      incorrect: { type: Number }
-    }
+    value: { type: String }
   },
   options
 );

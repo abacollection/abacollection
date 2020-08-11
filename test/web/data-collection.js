@@ -144,9 +144,7 @@ test('POST collection page > duration > adds data', async t => {
     .set('Accept', 'application/json')
     .send({
       targets: {
-        [target.id]: {
-          value: 1000
-        }
+        [target.id]: [{ value: 1000 }]
       }
     });
 
@@ -167,30 +165,40 @@ test('POST collection page > Percent Correct > adds data', async t => {
     data_type: 'Percent Correct'
   });
 
-  const res = await web
+  let res = await web
     .post(root)
     .set('Accept', 'application/json')
     .send({
       targets: {
-        [target.id]: {
-          value: {
-            correct: 2,
-            approximation: 3,
-            incorrect: 1
-          }
-        }
+        [target.id]: ['correct']
       }
     });
 
   t.is(res.status, 200);
 
-  const query = await Targets.findOne({ id: target.id })
+  let query = await Targets.findOne({ id: target.id })
     .populate('data')
     .exec();
   t.is(query.data.length, 1);
-  t.is(query.data[0].value.correct, 2);
-  t.is(query.data[0].value.approximation, 3);
-  t.is(query.data[0].value.incorrect, 1);
+  t.is(query.data[0].value, 'correct');
+
+  res = await web
+    .post(root)
+    .set('Accept', 'application/json')
+    .send({
+      targets: {
+        [target.id]: ['incorrect', 'approximation']
+      }
+    });
+
+  t.is(res.status, 200);
+
+  query = await Targets.findOne({ id: target.id })
+    .populate('data')
+    .exec();
+  t.is(query.data.length, 2);
+  t.is(query.data[0].value, 'incorrect');
+  t.is(query.data[1].value, 'approximation');
 });
 
 test('POST collection page > Rate > adds data', async t => {

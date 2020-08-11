@@ -1,30 +1,52 @@
 const $ = require('jquery');
 const ms = require('ms');
+const superagent = require('superagent');
+const revHash = require('rev-hash');
+const safeStringify = require('fast-safe-stringify');
+const _ = require('lodash');
+
+const logger = require('./logger.js');
 
 const timers = {};
 const percentCorrect = {};
+let targets = {};
 
 //
 // handle clicker
 //
 // plus button
 $('.clicker-plus').click(function() {
-  const $label = $(this).next();
+  const $parent = $(this).parents('.clicker');
+  const $label = $parent.find('.clicker-label');
   const val = parseInt($label.text(), 10);
+  const id = $(this)
+    .parents('.card')
+    .prop('id');
+
   $label.text(val + 1);
+
+  // add to targets data
+  if (targets[id]) targets[id].value++;
+  else targets[id] = { value: 1 };
 
   if (val === 0) $label.next().prop('disabled', false);
 });
 
 // minus button
 $('.clicker-minus').click(function() {
-  const $label = $(this).prev();
+  const $parent = $(this).parents('.clicker');
+  const $label = $parent.find('.clicker-label');
   const val = parseInt($label.text(), 10);
+  const id = $(this)
+    .parents('.card')
+    .prop('id');
 
   if (val <= 1) {
     $label.text(0);
     $(this).prop('disabled', true);
   } else $label.text(val - 1);
+
+  targets[id].value--;
 });
 
 //
@@ -45,6 +67,7 @@ $('.timer-play').click(function() {
   $(this).prop('disabled', true);
   $timer.find('.timer-stop').prop('disabled', false);
   $timer.find('.timer-reset').prop('disabled', true);
+  $timer.find('.timer-save').prop('disabled', true);
 
   let offset = 0;
   if (timers[id]) {
@@ -81,12 +104,13 @@ $('.timer-stop').click(function() {
   $(this).prop('disabled', true);
   $timer.find('.timer-play').prop('disabled', false);
   $timer.find('.timer-reset').prop('disabled', false);
+  $timer.find('.timer-save').prop('disabled', false);
 
   clearInterval(timers[id]);
 });
 
 // reset button
-$('.timer-reset').click(function() {
+function resetTimer() {
   // get timer selectors
   const $timer = $(this).parents('.timer');
   const $hour = $timer.find('.timer-hour');
@@ -103,6 +127,30 @@ $('.timer-reset').click(function() {
   timers[id] = undefined;
 
   $(this).prop('disabled', true);
+  $timer.find('.timer-save').prop('disabled', true);
+}
+
+$('.timer-reset').click(resetTimer);
+
+// save button
+$('.timer-save').click(function() {
+  // get timer selectors
+  const $timer = $(this).parents('.timer');
+  const $hour = $timer.find('.timer-hour');
+  const $minute = $timer.find('.timer-minute');
+  const $second = $timer.find('.timer-second');
+  const id = $(this)
+    .parents('.card')
+    .prop('id');
+
+  const value =
+    ms(`${$hour.text()}h`) +
+    ms(`${$minute.text()}m`) +
+    ms(`${$second.text()}s`);
+  if (targets[id]) targets[id].push({ value });
+  else targets[id] = [{ value }];
+
+  resetTimer();
 });
 
 //
@@ -224,3 +272,35 @@ $('.percent-correct-next').click(function() {
   if (trial !== 1)
     $parent.find('.percent-correct-previous').prop('disabled', false);
 });
+
+//
+// POST Data
+//
+async function postData() {
+  try {
+    const hash = revHash(safeStringify(_.omit(percentCorrect, 'hash')));
+    if (hash !== percentCorrect.hash) {
+      targets = Object.assign(targets, _.omit(percentCorrect, 'hash'));
+
+      percentCorrect.hash = hash;
+    }
+
+    // return early if there has been no changes
+    if (_.isEmpty(targets)) return;
+
+    const res = await superagent
+      .post(window.location.pathname)
+      .set('Accept', 'application/json')
+      .set('x-csrf-token', window._csrf)
+      .retry(3)
+      .send({ targets });
+
+    if (res.status === 200) targets = {};
+  } catch (err) {
+    logger.error(err);
+  }
+}
+
+setInterval(async () => {
+  await postData();
+}, ms('30s'));
