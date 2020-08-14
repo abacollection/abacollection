@@ -124,9 +124,58 @@ targetSchema.method('getPreviousData', async function() {
   return ret;
 });
 
-targetSchema.method('getCurrentData', function() {
-  // TODO correct aggregation of data per data_type
-  return 'WIP';
+targetSchema.method('getCurrentData', async function() {
+  let ret = 'WIP';
+
+  if (this.data_type === 'Frequency') {
+    ret = await Datas.aggregate()
+      .match({
+        $and: [
+          {
+            target: this._id
+          },
+          {
+            created_at: {
+              $gte: dayjs()
+                .startOf('day')
+                .toDate()
+            }
+          }
+        ]
+      })
+      .group({
+        _id: null,
+        previous: { $sum: '$value' }
+      })
+      .project('-_id previous')
+      .exec();
+
+    ret = ret[0].previous;
+  } else if (this.data_type === 'Duration') {
+    ret = 'NA';
+  } else if (this.data_type === 'Percent Correct') {
+    ret = await Datas.find({
+      $and: [
+        {
+          target: this._id
+        },
+        {
+          created_at: {
+            $gte: dayjs()
+              .startOf('day')
+              .toDate()
+          }
+        }
+      ]
+    }).exec();
+
+    const total = ret.length;
+    const correct = ret.filter(data => data.value === 'correct').length;
+
+    ret = `${(correct / total) * 100}%`;
+  }
+
+  return ret;
 });
 
 const Target = mongoose.model('Target', targetSchema);

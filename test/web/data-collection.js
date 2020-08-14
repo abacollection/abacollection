@@ -122,6 +122,7 @@ test('GET(HTML) collection page > frequency', async t => {
 
   t.is(res.status, 200);
   t.true(res.text.includes('Previous: 2'));
+  t.true(res.text.includes('Current: 3'));
 });
 
 test('GET(HTML) collection page > duration', async t => {
@@ -170,6 +171,7 @@ test('GET(HTML) collection page > duration', async t => {
 
   t.is(res.status, 200);
   t.true(res.text.includes(`Previous: ${ms('1m')}`));
+  t.true(res.text.includes('Current: NA'));
 });
 
 test('GET(HTML) collection page > percent correct', async t => {
@@ -217,7 +219,8 @@ test('GET(HTML) collection page > percent correct', async t => {
   const res = await web.get(root);
 
   t.is(res.status, 200);
-  t.true(res.text.includes(`Previous: 50%`));
+  t.true(res.text.includes('Previous: 50%'));
+  t.true(res.text.includes('Current: 0%'));
 });
 
 test('POST collection page > frequency > adds data', async t => {

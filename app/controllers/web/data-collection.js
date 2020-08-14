@@ -14,9 +14,11 @@ async function retrieveTargets(ctx, next) {
 async function getUpdates(ctx) {
   // get previous data
   ctx.state.previous = {};
+  ctx.state.current = {};
   await Promise.all(
     ctx.state.targets.map(async target => {
       ctx.state.previous[target._id] = await target.getPreviousData();
+      ctx.state.current[target._id] = await target.getCurrentData();
     })
   );
 
