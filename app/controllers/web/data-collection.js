@@ -12,6 +12,14 @@ async function retrieveTargets(ctx, next) {
 }
 
 async function getUpdates(ctx) {
+  // get previous data
+  ctx.state.previous = {};
+  await Promise.all(
+    ctx.state.targets.map(async target => {
+      ctx.state.previous[target._id] = await target.getPreviousData();
+    })
+  );
+
   if (ctx.accepts('html')) return ctx.render('data-collection');
   // TODO add updating of data on page
 }

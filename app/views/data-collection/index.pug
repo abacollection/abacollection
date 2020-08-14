@@ -63,3 +63,6 @@ block body
                       button.btn.percent-correct-next(disabled): i.fas.fa-chevron-right
                 default
                   = t(`${target.data_type} not implemented yet.`)
+            .card-footer
+              p
+                = t(`Previous: ${previous[target._id] ? previous[target._id] : 'NA'}`)

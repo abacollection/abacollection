@@ -1,5 +1,7 @@
 const test = require('ava');
 const { factory } = require('factory-girl');
+const dayjs = require('dayjs');
+const ms = require('ms');
 
 const config = require('../../config');
 const { Users, Targets } = require('../../app/models');
@@ -41,12 +43,6 @@ test.beforeEach(async t => {
     client: t.context.client
   });
 
-  t.context.targets = t.context.programs.map(program => {
-    return factory.createMany('target', 3, { program });
-  });
-  t.context.targets = await Promise.all(t.context.targets);
-  t.context.targets = t.context.targets.flat();
-
   t.context.root = `/en/collection/${t.context.client.id}`;
 });
 
@@ -54,6 +50,12 @@ test('retrieveTargets > successfully', async t => {
   t.plan(1);
 
   const { user, client, programs } = t.context;
+
+  await Promise.all(
+    programs.map(program => {
+      return factory.createMany('target', 3, { program });
+    })
+  );
 
   const ctx = {
     state: {
@@ -68,12 +70,154 @@ test('retrieveTargets > successfully', async t => {
   });
 });
 
-test('GET(HTML) collection page', async t => {
-  const { web, root } = t.context;
+test('GET(HTML) collection page > frequency', async t => {
+  const { web, root, programs } = t.context;
+  const program = programs[0];
+
+  // setup frequency target with data from yesterday
+  const frequency = await factory.create('target', {
+    program,
+    data_type: 'Frequency'
+  });
+  await factory.createMany('data', [
+    {
+      value: 1,
+      target: frequency,
+      data_type: 'Frequency',
+      created_at: dayjs()
+        .subtract(2, 'day')
+        .toDate()
+    },
+    {
+      value: 1,
+      target: frequency,
+      data_type: 'Frequency',
+      created_at: dayjs()
+        .subtract(1, 'day')
+        .toDate()
+    },
+    {
+      value: 1,
+      target: frequency,
+      data_type: 'Frequency',
+      created_at: dayjs()
+        .subtract(1, 'day')
+        .toDate()
+    },
+    {
+      value: 1,
+      target: frequency,
+      data_type: 'Frequency',
+      created_at: dayjs().toDate()
+    },
+    {
+      value: 2,
+      target: frequency,
+      data_type: 'Frequency',
+      created_at: dayjs().toDate()
+    }
+  ]);
 
   const res = await web.get(root);
 
   t.is(res.status, 200);
+  t.true(res.text.includes('Previous: 2'));
+});
+
+test('GET(HTML) collection page > duration', async t => {
+  const { web, root, programs } = t.context;
+  const program = programs[0];
+
+  // setup frequency target with data from yesterday
+  const duration = await factory.create('target', {
+    program,
+    data_type: 'Duration'
+  });
+  await factory.createMany('data', [
+    {
+      value: ms('30s'),
+      target: duration,
+      data_type: 'Duration',
+      created_at: dayjs()
+        .subtract(2, 'day')
+        .toDate()
+    },
+    {
+      value: ms('3m'),
+      target: duration,
+      data_type: 'Duration',
+      created_at: dayjs()
+        .subtract(1, 'day')
+        .toDate()
+    },
+    {
+      value: ms('2m'),
+      target: duration,
+      data_type: 'Duration',
+      created_at: dayjs()
+        .subtract(1, 'day')
+        .toDate()
+    },
+    {
+      value: ms('1m'),
+      target: duration,
+      data_type: 'Duration',
+      created_at: dayjs().toDate()
+    }
+  ]);
+
+  const res = await web.get(root);
+
+  t.is(res.status, 200);
+  t.true(res.text.includes(`Previous: ${ms('1m')}`));
+});
+
+test('GET(HTML) collection page > percent correct', async t => {
+  const { web, root, programs } = t.context;
+  const program = programs[0];
+
+  // setup frequency target with data from yesterday
+  const percentCorrect = await factory.create('target', {
+    program,
+    data_type: 'Percent Correct'
+  });
+  await factory.createMany('data', [
+    {
+      value: 'correct',
+      target: percentCorrect,
+      data_type: 'Percent Correct',
+      created_at: dayjs()
+        .subtract(2, 'day')
+        .toDate()
+    },
+    {
+      value: 'incorrect',
+      target: percentCorrect,
+      data_type: 'Percent Correct',
+      created_at: dayjs()
+        .subtract(1, 'day')
+        .toDate()
+    },
+    {
+      value: 'correct',
+      target: percentCorrect,
+      data_type: 'Percent Correct',
+      created_at: dayjs()
+        .subtract(1, 'day')
+        .toDate()
+    },
+    {
+      value: 'incorrect',
+      target: percentCorrect,
+      data_type: 'Percent Correct',
+      created_at: dayjs().toDate()
+    }
+  ]);
+
+  const res = await web.get(root);
+
+  t.is(res.status, 200);
+  t.true(res.text.includes(`Previous: 50%`));
 });
 
 test('POST collection page > frequency > adds data', async t => {
