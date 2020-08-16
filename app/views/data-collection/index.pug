@@ -64,7 +64,7 @@ block body
                 default
                   = t(`${target.data_type} not implemented yet.`)
             .card-footer
-              p
+              p.previous-data.text-muted.small.mb-0
                 = t(`Previous: ${previous[target._id] ? previous[target._id] : 'NA'}`)
-              p
+              p.current-data.text-muted.small.mb-0
                 = t(`Current: ${current[target._id] ? current[target._id]: 'NA'}`)

@@ -11,6 +11,9 @@ const timers = {};
 const percentCorrect = {};
 let targets = {};
 
+let hash;
+let updatePC = false;
+
 //
 // handle clicker
 //
@@ -178,6 +181,8 @@ $('button.percent-correct').click(function() {
   else if ($(this).hasClass('percent-correct-incorrect'))
     percentCorrect[id][trial - 1] = 'incorrect';
 
+  updatePC = true;
+
   // bump trial and total
   trial++;
   const total = percentCorrect[id].length;
@@ -274,19 +279,96 @@ $('.percent-correct-next').click(function() {
 });
 
 //
+// GET Data
+//
+async function getData(res) {
+  try {
+    if (!res)
+      res = await superagent
+        .get(window.location.pathname)
+        .set('Accept', 'application/json')
+        .retry(3)
+        .send({ targets });
+
+    const { body } = res;
+
+    if (body.hash === hash) return;
+
+    hash = body.hash;
+
+    Object.entries(_.omit(body, 'hash')).forEach(entry => {
+      const [id, data] = entry;
+
+      $(`#${id} .previous-data`).text(
+        `Previous: ${data.previous ? data.previous : 'NA'}`
+      );
+      $(`#${id} .current-data`).text(
+        `Current: ${data.current ? data.current : 'NA'}`
+      );
+
+      if (data.data_type === 'Frequency')
+        $(`#${id} .clicker-label`).text(data.current ? data.current : 0);
+      else if (data.data_type === 'Percent Correct') {
+        percentCorrect[id] = data.percentCorrect;
+        percentCorrect.hash = revHash(
+          safeStringify(_.omit(percentCorrect, 'hash'))
+        );
+
+        console.log('jungle', data);
+
+        const $label = $(`#${id} .percent-correct-label`);
+        const total = percentCorrect[id].length + 1;
+        const trial =
+          $label.data('trial') === $label.data('total')
+            ? total
+            : $label.data('trial');
+
+        $label.data('trial', trial);
+        $label.data('total', total);
+        $label.text(`${trial} / ${total}`);
+
+        // remove selection class
+        $(
+          `#${id} .percent-correct-correct,.percent-correct-approximation,.percent-correct-incorrect`
+        ).removeClass('btn-primary');
+
+        // add selection class
+        $(`#${id} .percent-correct-${percentCorrect[id][trial - 1]}`).addClass(
+          'btn-primary'
+        );
+
+        // if trial is equal to total disable button
+        $(`#${id} .percent-correct-next`).prop('disabled', trial === total);
+        // if trial does not equal 1 enable previous button
+        $(`#${id} .percent-correct-previous`).prop('disabled', trial === 1);
+      }
+    });
+  } catch (err) {
+    logger.error(err);
+  }
+}
+
+//
 // POST Data
 //
 async function postData() {
   try {
-    const hash = revHash(safeStringify(_.omit(percentCorrect, 'hash')));
-    if (hash !== percentCorrect.hash) {
-      targets = Object.assign(targets, _.omit(percentCorrect, 'hash'));
+    if (updatePC) {
+      Object.entries(_.omit(percentCorrect, 'hash')).forEach(entry => {
+        const [id, data] = entry;
 
-      percentCorrect.hash = hash;
+        if (data.length !== 0) targets[id] = data;
+      });
+
+      updatePC = false;
     }
 
     // return early if there has been no changes
-    if (_.isEmpty(targets)) return;
+    if (_.isEmpty(targets)) {
+      await getData();
+
+      return;
+    }
 
     const res = await superagent
       .post(window.location.pathname)
@@ -295,11 +377,18 @@ async function postData() {
       .retry(3)
       .send({ targets });
 
-    if (res.status === 200) targets = {};
+    if (res.status === 200) {
+      targets = {};
+      await getData(res);
+    } else await getData();
   } catch (err) {
     logger.error(err);
   }
 }
+
+(async () => {
+  await getData();
+})();
 
 setInterval(async () => {
   await postData();

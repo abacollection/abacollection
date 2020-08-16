@@ -340,6 +340,8 @@ test('POST collection page > Percent Correct > adds data', async t => {
 
   t.is(res.status, 200);
 
+  t.is(res.body[target._id].percentCorrect.length, 2);
+
   query = await Targets.findOne({ id: target.id })
     .populate('data')
     .exec();

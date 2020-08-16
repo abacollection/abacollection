@@ -59,42 +59,37 @@ targetSchema.method('getPreviousData', async function() {
   let ret = 'WIP';
 
   if (this.data_type === 'Frequency') {
-    ret = await Datas.aggregate()
-      .match({
-        $and: [
-          {
-            target: this._id
-          },
-          {
-            created_at: {
-              $lt: dayjs()
-                .startOf('day')
-                .toDate(),
-              $gte: dayjs()
-                .startOf('day')
-                .subtract(1, 'day')
-                .toDate()
-            }
+    const datas = await Datas.find({
+      $and: [
+        {
+          target: this._id
+        },
+        {
+          created_at: {
+            $lt: dayjs()
+              .startOf('day')
+              .toDate(),
+            $gte: dayjs()
+              .startOf('day')
+              .subtract(1, 'day')
+              .toDate()
           }
-        ]
-      })
-      .group({
-        _id: null,
-        previous: { $sum: '$value' }
-      })
-      .project('-_id previous')
-      .exec();
+        }
+      ]
+    }).exec();
 
-    ret = ret[0].previous;
+    ret = 0;
+
+    datas.forEach(data => {
+      ret += data.value;
+    });
   } else if (this.data_type === 'Duration') {
-    ret = await Datas.aggregate()
-      .match({ target: this._id })
-      .sort({ created_at: -1 })
+    ret = await Datas.find({ target: this._id })
+      .sort('-created_at')
       .limit(1)
-      .project({ _id: 0, previous: '$value' })
       .exec();
 
-    ret = ret[0].previous;
+    ret = ret[0] ? ret[0].value : 'NA';
   } else if (this.data_type === 'Percent Correct') {
     ret = await Datas.find({
       $and: [
@@ -118,7 +113,9 @@ targetSchema.method('getPreviousData', async function() {
     const total = ret.length;
     const correct = ret.filter(data => data.value === 'correct').length;
 
-    ret = `${(correct / total) * 100}%`;
+    const percent = ((correct / total) * 100).toFixed(0);
+
+    ret = `${percent === 'NaN' ? 'NA' : percent}%`;
   }
 
   return ret;
@@ -128,29 +125,26 @@ targetSchema.method('getCurrentData', async function() {
   let ret = 'WIP';
 
   if (this.data_type === 'Frequency') {
-    ret = await Datas.aggregate()
-      .match({
-        $and: [
-          {
-            target: this._id
-          },
-          {
-            created_at: {
-              $gte: dayjs()
-                .startOf('day')
-                .toDate()
-            }
+    const datas = await Datas.find({
+      $and: [
+        {
+          target: this._id
+        },
+        {
+          created_at: {
+            $gte: dayjs()
+              .startOf('day')
+              .toDate()
           }
-        ]
-      })
-      .group({
-        _id: null,
-        previous: { $sum: '$value' }
-      })
-      .project('-_id previous')
-      .exec();
+        }
+      ]
+    }).exec();
 
-    ret = ret[0].previous;
+    ret = 0;
+
+    datas.forEach(data => {
+      ret += data.value;
+    });
   } else if (this.data_type === 'Duration') {
     ret = 'NA';
   } else if (this.data_type === 'Percent Correct') {
@@ -172,7 +166,9 @@ targetSchema.method('getCurrentData', async function() {
     const total = ret.length;
     const correct = ret.filter(data => data.value === 'correct').length;
 
-    ret = `${(correct / total) * 100}%`;
+    const percent = ((correct / total) * 100).toFixed(0);
+
+    ret = `${percent === 'NaN' ? 'NA' : percent}%`;
   }
 
   return ret;
