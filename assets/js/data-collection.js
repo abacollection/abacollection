@@ -18,13 +18,11 @@ let updatePC = false;
 // handle clicker
 //
 // plus button
-$('.clicker-plus').click(function() {
+$('.clicker-plus').click(function () {
   const $parent = $(this).parents('.clicker');
   const $label = $parent.find('.clicker-label');
-  const val = parseInt($label.text(), 10);
-  const id = $(this)
-    .parents('.card')
-    .prop('id');
+  const val = Number.parseInt($label.text(), 10);
+  const id = $(this).parents('.card').prop('id');
 
   $label.text(val + 1);
 
@@ -36,13 +34,11 @@ $('.clicker-plus').click(function() {
 });
 
 // minus button
-$('.clicker-minus').click(function() {
+$('.clicker-minus').click(function () {
   const $parent = $(this).parents('.clicker');
   const $label = $parent.find('.clicker-label');
-  const val = parseInt($label.text(), 10);
-  const id = $(this)
-    .parents('.card')
-    .prop('id');
+  const val = Number.parseInt($label.text(), 10);
+  const id = $(this).parents('.card').prop('id');
 
   if (val <= 1) {
     $label.text(0);
@@ -56,15 +52,13 @@ $('.clicker-minus').click(function() {
 // handle timer
 //
 // play button
-$('.timer-play').click(function() {
+$('.timer-play').click(function () {
   // get timer selectors
   const $timer = $(this).parents('.timer');
   const $hour = $timer.find('.timer-hour');
   const $minute = $timer.find('.timer-minute');
   const $second = $timer.find('.timer-second');
-  const id = $(this)
-    .parents('.card')
-    .prop('id');
+  const id = $(this).parents('.card').prop('id');
 
   // disable play button and enable pause button
   $(this).prop('disabled', true);
@@ -74,16 +68,16 @@ $('.timer-play').click(function() {
 
   let offset = 0;
   if (timers[id]) {
-    const hour = parseInt($hour.text(), 10);
-    const minute = parseInt($minute.text(), 10);
-    const second = parseInt($second.text(), 10);
+    const hour = Number.parseInt($hour.text(), 10);
+    const minute = Number.parseInt($minute.text(), 10);
+    const second = Number.parseInt($second.text(), 10);
 
     offset = ms(`${hour}h`) + ms(`${minute}m`) + ms(`${second}s`);
   }
 
   const startTime = Date.now() - offset;
   // setup timer
-  timers[id] = setInterval(function() {
+  timers[id] = setInterval(function () {
     const duration = Date.now() - startTime;
     const seconds = (duration / ms('1s')).toFixed(0);
     const minutes = (duration / ms('1m')).toFixed(0);
@@ -96,12 +90,10 @@ $('.timer-play').click(function() {
 });
 
 // pause button
-$('.timer-pause').click(function() {
+$('.timer-pause').click(function () {
   // get timer selectors
   const $timer = $(this).parents('.timer');
-  const id = $(this)
-    .parents('.card')
-    .prop('id');
+  const id = $(this).parents('.card').prop('id');
 
   // disable pause button and enable play button
   $(this).prop('disabled', true);
@@ -119,9 +111,7 @@ function resetTimer() {
   const $hour = $timer.find('.timer-hour');
   const $minute = $timer.find('.timer-minute');
   const $second = $timer.find('.timer-second');
-  const id = $(this)
-    .parents('.card')
-    .prop('id');
+  const id = $(this).parents('.card').prop('id');
 
   $hour.text(0);
   $minute.text(0);
@@ -136,15 +126,13 @@ function resetTimer() {
 $('.timer-reset').click(resetTimer);
 
 // save button
-$('.timer-save').click(function() {
+$('.timer-save').click(function () {
   // get timer selectors
   const $timer = $(this).parents('.timer');
   const $hour = $timer.find('.timer-hour');
   const $minute = $timer.find('.timer-minute');
   const $second = $timer.find('.timer-second');
-  const id = $(this)
-    .parents('.card')
-    .prop('id');
+  const id = $(this).parents('.card').prop('id');
 
   const value =
     ms(`${$hour.text()}h`) +
@@ -160,16 +148,14 @@ $('.timer-save').click(function() {
 // handle percent correct
 //
 // button clicked
-$('button.percent-correct').click(function() {
+$('button.percent-correct').click(function () {
   // get percent correct selectors
   const $parent = $(this).parents('.percent-correct');
   const $previous = $parent.find('.percent-correct-previous');
   const $next = $parent.find('.percent-correct-next');
   const $label = $parent.find('.percent-correct-label');
   let trial = $label.data('trial');
-  const id = $(this)
-    .parents('.card')
-    .prop('id');
+  const id = $(this).parents('.card').prop('id');
 
   // set data value
   if (!Array.isArray(percentCorrect[id])) percentCorrect[id] = [];
@@ -211,15 +197,13 @@ $('button.percent-correct').click(function() {
 });
 
 // previous button clicked
-$('.percent-correct-previous').click(function() {
+$('.percent-correct-previous').click(function () {
   // get selectors
   const $parent = $(this).parents('.percent-correct');
   const $label = $parent.find('.percent-correct-label');
   let trial = $label.data('trial');
   const total = $label.data('total');
-  const id = $(this)
-    .parents('.card')
-    .prop('id');
+  const id = $(this).parents('.card').prop('id');
 
   trial--;
   $label.text(`${trial} / ${total}`);
@@ -245,15 +229,13 @@ $('.percent-correct-previous').click(function() {
 });
 
 // next button clicked
-$('.percent-correct-next').click(function() {
+$('.percent-correct-next').click(function () {
   // get selectors
   const $parent = $(this).parents('.percent-correct');
   const $label = $parent.find('.percent-correct-label');
   let trial = $label.data('trial');
   const total = $label.data('total');
-  const id = $(this)
-    .parents('.card')
-    .prop('id');
+  const id = $(this).parents('.card').prop('id');
 
   trial++;
   $label.text(`${trial} / ${total}`);
@@ -296,7 +278,7 @@ async function getData(res) {
 
     hash = body.hash;
 
-    Object.entries(_.omit(body, 'hash')).forEach(entry => {
+    Object.entries(_.omit(body, 'hash')).forEach((entry) => {
       const [id, data] = entry;
 
       $(`#${id} .previous-data`).text(
@@ -354,7 +336,7 @@ async function getData(res) {
 async function postData() {
   try {
     if (updatePC) {
-      Object.entries(_.omit(percentCorrect, 'hash')).forEach(entry => {
+      Object.entries(_.omit(percentCorrect, 'hash')).forEach((entry) => {
         const [id, data] = entry;
 
         if (data.length !== 0) targets[id] = data;

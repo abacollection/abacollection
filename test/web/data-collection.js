@@ -20,7 +20,7 @@ test.before(utils.defineDataFactory);
 
 test.after.always(utils.teardownMongoose);
 
-test.beforeEach(async t => {
+test.beforeEach(async (t) => {
   // set password
   t.context.password = '!@K#NLK!#N';
   // create user
@@ -46,13 +46,13 @@ test.beforeEach(async t => {
   t.context.root = `/en/collection/${t.context.client.id}`;
 });
 
-test('retrieveTargets > successfully', async t => {
+test('retrieveTargets > successfully', async (t) => {
   t.plan(1);
 
   const { user, client, programs } = t.context;
 
   await Promise.all(
-    programs.map(program => {
+    programs.map((program) => {
       return factory.createMany('target', 3, { program });
     })
   );
@@ -70,7 +70,7 @@ test('retrieveTargets > successfully', async t => {
   });
 });
 
-test('GET(HTML) collection page > frequency', async t => {
+test('GET(HTML) collection page > frequency', async (t) => {
   const { web, root, programs } = t.context;
   const program = programs[0];
 
@@ -84,25 +84,19 @@ test('GET(HTML) collection page > frequency', async t => {
       value: 1,
       target: frequency,
       data_type: 'Frequency',
-      created_at: dayjs()
-        .subtract(2, 'day')
-        .toDate()
+      created_at: dayjs().subtract(2, 'day').toDate()
     },
     {
       value: 1,
       target: frequency,
       data_type: 'Frequency',
-      created_at: dayjs()
-        .subtract(1, 'day')
-        .toDate()
+      created_at: dayjs().subtract(1, 'day').toDate()
     },
     {
       value: 1,
       target: frequency,
       data_type: 'Frequency',
-      created_at: dayjs()
-        .subtract(1, 'day')
-        .toDate()
+      created_at: dayjs().subtract(1, 'day').toDate()
     },
     {
       value: 1,
@@ -125,7 +119,7 @@ test('GET(HTML) collection page > frequency', async t => {
   t.true(res.text.includes('Current: 3'));
 });
 
-test('GET(HTML) collection page > duration', async t => {
+test('GET(HTML) collection page > duration', async (t) => {
   const { web, root, programs } = t.context;
   const program = programs[0];
 
@@ -139,25 +133,19 @@ test('GET(HTML) collection page > duration', async t => {
       value: ms('30s'),
       target: duration,
       data_type: 'Duration',
-      created_at: dayjs()
-        .subtract(2, 'day')
-        .toDate()
+      created_at: dayjs().subtract(2, 'day').toDate()
     },
     {
       value: ms('3m'),
       target: duration,
       data_type: 'Duration',
-      created_at: dayjs()
-        .subtract(1, 'day')
-        .toDate()
+      created_at: dayjs().subtract(1, 'day').toDate()
     },
     {
       value: ms('2m'),
       target: duration,
       data_type: 'Duration',
-      created_at: dayjs()
-        .subtract(1, 'day')
-        .toDate()
+      created_at: dayjs().subtract(1, 'day').toDate()
     },
     {
       value: ms('1m'),
@@ -174,7 +162,7 @@ test('GET(HTML) collection page > duration', async t => {
   t.true(res.text.includes('Current: NA'));
 });
 
-test('GET(HTML) collection page > percent correct', async t => {
+test('GET(HTML) collection page > percent correct', async (t) => {
   const { web, root, programs } = t.context;
   const program = programs[0];
 
@@ -188,25 +176,19 @@ test('GET(HTML) collection page > percent correct', async t => {
       value: 'correct',
       target: percentCorrect,
       data_type: 'Percent Correct',
-      created_at: dayjs()
-        .subtract(2, 'day')
-        .toDate()
+      created_at: dayjs().subtract(2, 'day').toDate()
     },
     {
       value: 'incorrect',
       target: percentCorrect,
       data_type: 'Percent Correct',
-      created_at: dayjs()
-        .subtract(1, 'day')
-        .toDate()
+      created_at: dayjs().subtract(1, 'day').toDate()
     },
     {
       value: 'correct',
       target: percentCorrect,
       data_type: 'Percent Correct',
-      created_at: dayjs()
-        .subtract(1, 'day')
-        .toDate()
+      created_at: dayjs().subtract(1, 'day').toDate()
     },
     {
       value: 'incorrect',
@@ -223,7 +205,7 @@ test('GET(HTML) collection page > percent correct', async t => {
   t.true(res.text.includes('Current: 0%'));
 });
 
-test('POST collection page > frequency > adds data', async t => {
+test('POST collection page > frequency > adds data', async (t) => {
   const { web, root, programs } = t.context;
   const program = programs[0];
   const target = await factory.create('target', {
@@ -251,7 +233,7 @@ test('POST collection page > frequency > adds data', async t => {
   t.is(query.data[0].value, 2);
 });
 
-test('POST collction page > data is 0, no changes', async t => {
+test('POST collction page > data is 0, no changes', async (t) => {
   const { web, root, programs } = t.context;
   const program = programs[0];
   const target = await factory.create('target', {
@@ -278,7 +260,7 @@ test('POST collction page > data is 0, no changes', async t => {
   t.is(query.data.length, 0);
 });
 
-test('POST collection page > duration > adds data', async t => {
+test('POST collection page > duration > adds data', async (t) => {
   const { web, root, programs } = t.context;
   const program = programs[0];
   const target = await factory.create('target', {
@@ -304,7 +286,7 @@ test('POST collection page > duration > adds data', async t => {
   t.is(query.data[0].value, 1000);
 });
 
-test('POST collection page > Percent Correct > adds data', async t => {
+test('POST collection page > Percent Correct > adds data', async (t) => {
   const { web, root, programs } = t.context;
   const program = programs[0];
   const target = await factory.create('target', {
@@ -323,9 +305,7 @@ test('POST collection page > Percent Correct > adds data', async t => {
 
   t.is(res.status, 200);
 
-  let query = await Targets.findOne({ id: target.id })
-    .populate('data')
-    .exec();
+  let query = await Targets.findOne({ id: target.id }).populate('data').exec();
   t.is(query.data.length, 1);
   t.is(query.data[0].value, 'correct');
 
@@ -342,15 +322,13 @@ test('POST collection page > Percent Correct > adds data', async t => {
 
   t.is(res.body[target._id].percentCorrect.length, 2);
 
-  query = await Targets.findOne({ id: target.id })
-    .populate('data')
-    .exec();
+  query = await Targets.findOne({ id: target.id }).populate('data').exec();
   t.is(query.data.length, 2);
   t.is(query.data[0].value, 'incorrect');
   t.is(query.data[1].value, 'approximation');
 });
 
-test('POST collection page > Rate > adds data', async t => {
+test('POST collection page > Rate > adds data', async (t) => {
   const { web, root, programs } = t.context;
   const program = programs[0];
   const target = await factory.create('target', {

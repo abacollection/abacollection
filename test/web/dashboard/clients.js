@@ -17,7 +17,7 @@ test.before(utils.defineClientFactory);
 
 test.after.always(utils.teardownMongoose);
 
-test.beforeEach(async t => {
+test.beforeEach(async (t) => {
   // set password
   t.context.password = '!@K#NLK!#N';
   // create user
@@ -32,7 +32,7 @@ test.beforeEach(async t => {
   await utils.loginUser(t);
 });
 
-test('retrieveClients > get clients that only the user has permissions for', async t => {
+test('retrieveClients > get clients that only the user has permissions for', async (t) => {
   t.plan(2);
 
   const members = await factory.createMany('member', 2);
@@ -52,7 +52,7 @@ test('retrieveClients > get clients that only the user has permissions for', asy
   });
 });
 
-test('retrieveClient > get client information', async t => {
+test('retrieveClient > get client information', async (t) => {
   t.plan(2);
   const client = await factory.create('client');
 
@@ -61,7 +61,7 @@ test('retrieveClient > get client information', async t => {
     state: {
       clients: [client],
       breadcrumbs: ['dashboard', 'clients', client.id],
-      l: link => `/en${link}`
+      l: (link) => `/en${link}`
     }
   };
 
@@ -79,12 +79,12 @@ test('retrieveClient > get client information', async t => {
   });
 });
 
-test('retrieveClient > errors if client does not exist', async t => {
+test('retrieveClient > errors if client does not exist', async (t) => {
   const ctx = {
     params: { client_id: '34' },
     state: { clients: [] },
-    translateError: err => err,
-    throw: err => {
+    translateError: (err) => err,
+    throw: (err) => {
       throw new Error(err);
     }
   };
@@ -97,14 +97,14 @@ test('retrieveClient > errors if client does not exist', async t => {
   );
 });
 
-test('retrieveClient > errors if client_id !isSANB and req.body.client !isSANB', async t => {
+test('retrieveClient > errors if client_id !isSANB and req.body.client !isSANB', async (t) => {
   const ctx = {
     params: { client_id: 34 },
     request: {
       body: { client: 34 }
     },
-    translateError: err => err,
-    throw: err => {
+    translateError: (err) => err,
+    throw: (err) => {
       throw new Error(err);
     }
   };
@@ -117,7 +117,7 @@ test('retrieveClient > errors if client_id !isSANB and req.body.client !isSANB',
   );
 });
 
-test('GET dashboard > successfully', async t => {
+test('GET dashboard > successfully', async (t) => {
   const { web } = t.context;
 
   const res = await web.get('/en/dashboard');
@@ -126,7 +126,7 @@ test('GET dashboard > successfully', async t => {
   t.true(res.text.includes('Dashboard'));
 });
 
-test('GET dashboard/clients > successfully with no clients', async t => {
+test('GET dashboard/clients > successfully with no clients', async (t) => {
   const { web } = t.context;
 
   const res = await web.get('/en/dashboard/clients');
@@ -136,7 +136,7 @@ test('GET dashboard/clients > successfully with no clients', async t => {
   t.true(res.text.includes('No clients exist yet'));
 });
 
-test('GET dashboard/clients > successfully with clients', async t => {
+test('GET dashboard/clients > successfully with clients', async (t) => {
   const { web, user } = t.context;
   const member = await factory.create('member', { user });
   const client = await factory.create('client', { members: member });
@@ -148,7 +148,7 @@ test('GET dashboard/clients > successfully with clients', async t => {
   t.true(res.text.includes(client.first_name));
 });
 
-test('PUT dashboard/clients > successfully with name', async t => {
+test('PUT dashboard/clients > successfully with name', async (t) => {
   const { web } = t.context;
   const client = await factory.build('client');
 
@@ -170,7 +170,7 @@ test('PUT dashboard/clients > successfully with name', async t => {
   t.is(query.dob, undefined);
 });
 
-test('PUT dashboard/clients > successfully with name and gender', async t => {
+test('PUT dashboard/clients > successfully with name and gender', async (t) => {
   const { web } = t.context;
   const client = await factory.build('client');
 
@@ -193,7 +193,7 @@ test('PUT dashboard/clients > successfully with name and gender', async t => {
   t.is(query.dob, undefined);
 });
 
-test('PUT dashbaord/clients > successfully with name and dob', async t => {
+test('PUT dashbaord/clients > successfully with name and dob', async (t) => {
   const { web } = t.context;
   const client = await factory.build('client');
 
@@ -216,7 +216,7 @@ test('PUT dashbaord/clients > successfully with name and dob', async t => {
   t.deepEqual(query.dob, client.dob);
 });
 
-test('PUT dashbaord/clients > successfully with name, gender, and dob', async t => {
+test('PUT dashbaord/clients > successfully with name, gender, and dob', async (t) => {
   const { web } = t.context;
   const client = await factory.build('client');
 
@@ -240,7 +240,7 @@ test('PUT dashbaord/clients > successfully with name, gender, and dob', async t 
   t.deepEqual(query.dob, client.dob);
 });
 
-test('PUT dashboard/clients > fails with no name', async t => {
+test('PUT dashboard/clients > fails with no name', async (t) => {
   const { web } = t.context;
 
   const res = await web.put('/en/dashboard/clients').send({});
@@ -249,7 +249,7 @@ test('PUT dashboard/clients > fails with no name', async t => {
   t.is(JSON.parse(res.text).message, phrases.INVALID_NAME);
 });
 
-test('PUT dashboard/clients > fails with invalid dob', async t => {
+test('PUT dashboard/clients > fails with invalid dob', async (t) => {
   const { web } = t.context;
 
   const res = await web.put('/en/dashboard/clients').send({
@@ -262,7 +262,7 @@ test('PUT dashboard/clients > fails with invalid dob', async t => {
   t.is(JSON.parse(res.text).message, phrases.INVALID_DOB);
 });
 
-test('DELETE dashboard/clients > successfully', async t => {
+test('DELETE dashboard/clients > successfully', async (t) => {
   const { web, user } = t.context;
   const member = await factory.create('member', {
     user,
@@ -282,7 +282,7 @@ test('DELETE dashboard/clients > successfully', async t => {
   t.is(query, null);
 });
 
-test('DELETE dashboard/clients > fails if user does not have permissions', async t => {
+test('DELETE dashboard/clients > fails if user does not have permissions', async (t) => {
   const { web } = t.context;
   const client = await factory.create('client');
 
@@ -292,7 +292,7 @@ test('DELETE dashboard/clients > fails if user does not have permissions', async
   t.is(JSON.parse(res.text).message, phrases.CLIENT_DOES_NOT_EXIST);
 });
 
-test('DELETE dashboard/clients > fails if client does not exist', async t => {
+test('DELETE dashboard/clients > fails if client does not exist', async (t) => {
   const { web } = t.context;
 
   const res = await web.delete('/en/dashboard/clients/1');
@@ -301,7 +301,7 @@ test('DELETE dashboard/clients > fails if client does not exist', async t => {
   t.is(JSON.parse(res.text).message, phrases.CLIENT_DOES_NOT_EXIST);
 });
 
-test('DELETE dashboard/clients > fails if user is not admin', async t => {
+test('DELETE dashboard/clients > fails if user is not admin', async (t) => {
   const { web, user } = t.context;
   const member = await factory.create('member', {
     user,
@@ -321,7 +321,7 @@ test('DELETE dashboard/clients > fails if user is not admin', async t => {
   t.is(query.id, client.id);
 });
 
-test('GET dashboard/clients/settings > successfully', async t => {
+test('GET dashboard/clients/settings > successfully', async (t) => {
   const { web, user } = t.context;
   const member = await factory.create('member', { user });
   const client = await factory.create('client', { members: member });
@@ -331,7 +331,7 @@ test('GET dashboard/clients/settings > successfully', async t => {
   t.is(res.status, 200);
 });
 
-test('POST dashboard/clients/settings > successfully', async t => {
+test('POST dashboard/clients/settings > successfully', async (t) => {
   const { web, user } = t.context;
   const member = await factory.create('member', { user });
   const client = await factory.create('client', { members: member });
@@ -368,7 +368,7 @@ test('POST dashboard/clients/settings > successfully', async t => {
   );
 });
 
-test('POST dashboard/clients/settings > fails if dob is invalid', async t => {
+test('POST dashboard/clients/settings > fails if dob is invalid', async (t) => {
   const { web, user } = t.context;
   const member = await factory.create('member', { user });
   const client = await factory.create('client', { members: member });
@@ -386,7 +386,7 @@ test('POST dashboard/clients/settings > fails if dob is invalid', async t => {
   t.is(JSON.parse(res.text).message, phrases.INVALID_DOB);
 });
 
-test('POST dashboard/clients/settings > fails if name is invalid', async t => {
+test('POST dashboard/clients/settings > fails if name is invalid', async (t) => {
   const { web, user } = t.context;
   const member = await factory.create('member', { user });
   const client = await factory.create('client', { members: member });

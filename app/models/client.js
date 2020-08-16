@@ -53,7 +53,7 @@ const Client = new mongoose.Schema({
   members: [Member]
 });
 
-Client.virtual('name').get(function() {
+Client.virtual('name').get(function () {
   return `${this.first_name} ${this.last_name}`;
 });
 
@@ -61,7 +61,7 @@ Client.plugin(mongooseCommonPlugin, { object: 'client', uniqueID: true });
 Client.plugin(mongooseLeanVirtuals);
 
 // remove programs when client is removed
-Client.post('findOneAndRemove', async function() {
+Client.post('findOneAndRemove', async function () {
   const programs = await Programs.find(
     {
       $or: [{ client: this.getQuery()._id }]
@@ -71,7 +71,7 @@ Client.post('findOneAndRemove', async function() {
     .lean()
     .exec();
 
-  programs.forEach(async program => {
+  programs.forEach(async (program) => {
     await Programs.findByIdAndRemove(program._id);
   });
 });

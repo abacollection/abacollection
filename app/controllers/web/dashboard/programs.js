@@ -12,16 +12,13 @@ async function retrievePrograms(ctx, next) {
     $or: [{ client: ctx.state.client._id }]
   };
 
-  ctx.state.programs = await Programs.find(query)
-    .sort('name')
-    .lean()
-    .exec();
+  ctx.state.programs = await Programs.find(query).sort('name').lean().exec();
 
   //
   // set breadcrumb
   //
   if (ctx.state.breadcrumbs)
-    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map(breadcrumb => {
+    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map((breadcrumb) => {
       if (!_.isObject(breadcrumb) && breadcrumb === 'programs')
         return {
           name: 'Programs',
@@ -47,7 +44,7 @@ async function retrieveProgram(ctx, next) {
     ? ctx.params.program_id
     : ctx.request.body.program;
 
-  ctx.state.program = ctx.state.programs.find(program =>
+  ctx.state.program = ctx.state.programs.find((program) =>
     [program.id, program.name].includes(id)
   );
 
@@ -60,7 +57,7 @@ async function retrieveProgram(ctx, next) {
   // set breadcrumb
   //
   if (ctx.state.breadcrumbs)
-    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map(breadcrumb => {
+    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map((breadcrumb) => {
       if (!_.isObject(breadcrumb) && breadcrumb === id)
         return {
           name: ctx.state.program.name,

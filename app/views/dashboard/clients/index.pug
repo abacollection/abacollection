@@ -52,7 +52,7 @@ block body
                     tr
                       td.align-middle= client.first_name
                       td.align-middle= client.last_name
-                      td.align-middle= moment(client.dob).format('M/D/YY')
+                      td.align-middle= dayjs(client.dob).format('M/D/YY')
                       td.align-middle= client.gender
                       td.align-middle
                         .btn-group(role='group', aria-label=t('Actions'))

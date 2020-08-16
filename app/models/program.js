@@ -26,7 +26,7 @@ const Program = new mongoose.Schema({
 Program.plugin(mongooseCommonPlugin, { object: 'program' });
 
 // remove targets when program is removed
-Program.post('findOneAndRemove', async function() {
+Program.post('findOneAndRemove', async function () {
   const targets = await Targets.find(
     {
       $or: [{ program: this.getQuery()._id }]
@@ -36,7 +36,7 @@ Program.post('findOneAndRemove', async function() {
     .lean()
     .exec();
 
-  targets.forEach(async target => {
+  targets.forEach(async (target) => {
     await Targets.findByIdAndRemove(target._id);
   });
 });

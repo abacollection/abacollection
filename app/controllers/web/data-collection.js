@@ -24,7 +24,7 @@ async function getUpdates(ctx) {
   ctx.state.previous = {};
   ctx.state.current = {};
   await Promise.all(
-    ctx.state.targets.map(async target => {
+    ctx.state.targets.map(async (target) => {
       ctx.state.previous[target._id] = await target.getPreviousData();
       ctx.state.current[target._id] = await target.getCurrentData();
 
@@ -41,15 +41,13 @@ async function getUpdates(ctx) {
           },
           {
             created_at: {
-              $gte: dayjs()
-                .startOf('day')
-                .toDate()
+              $gte: dayjs().startOf('day').toDate()
             }
           }
         ]
       }).exec();
 
-      body[target._id].percentCorrect = percentCorrect.map(pc => pc.value);
+      body[target._id].percentCorrect = percentCorrect.map((pc) => pc.value);
     })
   );
 
@@ -62,7 +60,7 @@ async function getUpdates(ctx) {
 
 async function update(ctx) {
   const { targets } = ctx.request.body;
-  ctx.state.targets = ctx.state.targets.map(async target => {
+  ctx.state.targets = ctx.state.targets.map(async (target) => {
     if (!targets[target._id]) return target;
 
     if (Array.isArray(targets[target._id])) {

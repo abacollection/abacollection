@@ -9,13 +9,13 @@ test.before(utils.setupMongoose);
 test.after.always(utils.teardownMongoose);
 test.beforeEach(utils.setupApiServer);
 
-test('fails when no creds are presented', async t => {
+test('fails when no creds are presented', async (t) => {
   const { api } = t.context;
   const res = await api.get('/v1/account');
   t.is(401, res.status);
 });
 
-test("returns current user's account", async t => {
+test("returns current user's account", async (t) => {
   const { api } = t.context;
   const body = {
     email: 'testglobal@api.example.com',

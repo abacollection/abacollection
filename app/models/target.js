@@ -45,17 +45,15 @@ const targetSchema = new mongoose.Schema({
 
 targetSchema.plugin(mongooseCommonPlugin, { object: 'target' });
 
-targetSchema.post('findOneAndRemove', async function() {
-  const datas = await Datas.find({ target: this.getQuery()._id })
-    .lean()
-    .exec();
+targetSchema.post('findOneAndRemove', async function () {
+  const datas = await Datas.find({ target: this.getQuery()._id }).lean().exec();
 
-  datas.forEach(async data => {
+  datas.forEach(async (data) => {
     await Datas.findByIdAndRemove(data._id);
   });
 });
 
-targetSchema.method('getPreviousData', async function() {
+targetSchema.method('getPreviousData', async function () {
   let ret = 'WIP';
 
   if (this.data_type === 'Frequency') {
@@ -66,13 +64,8 @@ targetSchema.method('getPreviousData', async function() {
         },
         {
           created_at: {
-            $lt: dayjs()
-              .startOf('day')
-              .toDate(),
-            $gte: dayjs()
-              .startOf('day')
-              .subtract(1, 'day')
-              .toDate()
+            $lt: dayjs().startOf('day').toDate(),
+            $gte: dayjs().startOf('day').subtract(1, 'day').toDate()
           }
         }
       ]
@@ -80,7 +73,7 @@ targetSchema.method('getPreviousData', async function() {
 
     ret = 0;
 
-    datas.forEach(data => {
+    datas.forEach((data) => {
       ret += data.value;
     });
   } else if (this.data_type === 'Duration') {
@@ -98,20 +91,15 @@ targetSchema.method('getPreviousData', async function() {
         },
         {
           created_at: {
-            $lt: dayjs()
-              .startOf('day')
-              .toDate(),
-            $gte: dayjs()
-              .startOf('day')
-              .subtract(1, 'day')
-              .toDate()
+            $lt: dayjs().startOf('day').toDate(),
+            $gte: dayjs().startOf('day').subtract(1, 'day').toDate()
           }
         }
       ]
     }).exec();
 
     const total = ret.length;
-    const correct = ret.filter(data => data.value === 'correct').length;
+    const correct = ret.filter((data) => data.value === 'correct').length;
 
     const percent = ((correct / total) * 100).toFixed(0);
 
@@ -121,7 +109,7 @@ targetSchema.method('getPreviousData', async function() {
   return ret;
 });
 
-targetSchema.method('getCurrentData', async function() {
+targetSchema.method('getCurrentData', async function () {
   let ret = 'WIP';
 
   if (this.data_type === 'Frequency') {
@@ -132,9 +120,7 @@ targetSchema.method('getCurrentData', async function() {
         },
         {
           created_at: {
-            $gte: dayjs()
-              .startOf('day')
-              .toDate()
+            $gte: dayjs().startOf('day').toDate()
           }
         }
       ]
@@ -142,7 +128,7 @@ targetSchema.method('getCurrentData', async function() {
 
     ret = 0;
 
-    datas.forEach(data => {
+    datas.forEach((data) => {
       ret += data.value;
     });
   } else if (this.data_type === 'Duration') {
@@ -155,16 +141,14 @@ targetSchema.method('getCurrentData', async function() {
         },
         {
           created_at: {
-            $gte: dayjs()
-              .startOf('day')
-              .toDate()
+            $gte: dayjs().startOf('day').toDate()
           }
         }
       ]
     }).exec();
 
     const total = ret.length;
-    const correct = ret.filter(data => data.value === 'correct').length;
+    const correct = ret.filter((data) => data.value === 'correct').length;
 
     const percent = ((correct / total) * 100).toFixed(0);
 

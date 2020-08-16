@@ -1,6 +1,6 @@
 const $ = require('jquery');
 
-$(document).on('click', '#editTargetBtn', function() {
+$(document).on('click', '#editTargetBtn', function () {
   const id = $(this).data('id');
   const name = $(this).data('name');
   const description = $(this).data('description');

@@ -12,16 +12,13 @@ async function retrieveTargets(ctx, next) {
     $or: [{ program: ctx.state.program._id }]
   };
 
-  ctx.state.targets = await Targets.find(query)
-    .sort('name')
-    .lean()
-    .exec();
+  ctx.state.targets = await Targets.find(query).sort('name').lean().exec();
 
   //
   // set breadcrumb
   //
   if (ctx.state.breadcrumbs)
-    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map(breadcrumb => {
+    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map((breadcrumb) => {
       if (!_.isObject(breadcrumb) && breadcrumb === 'targets')
         return {
           name: 'Targets',
@@ -47,7 +44,7 @@ async function retrieveTarget(ctx, next) {
     ? ctx.params.target_id
     : ctx.request.body.target;
 
-  ctx.state.target = ctx.state.targets.find(target =>
+  ctx.state.target = ctx.state.targets.find((target) =>
     [target.id, target.name].includes(id)
   );
 
@@ -60,7 +57,7 @@ async function retrieveTarget(ctx, next) {
   // set breadcrumb
   //
   if (ctx.state.breadcrumbs)
-    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map(breadcrumb => {
+    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map((breadcrumb) => {
       if (!_.isObject(breadcrumb) && breadcrumb === id)
         return {
           name: ctx.state.target.name,

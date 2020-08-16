@@ -20,7 +20,7 @@ test.before(utils.defineTargetFactory);
 
 test.after.always(utils.teardownMongoose);
 
-test.beforeEach(async t => {
+test.beforeEach(async (t) => {
   // set password
   t.context.password = '!@K#NLK!#N';
   // create user
@@ -46,7 +46,7 @@ test.beforeEach(async t => {
   t.context.root = `/en/dashboard/clients/${t.context.client.id}/programs/${t.context.program.id}`;
 });
 
-test('retrieveTargets > get targets only linked to program', async t => {
+test('retrieveTargets > get targets only linked to program', async (t) => {
   t.plan(2);
 
   const { program } = t.context;
@@ -64,7 +64,7 @@ test('retrieveTargets > get targets only linked to program', async t => {
   });
 });
 
-test('retrieveTarget > get target', async t => {
+test('retrieveTarget > get target', async (t) => {
   t.plan(2);
 
   const targets = await factory.createMany('target', 2);
@@ -76,7 +76,7 @@ test('retrieveTarget > get target', async t => {
       program: targets[0].program,
       breadcrumbs: [targets[0].id],
       client: { id: '32' },
-      l: url => `/en${url}`
+      l: (url) => `/en${url}`
     }
   };
 
@@ -86,7 +86,7 @@ test('retrieveTarget > get target', async t => {
   });
 });
 
-test('retrieveTarget > errors if no params', async t => {
+test('retrieveTarget > errors if no params', async (t) => {
   const targets = await factory.createMany('target', 2);
 
   const ctx = {
@@ -95,8 +95,8 @@ test('retrieveTarget > errors if no params', async t => {
       body: { target: '' }
     },
     state: { targets },
-    translateError: err => err,
-    throw: err => {
+    translateError: (err) => err,
+    throw: (err) => {
       throw err;
     }
   };
@@ -106,12 +106,12 @@ test('retrieveTarget > errors if no params', async t => {
   });
 });
 
-test('retrieveTarget > errors if target does not exist', async t => {
+test('retrieveTarget > errors if target does not exist', async (t) => {
   const ctx = {
     params: { target_id: '1' },
     state: { targets: [] },
-    translateError: err => err,
-    throw: err => {
+    translateError: (err) => err,
+    throw: (err) => {
       throw err;
     }
   };
@@ -121,7 +121,7 @@ test('retrieveTarget > errors if target does not exist', async t => {
   });
 });
 
-test('GET targets > successfully with no targets', async t => {
+test('GET targets > successfully with no targets', async (t) => {
   const { web, root } = t.context;
 
   const res = await web.get(`${root}/targets`);
@@ -130,7 +130,7 @@ test('GET targets > successfully with no targets', async t => {
   t.true(res.text.includes('No targets for this client yet.'));
 });
 
-test('GET targets > successfully with targets', async t => {
+test('GET targets > successfully with targets', async (t) => {
   const { web, root, program } = t.context;
 
   const target = await factory.create('target', { program });
@@ -141,7 +141,7 @@ test('GET targets > successfully with targets', async t => {
   t.true(res.text.includes(target.name));
 });
 
-test('PUT targets > successfully', async t => {
+test('PUT targets > successfully', async (t) => {
   const { web, root } = t.context;
   const target = await factory.build('target');
 
@@ -164,7 +164,7 @@ test('PUT targets > successfully', async t => {
   t.is(query.data_type, target.data_type);
 });
 
-test('PUT targets > fails with invalid name', async t => {
+test('PUT targets > fails with invalid name', async (t) => {
   const { web, root } = t.context;
 
   const res = await web.put(`${root}/targets`).send({});
@@ -173,7 +173,7 @@ test('PUT targets > fails with invalid name', async t => {
   t.is(JSON.parse(res.text).message, phrases.INVALID_TARGET_NAME);
 });
 
-test('DELETE targets > successfully', async t => {
+test('DELETE targets > successfully', async (t) => {
   const { web, root, program } = t.context;
   const target = await factory.create('target', { program });
 
@@ -189,7 +189,7 @@ test('DELETE targets > successfully', async t => {
   t.is(query, null);
 });
 
-test('DELETE targets > fails if target does not exist', async t => {
+test('DELETE targets > fails if target does not exist', async (t) => {
   const { web, root } = t.context;
 
   const res = await web.delete(`${root}/targets/1`);
@@ -198,7 +198,7 @@ test('DELETE targets > fails if target does not exist', async t => {
   t.is(JSON.parse(res.text).message, phrases.TARGET_DOES_NOT_EXIST);
 });
 
-test('DELETE targets > fails if not admin', async t => {
+test('DELETE targets > fails if not admin', async (t) => {
   const { web, user } = t.context;
 
   const member = await factory.create('member', { user, group: 'user' });
@@ -220,7 +220,7 @@ test('DELETE targets > fails if not admin', async t => {
   t.is(query.id, target.id);
 });
 
-test('deletes target when program is deleted', async t => {
+test('deletes target when program is deleted', async (t) => {
   const { web, program, root } = t.context;
 
   await factory.createMany('target', 2, { program });
@@ -236,7 +236,7 @@ test('deletes target when program is deleted', async t => {
   t.is(query.length, 0);
 });
 
-test('POST targets > modifies name and description', async t => {
+test('POST targets > modifies name and description', async (t) => {
   const { web, client, program } = t.context;
 
   const target = await factory.create('target', { program });

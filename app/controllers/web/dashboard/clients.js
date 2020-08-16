@@ -83,10 +83,10 @@ async function retrieveClients(ctx, next) {
     .lean({ virtuals: true })
     .exec();
 
-  ctx.state.clients = ctx.state.clients.map(client => {
+  ctx.state.clients = ctx.state.clients.map((client) => {
     // populate a `group` on the client based off the user's association
     const member = client.members.find(
-      member => member.user.id === ctx.state.user.id
+      (member) => member.user.id === ctx.state.user.id
     );
 
     const { group } = member ? member : { group: null };
@@ -110,7 +110,7 @@ async function retrieveClient(ctx, next) {
     ? ctx.params.client_id
     : ctx.request.body.client;
 
-  ctx.state.client = ctx.state.clients.find(client =>
+  ctx.state.client = ctx.state.clients.find((client) =>
     [client.id, client.name].includes(id)
   );
 
@@ -123,7 +123,7 @@ async function retrieveClient(ctx, next) {
   // set breadcrumb
   //
   if (ctx.state.breadcrumbs)
-    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map(breadcrumb => {
+    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map((breadcrumb) => {
       if (!_.isObject(breadcrumb) && breadcrumb === id)
         return {
           name: ctx.state.client.name,

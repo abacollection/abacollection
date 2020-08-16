@@ -23,14 +23,14 @@ exports.setupMongoose = async () => {
   await mongoose.connect(uri);
 };
 
-exports.setupWebServer = async t => {
+exports.setupWebServer = async (t) => {
   // must require here in order to load changes made during setup
   const { app } = require('../web');
   const port = await getPort();
   t.context.web = request.agent(app.listen(port));
 };
 
-exports.setupApiServer = async t => {
+exports.setupApiServer = async (t) => {
   // must require here in order to load changes made during setup
   const { app } = require('../api');
   const port = await getPort();
@@ -38,7 +38,7 @@ exports.setupApiServer = async t => {
 };
 
 // make sure to load the web server first using setupWebServer
-exports.loginUser = async t => {
+exports.loginUser = async (t) => {
   const { web, user, password } = t.context;
 
   await web.post('/en/login').send({
@@ -60,9 +60,9 @@ exports.teardownMongoose = async () => {
 // <https://github.com/simonexmachina/factory-girl>
 //
 exports.defineUserFactory = async () => {
-  factory.define('user', Users, buildOptions => {
+  factory.define('user', Users, (buildOptions) => {
     const user = {
-      email: factory.sequence('Users.email', n => `test${n}@example.com`),
+      email: factory.sequence('Users.email', (n) => `test${n}@example.com`),
       password: buildOptions.password ? buildOptions.password : '!@K#NLK!#N'
     };
 
@@ -79,7 +79,7 @@ exports.defineUserFactory = async () => {
 
 exports.defineClientFactory = async () => {
   // setup members factory
-  factory.define('member', Member, buildOptions => {
+  factory.define('member', Member, (buildOptions) => {
     return {
       user: buildOptions.user
         ? buildOptions.user
@@ -91,7 +91,7 @@ exports.defineClientFactory = async () => {
   });
 
   // setup client factory
-  factory.define('client', Clients, buildOptions => {
+  factory.define('client', Clients, (buildOptions) => {
     return {
       first_name: factory.chance('first'),
       last_name: factory.chance('last'),
@@ -107,7 +107,7 @@ exports.defineClientFactory = async () => {
 
 exports.defineProgramFactory = async () => {
   // setup program factory
-  factory.define('program', Programs, buildOptions => {
+  factory.define('program', Programs, (buildOptions) => {
     return {
       name: factory.chance('word'),
       description: factory.chance('sentence'),
@@ -121,7 +121,7 @@ exports.defineProgramFactory = async () => {
 
 exports.defineTargetFactory = async () => {
   // setup target factory
-  factory.define('target', Targets, buildOptions => {
+  factory.define('target', Targets, (buildOptions) => {
     return {
       name: factory.chance('word'),
       data_type: 'Frequency',
@@ -134,7 +134,7 @@ exports.defineTargetFactory = async () => {
 };
 
 exports.defineDataFactory = async () => {
-  factory.define('data', Datas, buildOptions => {
+  factory.define('data', Datas, (buildOptions) => {
     return {
       value: factory.chance('floating', { min: 0, max: 100 }),
       target: buildOptions.target

@@ -19,7 +19,7 @@ test.before(utils.defineProgramFactory);
 
 test.after.always(utils.teardownMongoose);
 
-test.beforeEach(async t => {
+test.beforeEach(async (t) => {
   // set password
   t.context.password = '!@K#NLK!#N';
   // create user
@@ -42,7 +42,7 @@ test.beforeEach(async t => {
   t.context.root = `/en/dashboard/clients/${t.context.client.id}`;
 });
 
-test('retrievePrograms > get programs only linked to the client', async t => {
+test('retrievePrograms > get programs only linked to the client', async (t) => {
   t.plan(2);
 
   const members = await factory.createMany('member', 2);
@@ -68,7 +68,7 @@ test('retrievePrograms > get programs only linked to the client', async t => {
   });
 });
 
-test('retrieveProgram > get program', async t => {
+test('retrieveProgram > get program', async (t) => {
   t.plan(2);
 
   const programs = await factory.createMany('program', 2);
@@ -79,7 +79,7 @@ test('retrieveProgram > get program', async t => {
       programs,
       breadcrumbs: [programs[0].id],
       client: { id: '32' },
-      l: url => `/en${url}`
+      l: (url) => `/en${url}`
     }
   };
 
@@ -89,7 +89,7 @@ test('retrieveProgram > get program', async t => {
   });
 });
 
-test('retrieveProgram > errors if no params', async t => {
+test('retrieveProgram > errors if no params', async (t) => {
   const programs = await factory.createMany('program', 2);
 
   const ctx = {
@@ -98,8 +98,8 @@ test('retrieveProgram > errors if no params', async t => {
       body: { program: '' }
     },
     state: { programs },
-    translateError: err => err,
-    throw: err => {
+    translateError: (err) => err,
+    throw: (err) => {
       throw new Error(err);
     }
   };
@@ -109,12 +109,12 @@ test('retrieveProgram > errors if no params', async t => {
   });
 });
 
-test('retrieveProgram > errors if program does not exist', async t => {
+test('retrieveProgram > errors if program does not exist', async (t) => {
   const ctx = {
     params: { program_id: '1' },
     state: { programs: [] },
-    translateError: err => err,
-    throw: err => {
+    translateError: (err) => err,
+    throw: (err) => {
       throw err;
     }
   };
@@ -124,7 +124,7 @@ test('retrieveProgram > errors if program does not exist', async t => {
   });
 });
 
-test('GET dashboard/clients/programs > successfully with no programs', async t => {
+test('GET dashboard/clients/programs > successfully with no programs', async (t) => {
   const { web, root } = t.context;
 
   const res = await web.get(`${root}/programs`);
@@ -133,7 +133,7 @@ test('GET dashboard/clients/programs > successfully with no programs', async t =
   t.true(res.text.includes('No programs for this client yet.'));
 });
 
-test('GET dashboard/clients/programs > successfully with programs', async t => {
+test('GET dashboard/clients/programs > successfully with programs', async (t) => {
   const { web, client, root } = t.context;
   const program = await factory.create('program', { client });
 
@@ -143,7 +143,7 @@ test('GET dashboard/clients/programs > successfully with programs', async t => {
   t.true(res.text.includes(program.name));
 });
 
-test('PUT dashboard/clients/programs > successfully', async t => {
+test('PUT dashboard/clients/programs > successfully', async (t) => {
   const { web, root } = t.context;
   const program = await factory.build('program');
 
@@ -164,7 +164,7 @@ test('PUT dashboard/clients/programs > successfully', async t => {
   );
 });
 
-test('PUT dashboard/clients/programs > fails with no name', async t => {
+test('PUT dashboard/clients/programs > fails with no name', async (t) => {
   const { web, root } = t.context;
   const program = await factory.build('program');
 
@@ -180,7 +180,7 @@ test('PUT dashboard/clients/programs > fails with no name', async t => {
   t.is(query, null);
 });
 
-test('DELETE dashboard/clients/programs > successfully', async t => {
+test('DELETE dashboard/clients/programs > successfully', async (t) => {
   const { web, client, root } = t.context;
 
   const program = await factory.create('program', { client });
@@ -197,7 +197,7 @@ test('DELETE dashboard/clients/programs > successfully', async t => {
   t.is(query, null);
 });
 
-test('DELETE dashboard/clients/programs > fails if program does not exist', async t => {
+test('DELETE dashboard/clients/programs > fails if program does not exist', async (t) => {
   const { web, root } = t.context;
 
   const res = await web.delete(`${root}/programs/1`);
@@ -206,7 +206,7 @@ test('DELETE dashboard/clients/programs > fails if program does not exist', asyn
   t.is(JSON.parse(res.text).message, phrases.PROGRAM_DOES_NOT_EXIST);
 });
 
-test('DELETE dashboard/clients/programs > fails if user is not admin', async t => {
+test('DELETE dashboard/clients/programs > fails if user is not admin', async (t) => {
   const { web, user } = t.context;
 
   const member = await factory.create('member', { user, group: 'user' });
@@ -227,7 +227,7 @@ test('DELETE dashboard/clients/programs > fails if user is not admin', async t =
   t.is(query.id, program.id);
 });
 
-test('deletes program when client deleted', async t => {
+test('deletes program when client deleted', async (t) => {
   const { web, client } = t.context;
 
   await factory.createMany('program', 2, { client });
@@ -244,7 +244,7 @@ test('deletes program when client deleted', async t => {
   t.is(query.length, 0);
 });
 
-test('POST dashboard/clients/program > modifies name and description', async t => {
+test('POST dashboard/clients/program > modifies name and description', async (t) => {
   const { web, client } = t.context;
 
   const program = await factory.create('program', { client });
