@@ -84,31 +84,31 @@ test('GET(HTML) collection page > frequency', async (t) => {
       value: 1,
       target: frequency,
       data_type: 'Frequency',
-      created_at: dayjs().subtract(2, 'day').toDate()
+      date: dayjs().subtract(2, 'day').toDate()
     },
     {
       value: 1,
       target: frequency,
       data_type: 'Frequency',
-      created_at: dayjs().subtract(1, 'day').toDate()
+      date: dayjs().subtract(1, 'day').toDate()
     },
     {
       value: 1,
       target: frequency,
       data_type: 'Frequency',
-      created_at: dayjs().subtract(1, 'day').toDate()
+      date: dayjs().subtract(1, 'day').toDate()
     },
     {
       value: 1,
       target: frequency,
       data_type: 'Frequency',
-      created_at: dayjs().toDate()
+      date: dayjs().toDate()
     },
     {
       value: 2,
       target: frequency,
       data_type: 'Frequency',
-      created_at: dayjs().toDate()
+      date: dayjs().toDate()
     }
   ]);
 
@@ -133,25 +133,25 @@ test('GET(HTML) collection page > duration', async (t) => {
       value: ms('30s'),
       target: duration,
       data_type: 'Duration',
-      created_at: dayjs().subtract(2, 'day').toDate()
+      date: dayjs().subtract(2, 'day').toDate()
     },
     {
       value: ms('3m'),
       target: duration,
       data_type: 'Duration',
-      created_at: dayjs().subtract(1, 'day').toDate()
+      date: dayjs().subtract(1, 'day').toDate()
     },
     {
       value: ms('2m'),
       target: duration,
       data_type: 'Duration',
-      created_at: dayjs().subtract(1, 'day').toDate()
+      date: dayjs().subtract(1, 'day').toDate()
     },
     {
       value: ms('1m'),
       target: duration,
       data_type: 'Duration',
-      created_at: dayjs().toDate()
+      date: dayjs().toDate()
     }
   ]);
 
@@ -176,25 +176,25 @@ test('GET(HTML) collection page > percent correct', async (t) => {
       value: 'correct',
       target: percentCorrect,
       data_type: 'Percent Correct',
-      created_at: dayjs().subtract(2, 'day').toDate()
+      date: dayjs().subtract(2, 'day').toDate()
     },
     {
       value: 'incorrect',
       target: percentCorrect,
       data_type: 'Percent Correct',
-      created_at: dayjs().subtract(1, 'day').toDate()
+      date: dayjs().subtract(1, 'day').toDate()
     },
     {
       value: 'correct',
       target: percentCorrect,
       data_type: 'Percent Correct',
-      created_at: dayjs().subtract(1, 'day').toDate()
+      date: dayjs().subtract(1, 'day').toDate()
     },
     {
       value: 'incorrect',
       target: percentCorrect,
       data_type: 'Percent Correct',
-      created_at: dayjs().toDate()
+      date: dayjs().toDate()
     }
   ]);
 
@@ -230,6 +230,11 @@ test('POST collection page > frequency > adds data', async (t) => {
     .populate('data')
     .exec();
   t.is(query.data.length, 1);
+  t.not(typeof query.data[0].date, undefined);
+  t.is(
+    dayjs(query.data[0].date).format('MM/DD/YYYY'),
+    dayjs().format('MM/DD/YYYY')
+  );
   t.is(query.data[0].value, 2);
 });
 
@@ -283,6 +288,11 @@ test('POST collection page > duration > adds data', async (t) => {
     .populate('data')
     .exec();
   t.is(query.data.length, 1);
+  t.not(typeof query.data[0].date, undefined);
+  t.is(
+    dayjs(query.data[0].date).format('MM/DD/YYYY'),
+    dayjs().format('MM/DD/YYYY')
+  );
   t.is(query.data[0].value, 1000);
 });
 
@@ -307,6 +317,11 @@ test('POST collection page > Percent Correct > adds data', async (t) => {
 
   let query = await Targets.findOne({ id: target.id }).populate('data').exec();
   t.is(query.data.length, 1);
+  t.not(typeof query.data[0].date, undefined);
+  t.is(
+    dayjs(query.data[0].date).format('MM/DD/YYYY'),
+    dayjs().format('MM/DD/YYYY')
+  );
   t.is(query.data[0].value, 'correct');
 
   res = await web
@@ -324,7 +339,17 @@ test('POST collection page > Percent Correct > adds data', async (t) => {
 
   query = await Targets.findOne({ id: target.id }).populate('data').exec();
   t.is(query.data.length, 2);
+  t.not(typeof query.data[0].date, undefined);
+  t.is(
+    dayjs(query.data[0].date).format('MM/DD/YYYY'),
+    dayjs().format('MM/DD/YYYY')
+  );
   t.is(query.data[0].value, 'incorrect');
+  t.not(typeof query.data[1].date, undefined);
+  t.is(
+    dayjs(query.data[1].date).format('MM/DD/YYYY'),
+    dayjs().format('MM/DD/YYYY')
+  );
   t.is(query.data[1].value, 'approximation');
 });
 
@@ -357,6 +382,11 @@ test('POST collection page > Rate > adds data', async (t) => {
     .populate('data')
     .exec();
   t.is(query.data.length, 1);
+  t.not(typeof query.data[0].date, undefined);
+  t.is(
+    dayjs(query.data[0].date).format('MM/DD/YYYY'),
+    dayjs().format('MM/DD/YYYY')
+  );
   t.is(query.data[0].value.correct, 1);
   t.is(query.data[0].value.incorrect, 2);
   t.is(query.data[0].value.counting_time, 1000);

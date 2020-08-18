@@ -58,12 +58,10 @@ targetSchema.method('getDailyData', async function () {
 
   if (this.data_type === 'Frequency') {
     ret = {};
-    const datas = await Datas.find({ target: this._id })
-      .sort('created_at')
-      .exec();
+    const datas = await Datas.find({ target: this._id }).sort('date').exec();
 
     datas.forEach((data) => {
-      const date = dayjs(data.created_at).format('MM/DD/YYYY');
+      const date = dayjs(data.date).format('MM/DD/YYYY');
 
       if (ret[date]) ret[date] += data.value;
       else ret[date] = data.value;
@@ -87,7 +85,7 @@ targetSchema.method('getPreviousData', async function () {
           target: this._id
         },
         {
-          created_at: {
+          date: {
             $lt: dayjs().startOf('day').toDate(),
             $gte: dayjs().startOf('day').subtract(1, 'day').toDate()
           }
@@ -101,10 +99,7 @@ targetSchema.method('getPreviousData', async function () {
       ret += data.value;
     });
   } else if (this.data_type === 'Duration') {
-    ret = await Datas.find({ target: this._id })
-      .sort('-created_at')
-      .limit(1)
-      .exec();
+    ret = await Datas.find({ target: this._id }).sort('-date').limit(1).exec();
 
     ret = ret[0] ? ret[0].value : 'NA';
   } else if (this.data_type === 'Percent Correct') {
@@ -114,7 +109,7 @@ targetSchema.method('getPreviousData', async function () {
           target: this._id
         },
         {
-          created_at: {
+          date: {
             $lt: dayjs().startOf('day').toDate(),
             $gte: dayjs().startOf('day').subtract(1, 'day').toDate()
           }
@@ -143,7 +138,7 @@ targetSchema.method('getCurrentData', async function () {
           target: this._id
         },
         {
-          created_at: {
+          date: {
             $gte: dayjs().startOf('day').toDate()
           }
         }
@@ -164,7 +159,7 @@ targetSchema.method('getCurrentData', async function () {
           target: this._id
         },
         {
-          created_at: {
+          date: {
             $gte: dayjs().startOf('day').toDate()
           }
         }

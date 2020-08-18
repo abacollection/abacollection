@@ -283,7 +283,7 @@ test('GET data(JSON) > frequency', async (t) => {
       factory.create('data', {
         value: 1,
         target,
-        created_at: dayjs().subtract(i, 'day').toDate(),
+        date: dayjs().subtract(i, 'day').toDate(),
         data_type: 'Frequency'
       })
     );
@@ -293,7 +293,7 @@ test('GET data(JSON) > frequency', async (t) => {
     factory.create('data', {
       value: 1,
       target,
-      created_at: dayjs().subtract(1, 'day').toDate(),
+      date: dayjs().subtract(1, 'day').toDate(),
       data_type: 'Frequency'
     })
   );

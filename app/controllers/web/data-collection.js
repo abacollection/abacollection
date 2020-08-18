@@ -38,7 +38,7 @@ async function getUpdates(ctx) {
             target: target._id
           },
           {
-            created_at: {
+            date: {
               $gte: dayjs().startOf('day').toDate()
             }
           }
@@ -74,6 +74,7 @@ async function update(ctx) {
             value: d.value ? d.value : d,
             target: target._id,
             user: ctx.state.user._id,
+            date: new Date(Date.now()),
             data_type: target.data_type
           });
         }
@@ -87,6 +88,7 @@ async function update(ctx) {
         value: targets[target._id].value,
         target: target._id,
         user: ctx.state.user._id,
+        date: new Date(Date.now()),
         data_type: target.data_type
       });
 

@@ -10,7 +10,8 @@ const options = { discriminatorKey: 'data_type' };
 const dataSchema = new mongoose.Schema(
   {
     target: { type: mongoose.Schema.ObjectId, ref: 'Target' },
-    created_by: { type: mongoose.Schema.ObjectId, ref: 'User' }
+    created_by: { type: mongoose.Schema.ObjectId, ref: 'User' },
+    date: { type: Date }
   },
   options
 );
