@@ -185,7 +185,8 @@ async function getData(ctx) {
 
   const yaxisTitles = {
     Frequency: 'Count per Day',
-    'Percent Correct': 'Percent Correct per Day'
+    'Percent Correct': 'Percent Correct per Day',
+    Duration: 'Duration(mins) per Day'
   };
 
   const data = await target.getDailyData();

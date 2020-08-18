@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const mongooseCommonPlugin = require('mongoose-common-plugin');
 const dayjs = require('dayjs');
+const ms = require('ms');
 
 const Datas = require('./data');
 
@@ -86,6 +87,17 @@ targetSchema.method('getDailyData', async function () {
       const percent = ((correct / total) * 100).toFixed(0);
 
       return { x: key, y: Number.parseInt(percent, 10) };
+    });
+  } else if (this.data_type === 'Duration') {
+    datas.forEach((data) => {
+      const date = dayjs(data.date).format('MM/DD/YYYY');
+
+      if (ret[date]) ret[date] += data.value;
+      else ret[date] = data.value;
+    });
+
+    ret = Object.entries(ret).map((r) => {
+      return { x: r[0], y: r[1] / ms('1 min') };
     });
   }
 
