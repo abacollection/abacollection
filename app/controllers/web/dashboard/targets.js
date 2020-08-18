@@ -183,13 +183,19 @@ async function editTarget(ctx) {
 async function getData(ctx) {
   const { target } = ctx.state;
 
+  const yaxisTitles = {
+    Frequency: 'Count per Day',
+    'Percent Correct': 'Percent Correct per Day'
+  };
+
   const data = await target.getDailyData();
 
   ctx.body = {
     series: [{ name: target.name, data }],
     title: target.name,
     xaxisTitle: 'Date',
-    yaxisTitle: 'Count per Day'
+    yaxisTitle: yaxisTitles[target.data_type],
+    yaxisMax: target.data_type === 'Percent Correct' ? 100 : false
   };
 }
 

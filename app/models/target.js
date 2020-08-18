@@ -54,12 +54,11 @@ targetSchema.post('findOneAndRemove', async function () {
 });
 
 targetSchema.method('getDailyData', async function () {
-  let ret;
+  let ret = {};
+
+  const datas = await Datas.find({ target: this._id }).sort('date').exec();
 
   if (this.data_type === 'Frequency') {
-    ret = {};
-    const datas = await Datas.find({ target: this._id }).sort('date').exec();
-
     datas.forEach((data) => {
       const date = dayjs(data.date).format('MM/DD/YYYY');
 
@@ -69,6 +68,24 @@ targetSchema.method('getDailyData', async function () {
 
     ret = Object.entries(ret).map((r) => {
       return { x: r[0], y: r[1] };
+    });
+  } else if (this.data_type === 'Percent Correct') {
+    datas.forEach((data) => {
+      const date = dayjs(data.date).format('MM/DD/YYYY');
+
+      if (ret[date]) ret[date].push(data.value);
+      else ret[date] = [data.value];
+    });
+
+    ret = Object.entries(ret).map((r) => {
+      const [key, value] = r;
+
+      const total = value.length;
+      const correct = value.filter((d) => d === 'correct').length;
+
+      const percent = ((correct / total) * 100).toFixed(0);
+
+      return { x: key, y: Number.parseInt(percent, 10) };
     });
   }
 

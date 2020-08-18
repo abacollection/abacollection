@@ -268,8 +268,8 @@ test('POST targets > modifies name and description', async (t) => {
   t.is(query.description, newTarget.description);
 });
 
-test('GET data(JSON) > frequency', async (t) => {
-  t.plan(12);
+test('GET data(JSON) > frequency > default', async (t) => {
+  t.plan(14);
 
   const { web, client, program } = t.context;
 
@@ -309,9 +309,62 @@ test('GET data(JSON) > frequency', async (t) => {
 
   t.is(res.status, 200);
   t.is(res.body.series[0].data.length, 10);
+  t.is(res.body.xaxisTitle, 'Date');
+  t.is(res.body.yaxisTitle, 'Count per Day');
 
   for (let i = 0; i < 10; i++) {
     const data = res.body.series[0].data[i];
     t.is(data.y, i === 8 ? 2 : 1);
+  }
+});
+
+test('GET data(JSON) > percent correct > default', async (t) => {
+  t.plan(15);
+
+  const { web, client, program } = t.context;
+
+  const target = await factory.create('target', {
+    program,
+    data_type: 'Percent Correct'
+  });
+  const datas = [];
+  for (let i = 0; i < 10; i++) {
+    datas.push(
+      factory.create('data', {
+        value: 'correct',
+        target,
+        date: dayjs().subtract(i, 'day').toDate(),
+        data_type: 'Percent Correct'
+      })
+    );
+  }
+
+  datas.push(
+    factory.create('data', {
+      value: 'incorrect',
+      target,
+      date: dayjs().subtract(1, 'day').toDate(),
+      data_type: 'Percent Correct'
+    })
+  );
+
+  await Promise.all(datas);
+
+  const res = await web
+    .get(
+      `/en/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`
+    )
+    .set('Accept', 'application/json')
+    .send();
+
+  t.is(res.status, 200);
+  t.is(res.body.series[0].data.length, 10);
+  t.is(res.body.xaxisTitle, 'Date');
+  t.is(res.body.yaxisTitle, 'Percent Correct per Day');
+  t.is(res.body.yaxisMax, 100);
+
+  for (let i = 0; i < 10; i++) {
+    const data = res.body.series[0].data[i];
+    t.is(data.y, i === 8 ? 50 : 100);
   }
 });

@@ -61,6 +61,8 @@ $(document).on('click', '#graphTargetBtn', async function (event) {
       }
     };
 
+    if (body.yaxisMax) options.yaxis.max = body.yaxisMax;
+
     graph = new Apex(document.querySelector('#graph'), options);
     // hide spinner
     $spinner.prop('hidden', true);
