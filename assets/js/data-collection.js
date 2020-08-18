@@ -288,9 +288,12 @@ async function getData(res) {
         `Current: ${data.current ? data.current : 'NA'}`
       );
 
-      if (data.data_type === 'Frequency')
-        $(`#${id} .clicker-label`).text(data.current ? data.current : 0);
-      else if (data.data_type === 'Percent Correct') {
+      if (data.data_type === 'Frequency') {
+        data.current = data.current ? data.current : 0;
+        $(`#${id} .clicker-label`).text(data.current);
+
+        $(`#${id} .clicker-minus`).prop('disabled', data.current === 0);
+      } else if (data.data_type === 'Percent Correct') {
         percentCorrect[id] = data.percentCorrect;
         percentCorrect.hash = revHash(
           safeStringify(_.omit(percentCorrect, 'hash'))

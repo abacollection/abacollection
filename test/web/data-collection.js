@@ -158,7 +158,7 @@ test('GET(HTML) collection page > duration', async (t) => {
   const res = await web.get(root);
 
   t.is(res.status, 200);
-  t.true(res.text.includes(`Previous: ${ms('1m')}`));
+  t.true(res.text.includes(`Previous: 1 minute`));
   t.true(res.text.includes('Current: NA'));
 });
 
