@@ -130,7 +130,7 @@ targetSchema.method('getPreviousData', async function () {
   } else if (this.data_type === 'Duration') {
     ret = await Datas.find({ target: this._id }).sort('-date').limit(1).exec();
 
-    ret = ret[0] ? ret[0].value : 'NA';
+    ret = ret[0] ? ms(ret[0].value, { long: true }) : 'NA';
   } else if (this.data_type === 'Percent Correct') {
     ret = await Datas.find({
       $and: [
