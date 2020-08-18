@@ -53,6 +53,30 @@ targetSchema.post('findOneAndRemove', async function () {
   });
 });
 
+targetSchema.method('getDailyData', async function () {
+  let ret;
+
+  if (this.data_type === 'Frequency') {
+    ret = {};
+    const datas = await Datas.find({ target: this._id })
+      .sort('created_at')
+      .exec();
+
+    datas.forEach((data) => {
+      const date = dayjs(data.created_at).format('MM/DD/YYYY');
+
+      if (ret[date]) ret[date] += data.value;
+      else ret[date] = data.value;
+    });
+
+    ret = Object.entries(ret).map((r) => {
+      return { x: r[0], y: r[1] };
+    });
+  }
+
+  return ret;
+});
+
 targetSchema.method('getPreviousData', async function () {
   let ret = 'WIP';
 

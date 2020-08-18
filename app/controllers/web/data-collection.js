@@ -16,8 +16,6 @@ async function retrieveTargets(ctx, next) {
 }
 
 async function getUpdates(ctx) {
-  await retrieveTargets(ctx, () => {});
-
   const body = {};
 
   // get previous data
@@ -98,7 +96,7 @@ async function update(ctx) {
     return target.save();
   });
 
-  await Promise.all(ctx.state.targets);
+  ctx.state.targets = await Promise.all(ctx.state.targets);
 
   await getUpdates(ctx);
 }

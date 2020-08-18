@@ -12,7 +12,7 @@ async function retrieveTargets(ctx, next) {
     $or: [{ program: ctx.state.program._id }]
   };
 
-  ctx.state.targets = await Targets.find(query).sort('name').lean().exec();
+  ctx.state.targets = await Targets.find(query).sort('name').exec();
 
   //
   // set breadcrumb
@@ -180,11 +180,25 @@ async function editTarget(ctx) {
   else ctx.body = { redirectTo };
 }
 
+async function getData(ctx) {
+  const { target } = ctx.state;
+
+  const data = await target.getDailyData();
+
+  ctx.body = {
+    series: [{ name: target.name, data }],
+    title: target.name,
+    xaxisTitle: 'Date',
+    yaxisTitle: 'Count per Day'
+  };
+}
+
 module.exports = {
   retrieveTargets,
   retrieveTarget,
   list,
   addTarget,
   deleteTarget,
-  editTarget
+  editTarget,
+  getData
 };

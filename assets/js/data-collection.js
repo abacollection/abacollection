@@ -296,8 +296,6 @@ async function getData(res) {
           safeStringify(_.omit(percentCorrect, 'hash'))
         );
 
-        console.log('jungle', data);
-
         const $label = $(`#${id} .percent-correct-label`);
         const total = percentCorrect[id].length + 1;
         const trial =

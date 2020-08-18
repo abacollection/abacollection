@@ -1,5 +1,6 @@
 const test = require('ava');
 const { factory } = require('factory-girl');
+const dayjs = require('dayjs');
 
 const config = require('../../../config');
 const { Users, Targets } = require('../../../app/models');
@@ -17,6 +18,7 @@ test.before(utils.defineUserFactory);
 test.before(utils.defineClientFactory);
 test.before(utils.defineProgramFactory);
 test.before(utils.defineTargetFactory);
+test.before(utils.defineDataFactory);
 
 test.after.always(utils.teardownMongoose);
 
@@ -264,4 +266,52 @@ test('POST targets > modifies name and description', async (t) => {
   query = await Targets.findOne({ name: newTarget.name });
   t.is(query.name, newTarget.name);
   t.is(query.description, newTarget.description);
+});
+
+test('GET data(JSON) > frequency', async (t) => {
+  t.plan(12);
+
+  const { web, client, program } = t.context;
+
+  const target = await factory.create('target', {
+    program,
+    data_type: 'Frequency'
+  });
+  const datas = [];
+  for (let i = 0; i < 10; i++) {
+    datas.push(
+      factory.create('data', {
+        value: 1,
+        target,
+        created_at: dayjs().subtract(i, 'day').toDate(),
+        data_type: 'Frequency'
+      })
+    );
+  }
+
+  datas.push(
+    factory.create('data', {
+      value: 1,
+      target,
+      created_at: dayjs().subtract(1, 'day').toDate(),
+      data_type: 'Frequency'
+    })
+  );
+
+  await Promise.all(datas);
+
+  const res = await web
+    .get(
+      `/en/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`
+    )
+    .set('Accept', 'application/json')
+    .send();
+
+  t.is(res.status, 200);
+  t.is(res.body.series[0].data.length, 10);
+
+  for (let i = 0; i < 10; i++) {
+    const data = res.body.series[0].data[i];
+    t.is(data.y, i === 8 ? 2 : 1);
+  }
 });

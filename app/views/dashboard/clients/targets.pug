@@ -9,7 +9,7 @@ block body
     .modal-dialog(role='document')
       .modal-content
         .modal-header.d-block.text-center
-          h5.modal-title= t('Add target')
+          h5.modal-title= t('Add Target')
         form(action=ctx.path, method='POST').ajax-form.mt-3
           input(type='hidden', name='_method', value='PUT')
           input(type='hidden', name='_csrf', value=ctx.csrf)
@@ -40,7 +40,7 @@ block body
     .modal-dialog(role='document')
       .modal-content
         .modal-header.d-block.text-center
-          h5.modal-title= t('Edit Program')
+          h5.modal-title= t('Edit Target')
         form#edit-form(method='POST').ajax-form.confirm-prompt.mt-3
           input(type='hidden', name='_method', value='POST')
           input(type='hidden', name='_csrf', value=ctx.csrf)
@@ -55,6 +55,18 @@ block body
           .modal-footer.text-right
             button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
             button(type='submit').btn.btn-primary= t('Submit')
+  #modal-graph-target(tabindex='-1', role='dialog').modal.fade
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header.d-block.text-center
+          h5.modal-title#graph-title= t('Target Graph')
+        .modal-body
+          .text-center#graphSpinner
+            .spinner-border.text-seconday(role='status')
+              span.sr-only= t('Loading..')
+          #graph
+        .modal-footer.text-right
+          button(type='button', data-dismiss='modal', aria-label=t('Close')).btn.btn-secondary= t('Close')
   .container-fluid.py-3
     .row.mt-1
       .col
@@ -68,16 +80,20 @@ block body
                 tr
                   th(scope='col')= t('Name')
                   th(scope='col')= t('Description')
+                  th(scope='col')= t('Data Type')
                   th(scope='col')= t('Actions')
                 tbody
                   each target in targets
                     tr
                       td.align-middle= t(target.name)
                       td.align-middle= t(target.description)
+                      td.align-middle= t(target.data_type)
                       td.align-middle
                         .btn-group(role='group', aria-label=t('Actions'))
-                          #editTargetBtn(data-toggle='modal', data-target='#modal-edit-target', data-id=target.id, data-name=t(target.name), data-description=t(target.description)).btn.btn-secondary
+                          button#editTargetBtn(data-toggle='modal', data-target='#modal-edit-target', data-id=target.id, data-name=t(target.name), data-description=t(target.description)).btn.btn-secondary
                             a(data-toggle='tooltip',  data-title=t('Edit')): i.fa.fa-fw.fa-edit
+                          button#graphTargetBtn(data-toggle='modal', data-target='#modal-graph-target', data-id=target.id, data-name=t(target.name)).btn.btn-secondary
+                            a(data-toggle='tooltip', data-title=t('Graph')): i.fa.fa-fw.fa-chart-line
                           form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`), method="POST", autocomplete="off")
                             input(type='hidden', name='_csrf', value=ctx.csrf)
                             input(type='hidden', name='_method', value='DELETE')
