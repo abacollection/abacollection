@@ -56,14 +56,14 @@ block body
             button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
             button(type='submit').btn.btn-primary= t('Submit')
   #modal-graph-target(tabindex='-1', role='dialog').modal.fade
-    .modal-dialog(role='document')
+    .modal-dialog.modal-lg(role='document')
       .modal-content
         .modal-header.d-block.text-center
           h5.modal-title#graph-title= t('Target Graph')
         .modal-body
           .text-center#graphSpinner
             .spinner-border.text-seconday(role='status')
-              span.sr-only= t('Loading..')
+              span.sr-only= t('Loading...')
           #graph
         .modal-footer.text-right
           button(type='button', data-dismiss='modal', aria-label=t('Close')).btn.btn-secondary= t('Close')
