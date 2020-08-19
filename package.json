@@ -241,6 +241,9 @@
   },
   "private": true,
   "release-it": {
+    "npm": {
+      "publish": false
+    },
     "git": {
       "commitMessage": "v${version}"
     },
