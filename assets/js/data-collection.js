@@ -22,13 +22,8 @@ $('.clicker-plus').click(function () {
   const $parent = $(this).parents('.clicker');
   const $label = $parent.find('.clicker-label');
   const val = Number.parseInt($label.text(), 10);
-  const id = $(this).parents('.card').prop('id');
 
   $label.text(val + 1);
-
-  // add to targets data
-  if (targets[id]) targets[id].value++;
-  else targets[id] = { value: 1 };
 
   if (val === 0) $label.next().prop('disabled', false);
 });
@@ -38,14 +33,11 @@ $('.clicker-minus').click(function () {
   const $parent = $(this).parents('.clicker');
   const $label = $parent.find('.clicker-label');
   const val = Number.parseInt($label.text(), 10);
-  const id = $(this).parents('.card').prop('id');
 
   if (val <= 1) {
     $label.text(0);
     $(this).prop('disabled', true);
   } else $label.text(val - 1);
-
-  targets[id].value--;
 });
 
 //
@@ -291,6 +283,7 @@ async function getData(res) {
       if (data.data_type === 'Frequency') {
         data.current = data.current ? data.current : 0;
         $(`#${id} .clicker-label`).text(data.current);
+        $(`#${id} .clicker-label`).data('value', data.current);
 
         $(`#${id} .clicker-minus`).prop('disabled', data.current === 0);
       } else if (data.data_type === 'Percent Correct') {
@@ -336,6 +329,7 @@ async function getData(res) {
 //
 async function postData() {
   try {
+    // add percent correct data to target
     if (updatePC) {
       Object.entries(_.omit(percentCorrect, 'hash')).forEach((entry) => {
         const [id, data] = entry;
@@ -346,12 +340,17 @@ async function postData() {
       updatePC = false;
     }
 
-    // return early if there has been no changes
-    if (_.isEmpty(targets)) {
-      await getData();
+    // add frequency data
+    $('.frequency .clicker-label').each(function () {
+      const id = $(this).parents('.card').prop('id');
+      const prevValue = Number.parseInt($(this).data('value'), 10);
+      const value = Number.parseInt($(this).text(), 10) - prevValue;
 
-      return;
-    }
+      if (value !== 0) targets[id] = { value };
+    });
+
+    // return early if there has been no changes
+    if (_.isEmpty(targets)) return getData();
 
     const res = await superagent
       .post(window.location.pathname)

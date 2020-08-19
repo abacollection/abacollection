@@ -4,7 +4,7 @@ extends ../layout
 mixin clicker(target)
   .btn-group.clicker
     button.btn.clicker-plus: i.fas.fa-plus
-    .my-auto.px-3.font-weight-bold.clicker-label 0
+    .my-auto.px-3.font-weight-bold.clicker-label(data-value='0') 0
     button.btn.clicker-minus(disabled): i.fas.fa-minus
 
 append scripts
