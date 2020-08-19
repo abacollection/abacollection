@@ -68,7 +68,7 @@ targetSchema.method('getDailyData', async function () {
     });
 
     ret = Object.entries(ret).map((r) => {
-      return { x: r[0], y: r[1] };
+      return { x: r[0], y: r[1].toFixed(0) };
     });
   } else if (this.data_type === 'Percent Correct') {
     datas.forEach((data) => {
