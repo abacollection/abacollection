@@ -179,6 +179,22 @@ targetSchema.method('getPreviousData', async function () {
     const percent = ((correct / total) * 100).toFixed(0);
 
     ret = `${percent === 'NaN' ? 'NA' : percent}%`;
+  } else if (this.data_type === 'Rate') {
+    ret = await Datas.find({ target: this._id }).sort('-date').limit(1).exec();
+
+    if (ret[0]) {
+      const counting_time = ret[0].value.counting_time / ms('1m');
+      const correct = Number.parseInt(
+        (ret[0].value.correct / counting_time).toFixed(3),
+        10
+      );
+      const incorrect = Number.parseInt(
+        (ret[0].value.incorrect / counting_time).toFixed(3),
+        10
+      );
+
+      ret = `${correct} correct, ${incorrect} incorrect(/min)`;
+    } else ret = 'NA';
   }
 
   return ret;
@@ -228,6 +244,8 @@ targetSchema.method('getCurrentData', async function () {
     const percent = ((correct / total) * 100).toFixed(0);
 
     ret = `${percent === 'NaN' ? 'NA' : percent}%`;
+  } else if (this.data_type === 'Rate') {
+    ret = 'NA';
   }
 
   return ret;

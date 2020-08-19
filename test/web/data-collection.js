@@ -205,6 +205,65 @@ test('GET(HTML) collection page > percent correct', async (t) => {
   t.true(res.text.includes('Current: 0%'));
 });
 
+test('GET(HTML) collection page > rate', async (t) => {
+  const { web, root, programs } = t.context;
+  const program = programs[0];
+
+  // setup frequency target with data from yesterday
+  const rate = await factory.create('target', {
+    program,
+    data_type: 'Rate'
+  });
+  await factory.createMany('data', [
+    {
+      value: {
+        correct: 1,
+        incorrect: 3,
+        counting_time: ms('1m')
+      },
+      target: rate,
+      data_type: 'Rate',
+      date: dayjs().subtract(2, 'day').toDate()
+    },
+    {
+      value: {
+        correct: 3,
+        incorrect: 1,
+        counting_time: ms('1m')
+      },
+      target: rate,
+      data_type: 'Rate',
+      date: dayjs().subtract(1, 'day').toDate()
+    },
+    {
+      value: {
+        correct: 6,
+        incorrect: 1,
+        counting_time: ms('1m')
+      },
+      target: rate,
+      data_type: 'Rate',
+      date: dayjs().subtract(1, 'day').toDate()
+    },
+    {
+      value: {
+        correct: 12,
+        incorrect: 4,
+        counting_time: ms('1m')
+      },
+      target: rate,
+      data_type: 'Rate',
+      date: dayjs().toDate()
+    }
+  ]);
+
+  const res = await web.get(root);
+
+  t.is(res.status, 200);
+  t.true(res.text.includes('Previous: 12 correct, 4 incorrect(/min)'));
+  t.true(res.text.includes('Current: NA'));
+});
+
 test('POST collection page > frequency > adds data', async (t) => {
   const { web, root, programs } = t.context;
   const program = programs[0];
