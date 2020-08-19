@@ -1,11 +1,27 @@
 
 extends ../layout
 
-mixin clicker(target)
-  .btn-group.clicker
+mixin clicker(extraClasses)
+  .btn-group.clicker(class=extraClasses)
     button.btn.clicker-plus: i.fas.fa-plus
     .my-auto.px-3.font-weight-bold.clicker-label(data-value='0') 0
     button.btn.clicker-minus(disabled): i.fas.fa-minus
+
+mixin timer(saveModifier)
+  .row.justify-content-center.timer
+    .col-auto
+      .timer-hour 0
+    .col-auto.border-right.border-left
+      .timer-minute 0
+    .col-auto
+      .timer-second 0
+    .w-100
+    .col.text-center
+      .btn-group
+        button.btn.timer-play: i.fas.fa-play
+        button.btn.timer-pause(disabled): i.fas.fa-pause
+        button.btn.timer-reset(disabled): i.fas.fa-sync-alt
+        button.btn.timer-save(disabled): i.fas.fa-save
 
 append scripts
   script(defer, src=manifest('js/data-collection.js'), integrity=manifest('js/data-collection.js', 'integrity'), crossorigin='anonymous')
@@ -32,22 +48,10 @@ block body
                 when 'Frequency'
                   .row.text-center.frequency
                     .col
-                      +clicker(target)
+                      +clicker()
                 when 'Duration'
-                  .row.justify-content-center.timer
-                    .col-auto
-                      .timer-hour 0
-                    .col-auto.border-right.border-left
-                      .timer-minute 0
-                    .col-auto
-                      .timer-second 0
-                    .w-100
-                    .col.text-center
-                      .btn-group
-                        button.btn.timer-play: i.fas.fa-play
-                        button.btn.timer-pause(disabled): i.fas.fa-pause
-                        button.btn.timer-reset(disabled): i.fas.fa-sync-alt
-                        button.btn.timer-save(disabled): i.fas.fa-save
+                  .row.duration
+                    +timer('duration')
                 when 'Percent Correct'
                   .row.percent-correct
                     .col

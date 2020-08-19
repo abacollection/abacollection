@@ -97,13 +97,14 @@ $('.timer-pause').click(function () {
 });
 
 // reset button
-function resetTimer() {
+function resetTimer(elem) {
   // get timer selectors
-  const $timer = $(this).parents('.timer');
+  const $this = elem ? elem : $(this);
+  const $timer = $this.parents('.timer');
   const $hour = $timer.find('.timer-hour');
   const $minute = $timer.find('.timer-minute');
   const $second = $timer.find('.timer-second');
-  const id = $(this).parents('.card').prop('id');
+  const id = $this.parents('.card').prop('id');
 
   $hour.text(0);
   $minute.text(0);
@@ -111,14 +112,14 @@ function resetTimer() {
 
   timers[id] = undefined;
 
-  $(this).prop('disabled', true);
+  $this.prop('disabled', true);
   $timer.find('.timer-save').prop('disabled', true);
 }
 
 $('.timer-reset').click(resetTimer);
 
-// save button
-$('.timer-save').click(function () {
+// save duration button
+$('.duration .timer-save').click(function () {
   // get timer selectors
   const $timer = $(this).parents('.timer');
   const $hour = $timer.find('.timer-hour');
@@ -133,7 +134,7 @@ $('.timer-save').click(function () {
   if (targets[id]) targets[id].push({ value });
   else targets[id] = [{ value }];
 
-  resetTimer();
+  resetTimer($timer.find('.timer-reset'));
 });
 
 //
