@@ -97,7 +97,7 @@ targetSchema.method('getDailyData', async function () {
     });
 
     ret = Object.entries(ret).map((r) => {
-      return { x: r[0], y: r[1] / ms('1 min') };
+      return { x: r[0], y: (r[1] / ms('1 min')).toFixed(0) };
     });
   } else if (this.data_type === 'Rate') {
     datas.forEach((data) => {
