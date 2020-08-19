@@ -25,7 +25,7 @@ const Data = mongoose.model('Data', dataSchema);
 //
 const frequencySchema = new mongoose.Schema(
   {
-    value: { type: Number }
+    value: { type: Number, required: true }
   },
   options
 );
@@ -37,7 +37,7 @@ Data.discriminator('Frequency', frequencySchema);
 //
 const durationSchema = new mongoose.Schema(
   {
-    value: { type: Number } // value is in milliseconds
+    value: { type: Number, required: true } // value is in milliseconds
   },
   options
 );
@@ -49,7 +49,7 @@ Data.discriminator('Duration', durationSchema);
 //
 const percentCorrectSchema = new mongoose.Schema(
   {
-    value: { type: String }
+    value: { type: String, required: true }
   },
   options
 );
@@ -62,9 +62,9 @@ Data.discriminator('Percent Correct', percentCorrectSchema);
 const rateSchema = new mongoose.Schema(
   {
     value: {
-      correct: { type: Number },
-      incorrect: { type: Number },
-      counting_time: { type: Number } // in milliseconds
+      correct: { type: Number, required: true },
+      incorrect: { type: Number, required: true },
+      counting_time: { type: Number, required: true } // in milliseconds
     }
   },
   options
