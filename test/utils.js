@@ -25,6 +25,7 @@ exports.setupMongoose = async () => {
 
 exports.setupWebServer = async (t) => {
   // must require here in order to load changes made during setup
+  process.env.WEB_RATELIMIT_MAX = 200;
   const { app } = require('../web');
   const port = await getPort();
   t.context.web = request.agent(app.listen(port));
