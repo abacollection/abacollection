@@ -62,9 +62,21 @@ block body
           h5.modal-title#graph-title= t('Target Graph')
         .modal-body
           .text-center#graphSpinner
-            .spinner-border.text-seconday(role='status')
+            .spinner-border.text-secondary(role='status')
               span.sr-only= t('Loading...')
           #graph
+        .modal-footer.text-right
+          button(type='button', data-dismiss='modal', aria-label=t('Close')).btn.btn-secondary= t('Close')
+  #modal-data-target(tabindex='-1', role='dialog').modal.fade
+    .modal-dialog.modal-lg(role='document')
+      .modal-content
+        .modal-header.d-block.text-center
+          h5.modal-title#data-title= t('Target Data')
+        .modal-body
+          .text-center#dataSpinner
+            .spinner-border.text-secondary(role='status')
+              span.sr-only= t('Loading...')
+          #data
         .modal-footer.text-right
           button(type='button', data-dismiss='modal', aria-label=t('Close')).btn.btn-secondary= t('Close')
   .container-fluid.py-3
@@ -94,6 +106,8 @@ block body
                             a(data-toggle='tooltip',  data-title=t('Edit')): i.fa.fa-fw.fa-edit
                           button#graphTargetBtn(data-toggle='modal', data-target='#modal-graph-target', data-id=target.id, data-name=t(target.name)).btn.btn-secondary
                             a(data-toggle='tooltip', data-title=t('Graph')): i.fa.fa-fw.fa-chart-line
+                          button#dataTargetBtn(data-toggle='modal', data-target='#modal-data-target', data-id=target.id, data-name=t(target.name)).btn.btn-secondary
+                            a(data-toggle='tooltip', data-title=t('Data')): i.fa.fa-fw.fa-list
                           form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`), method="POST", autocomplete="off")
                             input(type='hidden', name='_csrf', value=ctx.csrf)
                             input(type='hidden', name='_method', value='DELETE')

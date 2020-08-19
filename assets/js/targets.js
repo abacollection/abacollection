@@ -72,6 +72,32 @@ $(document).on('click', '#graphTargetBtn', async function (event) {
   }
 });
 
+$(document).on('click', '#dataTargetBtn', async function (event) {
+  try {
+    event.preventDefault();
+
+    const $modal = $('#modal-data-target');
+    const $spinner = $('#dataSpinner');
+
+    const id = $(this).data('id');
+    const name = $(this).data('name');
+
+    $('#data-title').text(name);
+
+    $modal.modal('show');
+
+    const res = await superagent
+      .get(`${window.location.pathname}/${id}`)
+      .retry(3)
+      .send();
+
+    $spinner.prop('hidden', true);
+    $('#data').html(res.text);
+  } catch (err) {
+    logger.error(err);
+  }
+});
+
 $('#modal-graph-target').on('hidden.bs.modal', function () {
   if (graph) {
     graph.destroy();
@@ -85,4 +111,9 @@ $('#modal-graph-target').on('hidden.bs.modal', function () {
 
 $('#modal-edit-target').on('hidden.bs.modal', function () {
   $(this).find('form').trigger('reset');
+});
+
+$('#modal-data-target').on('hidden.bs.modal', function () {
+  $('#data').empty();
+  $('#dataSpinner').prop('hidden', false);
 });

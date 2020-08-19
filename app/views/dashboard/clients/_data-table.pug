@@ -1,0 +1,25 @@
+
+.row.mt-1
+  .col
+    if data.length === 0
+      .aler.alert-info= t('No data exists yet.')
+    else
+      .table-responsive
+        table.table.table-hover.table-bordered
+          thead.thead-dark
+            tr
+              th(scope='col')= t('Date')
+              if data_type === 'Rate'
+                th(scope='col')= t('Correct')
+                th(scope='col')= t('Incorrect')
+              else
+                th(scope='col')= t('Data')
+            tbody
+              each d in data
+                tr
+                  td.align-middle= d.x
+                  if data_type === 'Rate'
+                    td.align-middle= d.correct
+                    td.align-middle= d.incorrect
+                  else
+                    td.align-middle= d.y

@@ -184,13 +184,19 @@ async function getData(ctx) {
   const { target } = ctx.state;
 
   const yaxisTitles = {
-    Frequency: 'Count per Day',
-    'Percent Correct': 'Percent Correct per Day',
-    Duration: 'Duration(mins) per Day',
-    Rate: 'Count per Minute (first)'
+    Frequency: ctx.state.t('Count per Day'),
+    'Percent Correct': ctx.state.t('Percent Correct per Day'),
+    Duration: ctx.state.t('Duration(mins) per Day'),
+    Rate: ctx.state.t('Count per Minute (first)')
   };
 
   const data = await target.getDailyData();
+
+  if (ctx.accepts('html'))
+    return ctx.render('dashboard/clients/_data-table', {
+      data,
+      data_type: target.data_type
+    });
 
   let series = [];
 
@@ -216,7 +222,7 @@ async function getData(ctx) {
   ctx.body = {
     series,
     title: target.name,
-    xaxisTitle: 'Date',
+    xaxisTitle: ctx.state.t('Date'),
     yaxisTitle: yaxisTitles[target.data_type],
     yaxisMax: target.data_type === 'Percent Correct' ? 100 : false
   };
