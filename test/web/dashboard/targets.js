@@ -419,3 +419,62 @@ test('GET data(JSON) > duration > default', async (t) => {
     t.is(data.y, i === 8 ? 2 : 1);
   }
 });
+
+test('GET data(JSON) > rate > default', async (t) => {
+  t.plan(28);
+
+  const { web, client, program } = t.context;
+
+  const target = await factory.create('target', {
+    program,
+    data_type: 'Rate'
+  });
+  const datas = [];
+  for (let i = 0; i < 10; i++) {
+    datas.push(
+      factory.create('data', {
+        value: { correct: 1, incorrect: 1, counting_time: ms('1m') },
+        target,
+        date: dayjs().subtract(i, 'day').toDate(),
+        data_type: 'Rate'
+      })
+    );
+  }
+
+  datas.push(
+    factory.create('data', {
+      value: { correct: 2, incorrect: 2, counting_time: ms('1m') },
+      target,
+      date: dayjs().subtract(1, 'day').toDate(),
+      data_type: 'Rate'
+    })
+  );
+
+  await Promise.all(datas);
+
+  const res = await web
+    .get(
+      `/en/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`
+    )
+    .set('Accept', 'application/json')
+    .send();
+
+  t.is(res.status, 200);
+  t.is(res.body.series.length, 2);
+  t.is(res.body.series[0].data.length, 10);
+  t.is(res.body.series[1].data.length, 10);
+  t.is(res.body.xaxisTitle, 'Date');
+  t.is(res.body.yaxisTitle, 'Count per Minute (first)');
+
+  // check that series was named
+  t.is(res.body.series[0].name, 'Correct');
+  t.is(res.body.series[1].name, 'Incorrect');
+
+  for (let i = 0; i < 10; i++) {
+    let data = res.body.series[0].data[i];
+    t.is(data.y, 1);
+
+    data = res.body.series[1].data[i];
+    t.is(data.y, 1);
+  }
+});

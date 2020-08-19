@@ -99,6 +99,33 @@ targetSchema.method('getDailyData', async function () {
     ret = Object.entries(ret).map((r) => {
       return { x: r[0], y: r[1] / ms('1 min') };
     });
+  } else if (this.data_type === 'Rate') {
+    datas.forEach((data) => {
+      const date = dayjs(data.date).format('MM/DD/YYYY');
+
+      if (!ret[date]) {
+        const { value } = data;
+        const counting_time = value.counting_time / ms('1m');
+        const correct = Number.parseInt(
+          (value.correct / counting_time).toFixed(3),
+          10
+        );
+        const incorrect = Number.parseInt(
+          (value.incorrect / counting_time).toFixed(3),
+          10
+        );
+
+        ret[date] = { correct, incorrect };
+      }
+    });
+
+    ret = Object.entries(ret).map((r) => {
+      return {
+        x: r[0],
+        correct: r[1].correct,
+        incorrect: r[1].incorrect
+      };
+    });
   }
 
   return ret;
