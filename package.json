@@ -247,9 +247,6 @@
     "github": {
       "release": true
     },
-    "hooks": {
-      "before:git:release": "nps testUpdateSnapshots"
-    },
     "plugins": {
       "@release-it/conventional-changelog": {
         "preset": "angular"
