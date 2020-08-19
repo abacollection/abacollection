@@ -7,7 +7,7 @@ mixin clicker(extraClasses)
     .my-auto.px-3.font-weight-bold.clicker-label(data-value='0') 0
     button.btn.clicker-minus(disabled): i.fas.fa-minus
 
-mixin timer(saveModifier)
+mixin timer()
   .row.justify-content-center.timer
     .col-auto
       .timer-hour 0
@@ -51,7 +51,7 @@ block body
                       +clicker()
                 when 'Duration'
                   .row.duration
-                    +timer('duration')
+                    +timer()
                 when 'Percent Correct'
                   .row.percent-correct
                     .col
@@ -65,6 +65,24 @@ block body
                           include ./_percent-correct
                     .col
                       button.btn.percent-correct-next(disabled): i.fas.fa-chevron-right
+                when 'Rate'
+                  .row.rate
+                    .row.border-bottom
+                      .col.correct
+                        .row.text-center
+                          .col
+                            = t('Correct')
+                        .row
+                          .col
+                            +clicker()
+                      .col.incorrect
+                        .row.text-center
+                          .col
+                            = t('Incorrect')
+                        .row
+                          .col
+                            +clicker()
+                    +timer()
                 default
                   = t(`${target.data_type} not implemented yet.`)
             .card-footer

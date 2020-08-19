@@ -97,9 +97,8 @@ $('.timer-pause').click(function () {
 });
 
 // reset button
-function resetTimer(elem) {
+function resetTimer($this) {
   // get timer selectors
-  const $this = elem ? elem : $(this);
   const $timer = $this.parents('.timer');
   const $hour = $timer.find('.timer-hour');
   const $minute = $timer.find('.timer-minute');
@@ -116,7 +115,9 @@ function resetTimer(elem) {
   $timer.find('.timer-save').prop('disabled', true);
 }
 
-$('.timer-reset').click(resetTimer);
+$('.timer-reset').click(function () {
+  resetTimer($(this));
+});
 
 // save duration button
 $('.duration .timer-save').click(function () {
@@ -251,6 +252,42 @@ $('.percent-correct-next').click(function () {
   // if trial does not equal 1 enable previous button
   if (trial !== 1)
     $parent.find('.percent-correct-previous').prop('disabled', false);
+});
+
+//
+// handle rate
+//
+// save rate button
+$('.rate .timer-save').click(function () {
+  const value = {};
+  // get selectors
+  const $parent = $(this).parents('.rate');
+  const $correctLabel = $parent.find('.correct .clicker-label');
+  const $incorrectLabel = $parent.find('.incorrect .clicker-label');
+  const $hour = $parent.find('.timer-hour');
+  const $minute = $parent.find('.timer-minute');
+  const $second = $parent.find('.timer-second');
+  const id = $(this).parents('.card').prop('id');
+
+  // correct data
+  value.correct = Number.parseInt($correctLabel.text(), 10);
+  $correctLabel.text(0);
+  $parent.find('.correct .clicker-minus').prop('disabled', true);
+
+  // incorrect data
+  value.incorrect = Number.parseInt($incorrectLabel.text(), 10);
+  $incorrectLabel.text(0);
+  $parent.find('.incorrect .clicker-minus').prop('disabled', true);
+
+  // timer
+  value.counting_time =
+    ms(`${$hour.text()}h`) +
+    ms(`${$minute.text()}m`) +
+    ms(`${$second.text()}s`);
+  resetTimer($parent.find('.timer-reset'));
+
+  if (targets[id]) targets[id].push({ value });
+  else targets[id] = [{ value }];
 });
 
 //
