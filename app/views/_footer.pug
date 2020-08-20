@@ -18,7 +18,7 @@ footer.mt-auto
             ul.list-unstyled.d-inline-block.mb-0.align-middle
               li.text-muted!= `&copy; ${config.appName}`
               if config.env !== 'test'
-               li.text-muted!= `${t('Current version:')} v${config.pkg.version}`
+                li.text-muted!= `${t('Current version:')} v${config.pkg.version}`
         hr.d-md-none
         .flex-wrap.flex-fill
           h5.mb-2= t('Resources')
