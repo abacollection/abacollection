@@ -24,8 +24,7 @@ const clientRouter = new Router({ prefix: '/clients/:client_id' });
 clientRouter.use(web.dashboard.clients.retrieveClient);
 
 clientRouter.get('/', render('dashboard/clients/overview'));
-clientRouter.get('/settings', render('dashboard/clients/settings'));
-clientRouter.post('/settings', web.dashboard.clients.settings);
+clientRouter.post('/', web.dashboard.clients.settings);
 clientRouter.delete(
   '/',
   web.dashboard.clients.ensureAdmin,
