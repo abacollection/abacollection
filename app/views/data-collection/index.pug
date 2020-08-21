@@ -37,12 +37,22 @@ block body
         .col-xs-12.col-sm-6.col-md-4.mb-3
           .card.h-100(id=target.id)
             .card-header
-              h6.card-subtitle.text-muted.small
-                = t(target.program.name)
-              h5.card-title
-                = t(target.name)
-              h6.card-subtitle.text-muted
-                = t('Phase')
+              .row
+                .col
+                  h6.card-subtitle.text-muted.small
+                    = t(target.program.name)
+                  h5.card-title
+                    = t(target.name)
+                  h6.card-subtitle.text-muted
+                    = t('Phase')
+                .col.ml-auto.text-right
+                  h6.card-subtitle.small
+                    a.btn.p-0.mt-n1
+                      i.fa.fa-fas.fa-ellipsis-h
+                  p.previous-data.text-muted.small.mb-0
+                    = t(`Previous: ${previous[target._id] ? previous[target._id] : 'NA'}`)
+                  p.current-data.text-muted.small.mb-0
+                    = t(`Current: ${current[target._id] ? current[target._id]: 'NA'}`)
             .card-body
               case target.data_type
                 when 'Frequency'
@@ -85,8 +95,3 @@ block body
                     +timer()
                 default
                   = t(`${target.data_type} not implemented yet.`)
-            .card-footer
-              p.previous-data.text-muted.small.mb-0
-                = t(`Previous: ${previous[target._id] ? previous[target._id] : 'NA'}`)
-              p.current-data.text-muted.small.mb-0
-                = t(`Current: ${current[target._id] ? current[target._id]: 'NA'}`)
