@@ -1,11 +1,25 @@
 const $ = require('jquery');
 
-$(document).on('click', '#editProgramBtn', function () {
-  const id = $(this).data('id');
-  const name = $(this).data('name');
-  const description = $(this).data('description');
+$(document).on('click', '#addBtn', function () {
+  $('#addForm').prop('hidden', false);
+});
 
-  $('#edit-form').prop('action', `${window.location.pathname}/${id}`);
-  $('#edit-input-name').prop('value', name);
-  $('#edit-input-description').prop('value', description);
+$(document).on('click', '#cancelAddBtn', function () {
+  $('#addForm').prop('hidden', true);
+});
+
+$(document).on('click', '.edit-btn', function () {
+  const $parent = $(this).parents('tr');
+  const id = $parent.prop('id');
+
+  $parent.prop('hidden', true);
+  $(`.edit-form#${id}-form`).prop('hidden', false);
+});
+
+$(document).on('click', '.edit-cancel-btn', function () {
+  const $parent = $(this).parents('tr');
+  const id = $parent.prop('id').replace('-form', '');
+
+  $parent.prop('hidden', true);
+  $(`tr#${id}`).prop('hidden', false);
 });
