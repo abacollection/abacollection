@@ -14,16 +14,3 @@ nav(aria-label='breadcrumb')
       = _.isObject(breadcrumbs[breadcrumbs.length - 1]) ? breadcrumbs[breadcrumbs.length - 1].header || breadcrumbs[breadcrumbs.length - 1].name : t(titleize(humanize(breadcrumbs[breadcrumbs.length - 1])))
     else
       = _.isObject(breadcrumbs[0]) ? breadcrumbs[0].header || breadcrumbs[0].name : t(titleize(humanize(breadcrumbs[0])))
-  .flex-grow-1.ml-md-5.d-md-flex.align-items-center.justify-content-md-end.justify-content-center.mt-3.mt-md-0
-    ul.list-inline.mb-0
-      li.list-inline-item
-        if client && ctx.pathWithoutLocale === `/dashboard/clients/${client.id}/programs`
-          a(data-toggle='modal', data-target='#modal-add-program', role='button').btn.btn-secondary.text-light.text-uppercase.font-weight-bold
-            = t('Add Program')
-            = ' '
-            i.fa.fa-angle-double-right
-        else if client && program && ctx.pathWithoutLocale === `/dashboard/clients/${client.id}/programs/${program.id}/targets`
-          a(data-toggle='modal', data-target='#modal-add-target', role='button').btn.btn-secondary.text-light.text-uppercase.font-weight-bold
-            = t('Add Target')
-            = ' '
-            i.fa.fa-angle-double-right
