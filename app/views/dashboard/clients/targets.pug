@@ -5,56 +5,6 @@ append scripts
   script(defer, src=manifest('js/targets.js'), integrity=manifest('js/targets.js', 'integrity'), crossorigin='anonymous')
 
 block body
-  #modal-add-target(tabindex='-1', role='dialog').modal.fade
-    .modal-dialog(role='document')
-      .modal-content
-        .modal-header.d-block.text-center
-          h5.modal-title= t('Add Target')
-        form(action=ctx.path, method='POST').ajax-form.mt-3
-          input(type='hidden', name='_method', value='PUT')
-          input(type='hidden', name='_csrf', value=ctx.csrf)
-          input(type='hidden', name='add_target', value='true')
-          .modal-body
-            .form-group.floating-label
-              input#input-name(type='text', name='name', required, placeholder=" ").form-control
-              label(for='input-name')= t('Name')
-            .form-group.floating-label
-              input#input-description(type='text', name='description', placeholder=" ").form-control
-              label(for='input-description')= t('Description')
-            .form-group.floating-label
-              select#input-data_type(name='data_type').form-control
-                option(value='')= t('-- Select --')
-                option(value='Frequency')= t('Frequency')
-                option(value='Rate')= t('Rate')
-                option(value='Duration')= t('Duration')
-                option(value='Percent Correct')= t('Percent Correct')
-                option(value='Task Analysis')= t('Task Analysis')
-                option(value='Momentary Time Sampling')= t('Momentary Time Sampling')
-                option(value='Whole Interval')= t('Whole Interval')
-                option(value='Partial Interval')= t('Partial Interval')
-              label(for='data_type')= t('Data Type')
-          .modal-footer.text-right
-            button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
-            button(type='submit').btn.btn-primary= t('Submit')
-  #modal-edit-target(tabindex='-1', role='dialog').modal.fade
-    .modal-dialog(role='document')
-      .modal-content
-        .modal-header.d-block.text-center
-          h5.modal-title= t('Edit Target')
-        form#edit-form(method='POST').ajax-form.confirm-prompt.mt-3
-          input(type='hidden', name='_method', value='POST')
-          input(type='hidden', name='_csrf', value=ctx.csrf)
-          input(type='hidden', name='edit_program', value='true')
-          .modal-body
-            .form-group.floating-label
-              input#edit-input-name(type='text', name='name', required, placeholder=" ").form-control
-              label(for='input-name')= t('Name')
-            .form-group.floating-label
-              input#edit-input-description(type='text', name='description', placeholder=" ").form-control
-              label(for='input-description')= t('Description')
-          .modal-footer.text-right
-            button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
-            button(type='submit').btn.btn-primary= t('Submit')
   #modal-graph-target(tabindex='-1', role='dialog').modal.fade
     .modal-dialog.modal-lg(role='document')
       .modal-content
@@ -79,6 +29,8 @@ block body
           #data
         .modal-footer.text-right
           button(type='button', data-dismiss='modal', aria-label=t('Close')).btn.btn-secondary= t('Close')
+  form#add(action=ctx.path, method='PUT').ajax-form
+  form#edit(method='POST').ajax-form.confirm-prompt
   .container-fluid.py-3
     .row.mt-1
       .col
@@ -98,29 +50,28 @@ block body
                     a#addBtn(type='button', data-toggle='tooltip', data-title=t('Add'), aria-label=t('Add')).btn.btn-success.btn-sm.float-right: i.fas.fa-plus
                 tbody
                   tr#addForm(hidden)
-                    form(action=ctx.path, method='POST').ajax-form
-                      input(type='hidden', name='_method', value='PUT')
-                      input(type='hidden', name='_csrf', value=ctx.csrf)
-                      input(type='hidden', name='add_target', value='true')
-                      td.align-middle
-                        input#input-name(type='text', name='name', required, placeholder=t('Name')).form-control
-                      td.align-middle
-                        input#input-description(type='text', name='description', placeholder=t('Description')).form-control
-                      td.align-middle
-                        select#input-data_type(name='data_type').form-control
-                          option(value='')= t('-- Select --')
-                          option(value='Frequency')= t('Frequency')
-                          option(value='Rate')= t('Rate')
-                          option(value='Duration')= t('Duration')
-                          option(value='Percent Correct')= t('Percent Correct')
-                          option(value='Task Analysis')= t('Task Analysis')
-                          option(value='Momentary Time Sampling')= t('Momentary Time Sampling')
-                          option(value='Whole Interval')= t('Whole Interval')
-                          option(value='Partial Interval')= t('Partial Interval')
-                      td.align-middle
-                        .btn-group(role='group', aria-label=t('Actions'))
-                          button(type='submit').btn.btn-success: i.fa.fa-fw.fa-check
-                          button#cancelAddBtn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
+                    input(type='hidden', name='_method', value='PUT', form='add')
+                    input(type='hidden', name='_csrf', value=ctx.csrf, form='add')
+                    input(type='hidden', name='add_target', value='true', form='add')
+                    td.align-middle
+                      input#input-name(type='text', name='name', required, placeholder=t('Name'), form='add').form-control
+                    td.align-middle
+                      input#input-description(type='text', name='description', placeholder=t('Description'), form='add').form-control
+                    td.align-middle
+                      select#input-data_type(name='data_type', form='add').form-control
+                        option(value='')= t('-- Select --')
+                        option(value='Frequency')= t('Frequency')
+                        option(value='Rate')= t('Rate')
+                        option(value='Duration')= t('Duration')
+                        option(value='Percent Correct')= t('Percent Correct')
+                        option(value='Task Analysis')= t('Task Analysis')
+                        option(value='Momentary Time Sampling')= t('Momentary Time Sampling')
+                        option(value='Whole Interval')= t('Whole Interval')
+                        option(value='Partial Interval')= t('Partial Interval')
+                    td.align-middle
+                      .btn-group(role='group', aria-label=t('Actions'))
+                        button(type='submit', form='add').btn.btn-success: i.fa.fa-fw.fa-check
+                        button#cancelAddBtn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
                   each target in targets
                     tr(id=target.id)
                       td.align-middle= t(target.name)
@@ -138,17 +89,16 @@ block body
                             input(type='hidden', name='_method', value='DELETE')
                             button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
                     tr.edit-form(id=`${target.id}-form`, hidden)
-                      form#edit-form(action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`), method='POST').ajax-form.confirm-prompt
-                        input(type='hidden', name='_method', value='POST')
-                        input(type='hidden', name='_csrf', value=ctx.csrf)
-                        input(type='hidden', name='edit_program', value='true')
-                        td.align-middle
-                          input#edit-input-name(type='text', name='name', required, placeholder=t('Name'), value=t(target.name)).form-control
-                        td.align-middle
-                          input#edit-input-description(type='text', name='description', placeholder=t('Description'), value=t(target.description)).form-control
-                        td.align-middle= t(target.data_type)
-                        td.align-middle
-                          .btn-group
-                            button(type='submit').btn.btn-success: i.fa.fa-fw.fa-check
-                            button.edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
+                      input(type='hidden', name='_method', value='POST', form='edit')
+                      input(type='hidden', name='_csrf', value=ctx.csrf, form='edit')
+                      input(type='hidden', name='edit_program', value='true', form='edit')
+                      td.align-middle
+                        input#edit-input-name(type='text', name='name', required, placeholder=t('Name'), value=t(target.name), form='edit').form-control
+                      td.align-middle
+                        input#edit-input-description(type='text', name='description', placeholder=t('Description'), value=t(target.description), form='edit').form-control
+                      td.align-middle= t(target.data_type)
+                      td.align-middle
+                        .btn-group
+                          button(type='submit', form='edit', formaction=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`)).btn.btn-success: i.fa.fa-fw.fa-check
+                          button.edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
           include ../../_pagination
