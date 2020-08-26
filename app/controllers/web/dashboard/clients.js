@@ -8,13 +8,18 @@ const { Clients } = require('../../../models');
 
 async function list(ctx) {
   const [clients, itemCount] = await Promise.all([
-    Clients.find({})
+    Clients.find({
+      $or: [{ 'members.user': ctx.state.user._id }]
+    })
+      .collation({ locale: ctx.locale, strength: 2 })
+      .sort(ctx.query.sort)
       .limit(ctx.query.limit)
       .skip(ctx.paginate.skip)
       .lean()
-      .sort('last_name')
       .exec(),
-    Clients.countDocuments({})
+    Clients.countDocuments({
+      $or: [{ 'members.user': ctx.state.user._id }]
+    })
   ]);
 
   const pageCount = Math.ceil(itemCount / ctx.query.limit);

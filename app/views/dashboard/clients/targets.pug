@@ -1,6 +1,8 @@
 
 extends ../../layout
 
+include ./_sort_header
+
 append scripts
   script(defer, src=manifest('js/targets.js'), integrity=manifest('js/targets.js', 'integrity'), crossorigin='anonymous')
 
@@ -38,9 +40,12 @@ block body
           table.table.table-hover.table-bordered
             thead.thead-dark
               tr
-                th(scope='col')= t('Name')
-                th(scope='col')= t('Description')
-                th(scope='col')= t('Data Type')
+                th(scope='col')
+                  +sort_header('name')
+                th(scope='col')
+                  +sort_header('description')
+                th(scope='col')
+                  +sort_header('data_type')
                 th(scope='col')
                   = t('Actions')
                   a#addBtn(type='button', data-toggle='tooltip', data-title=t('Add'), aria-label=t('Add')).btn.btn-success.btn-sm.float-right: i.fas.fa-plus

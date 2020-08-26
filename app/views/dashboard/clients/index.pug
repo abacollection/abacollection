@@ -1,6 +1,8 @@
 
 extends ../../layout
 
+include ./_sort_header
+
 append scripts
   script(defer, src=manifest('js/clients.js'), integrity=manifest('js/clients.js', 'integrity'), crossorigin='anonymous')
 
@@ -17,10 +19,14 @@ block body
             table.table.table-hover.table-bordered
               thead.thead-dark
                 tr
-                  th(scope='col')= t('First Name')
-                  th(scope='col')= t('Last Name')
-                  th(scope='col')= t('Date of Birth')
-                  th(scope='col')= t('Gender')
+                  th(scope='col')
+                    +sort_header('first_name')
+                  th(scope='col')
+                    +sort_header('last_name')
+                  th(scope='col')
+                    +sort_header('dob', 'Date of Birth')
+                  th(scope='col')
+                    +sort_header('gender')
                   th(scope='col')
                     = t('Actions')
                     a#addClientBtn(type='button', data-toggle='tooltip', data-title=t('Add'), aria-label=t('Add Client')).btn.btn-success.btn-sm.float-right: i.fas.fa-plus

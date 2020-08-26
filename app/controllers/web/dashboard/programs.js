@@ -75,13 +75,18 @@ async function retrieveProgram(ctx, next) {
 
 async function list(ctx) {
   const [programs, itemCount] = await Promise.all([
-    Programs.find({})
+    Programs.find({
+      $or: [{ client: ctx.state.client._id }]
+    })
+      .collation({ locale: ctx.locale, strength: 2 })
+      .sort(ctx.query.sort)
       .limit(ctx.query.limit)
       .skip(ctx.paginate.skip)
       .lean()
-      .sort('name')
       .exec(),
-    Programs.countDocuments({})
+    Programs.countDocuments({
+      $or: [{ client: ctx.state.client._id }]
+    })
   ]);
 
   const pageCount = Math.ceil(itemCount / ctx.query.limit);

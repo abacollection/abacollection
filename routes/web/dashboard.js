@@ -11,11 +11,13 @@ router.use(policies.ensureLoggedIn);
 router.use(policies.ensureOtp);
 router.use(web.breadcrumbs);
 router.get('/', render('dashboard'));
-router.use(web.dashboard.clients.retrieveClients);
 //
 // clients
 //
 router.get('/clients', paginate.middleware(10, 50), web.dashboard.clients.list);
+
+router.use(web.dashboard.clients.retrieveClients);
+
 router.put('/clients', web.dashboard.clients.add_client);
 //
 // client specific routes
@@ -33,13 +35,14 @@ clientRouter.delete(
 //
 // programs
 //
-clientRouter.use(web.dashboard.programs.retrievePrograms);
-
 clientRouter.get(
   '/programs',
   paginate.middleware(10, 50),
   web.dashboard.programs.list
 );
+
+clientRouter.use(web.dashboard.programs.retrievePrograms);
+
 clientRouter.put('/programs', web.dashboard.programs.addProgram);
 //
 // program specific routes
@@ -56,13 +59,14 @@ programRouter.delete(
 //
 // targets
 //
-programRouter.use(web.dashboard.targets.retrieveTargets);
-
 programRouter.get(
   '/targets',
   paginate.middleware(10, 50),
   web.dashboard.targets.list
 );
+
+programRouter.use(web.dashboard.targets.retrieveTargets);
+
 programRouter.put('/targets', web.dashboard.targets.addTarget);
 //
 // target specific routes

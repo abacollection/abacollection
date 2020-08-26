@@ -75,13 +75,18 @@ async function retrieveTarget(ctx, next) {
 
 async function list(ctx) {
   const [targets, itemCount] = await Promise.all([
-    Targets.find({})
+    Targets.find({
+      $or: [{ program: ctx.state.program._id }]
+    })
+      .collation({ locale: ctx.locale, strength: 2 })
+      .sort(ctx.query.sort)
       .limit(ctx.query.limit)
       .skip(ctx.paginate.skip)
       .lean()
-      .sort('name')
       .exec(),
-    Targets.countDocuments({})
+    Targets.countDocuments({
+      $or: [{ program: ctx.state.program._id }]
+    })
   ]);
 
   const pageCount = Math.ceil(itemCount / ctx.query.limit);
