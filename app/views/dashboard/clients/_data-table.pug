@@ -1,4 +1,7 @@
 
+// TODO add action
+form#dataAdd(method='PUT').ajax-form
+form#dataEdit(method='POST').ajax-form.confirm-prompt
 .row.mt-1
   .col
     if data.length === 0
@@ -14,7 +17,27 @@
                 th(scope='col')= t('Incorrect')
               else
                 th(scope='col')= t('Data')
+              th(scope='col')= t('Actions')
+                a#dataAddBtn(type='button', data-toggle='tooltip', data-title=t('Add'), aria-label=t('Add')).btn.btn-success.btn-sm.float-right: i.fas.fa-plus
             tbody
+              tr#dataAddForm(hidden)
+                input(type='hidden', name='_method', value='PUT', form='dataAdd')
+                input(type='hidden', name='_csrf', value=ctx.csrf, form='dataAdd')
+                input(type='hidden'. name='add_data', value='true'. form='dataAdd')
+                td.align-middle
+                  input(type='date', name='date', required, form='dataAdd').form-control
+                if data_type === 'Rate'
+                  td.align-middle
+                    input(type='text', name='correct', required, form='dataAdd', placeholder=t('Correct')).form-control
+                  td.align-middle
+                    input(type='text', name='incorrect', required, form='dataAdd', placeholder=t('Incorrect')).form-control
+                else
+                  td.align-middle
+                    input(type='text', name='data', required, form='dataAdd', placeholder=t('Data')).form-control
+                td.align-middle
+                  .btn-group(role='group', aria-label=t('Actions'))
+                    button(type='submit', form='dataAdd').btn.btn-success: i.fa.fa-fw.fa-check
+                    button#dataCancelAddBtn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
               each d in data
                 tr
                   td.align-middle= d.x
@@ -23,3 +46,24 @@
                     td.align-middle= d.incorrect
                   else
                     td.align-middle= d.y
+                  td.align-middle
+                    a.data-edit-btn(href='#', data-toggle='tooltip', data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
+                tr.data-edit-form(id=`${d.id}-form`, hidden)
+                  input(type='hidden', name='_method', value='POST', form='dataEdit')
+                  input(type='hidden', name='_csrf', value=ctx.csrf, form='dataEdit')
+                  input(type='hidden'. name='edit_data', value='true'. form='dataEdit')
+                  td.align-middle
+                    input(type='date', name='date', required, form='dataEdit').form-control
+                  if data_type === 'Rate'
+                    td.align-middle
+                      input(type='text', name='correct', required, form='dataEdit', placeholder=t('Correct'), value=d.correct).form-control
+                    td.align-middle
+                      input(type='text', name='incorrect', required, form='dataEdit', placeholder=t('Incorrect'), value=d.incorrect).form-control
+                  else
+                    td.align-middle
+                      input(type='text', name='data', required, form='dataEdit', placeholder=t('Data'), value=d.y).form-control
+                  td.aling-middle
+                    .btn-group(role='group', aria-label=t('Actions'))
+                      // TODO add formaction
+                      button(type='submit', form='dataEdit').btn.btn-success: i.fa.fa-fw.fa-check
+                      button.data-edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times

@@ -30,6 +30,30 @@ $(document).on('click', '.edit-cancel-btn', function () {
   $(`tr#${id}`).prop('hidden', false);
 });
 
+$(document).on('click', '#dataAddBtn', function () {
+  $('#addForm').prop('hidden', false);
+});
+
+$(document).on('click', '#dataCancelAddBtn', function () {
+  $('#addForm').prop('hidden', true);
+});
+
+$(document).on('click', '.data-edit-btn', function () {
+  const $parent = $(this).parents('tr');
+  const id = $parent.prop('id');
+
+  $parent.prop('hidden', true);
+  $(`.data-edit-form#${id}-form`).prop('hidden', false);
+});
+
+$(document).on('click', '.edit-cancel-btn', function () {
+  const $parent = $(this).parents('tr');
+  const id = $parent.prop('id').replace('-form', '');
+
+  $parent.prop('hidden', true);
+  $(`tr#${id}`).prop('hidden', false);
+});
+
 $(document).on('click', '#graphTargetBtn', async function (event) {
   try {
     event.preventDefault();
