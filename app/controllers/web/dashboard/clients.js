@@ -7,12 +7,13 @@ const _ = require('lodash');
 const { Clients } = require('../../../models');
 
 async function list(ctx) {
+  console.log('jungle', ctx.query.sort);
   const [clients, itemCount] = await Promise.all([
     Clients.find({})
+      .sort(ctx.query.sort ? ctx.query.sort : 'last_name')
       .limit(ctx.query.limit)
       .skip(ctx.paginate.skip)
       .lean()
-      .sort('last_name')
       .exec(),
     Clients.countDocuments({})
   ]);

@@ -18,7 +18,8 @@ block body
             table.table.table-hover.table-bordered
               thead.thead-dark
                 tr
-                  th(scope='col')= t('First Name')
+                  th(scope='col')
+                    a.d-block(href=paginate.href({ sort: 'first_name' }))= t('First Name')
                   th(scope='col')= t('Last Name')
                   th(scope='col')= t('Date of Birth')
                   th(scope='col')= t('Gender')
