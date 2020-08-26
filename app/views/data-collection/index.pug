@@ -23,8 +23,38 @@ mixin timer()
         button.btn.timer-reset(disabled): i.fas.fa-sync-alt
         button.btn.timer-save(disabled): i.fas.fa-save
 
+append stylesheets
+  style.
+    #sidebar {
+      max-width: 250px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    #targetNavCollapse {
+      pointer-events: auto;
+    }
+
+    #sidebarBtn {
+      pointer-events: auto;
+    }
+
 append scripts
   script(defer, src=manifest('js/data-collection.js'), integrity=manifest('js/data-collection.js', 'integrity'), crossorigin='anonymous')
+
+append navigation
+  if targets.length !== 0
+    #sidebar.fixed-top.vh-100.position-fixed.d-inline-flex
+      #targetNavCollapse.collapse.navbar-collapse
+        nav#targetNav.navbar.navbar-dark.bg-dark.d-block.flex-column.flex-grow-1
+          span.navbar-brand.mb-0.h3
+            = t('Targets')
+          ul.navbar-nav
+            for target in targets
+              li.nav-item
+                a.nav-link(href=`#${target.id}`)
+                  = t(target.name)
+      button#sidebarBtn(type='button', data-toggle='collapse', data-target='#targetNavCollapse', aria-controls='targetNavCollapse', aria-expanded='false', aria-label=t('Targets')).btn.btn-secondary.mt-auto.ml-3.mb-3: i.fa.fa-fw.fa-chevron-left
 
 block body
   .container-fluid.py-3

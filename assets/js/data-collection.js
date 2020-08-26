@@ -4,6 +4,7 @@ const superagent = require('superagent');
 const revHash = require('rev-hash');
 const safeStringify = require('fast-safe-stringify');
 const _ = require('lodash');
+const PerfectScrollbar = require('perfect-scrollbar');
 
 const logger = require('./logger.js');
 
@@ -14,11 +15,21 @@ let targets = {};
 let hash;
 let updatePC = false;
 
+// eslint-disable-next-line no-unused-vars
+const ps = new PerfectScrollbar('#targetNavCollapse');
+
 //
 // handle instructions toggle
 //
 $('.instructions').click(function () {
   $(this).find('i').toggleClass('fa-chevron-right fa-chevron-down');
+});
+
+//
+// handle sidebar toggle
+//
+$('#sidebarBtn').click(function () {
+  $(this).find('i').toggleClass('fa-chevron-left fa-chevron-right');
 });
 
 //
