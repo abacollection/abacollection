@@ -321,17 +321,7 @@ test('DELETE dashboard/clients > fails if user is not admin', async (t) => {
   t.is(query.id, client.id);
 });
 
-test('GET dashboard/clients/settings > successfully', async (t) => {
-  const { web, user } = t.context;
-  const member = await factory.create('member', { user });
-  const client = await factory.create('client', { members: member });
-
-  const res = await web.get(`/en/dashboard/clients/${client.id}/settings`);
-
-  t.is(res.status, 200);
-});
-
-test('POST dashboard/clients/settings > successfully', async (t) => {
+test('POST /dashboard/clients/:client_id > successfully', async (t) => {
   const { web, user } = t.context;
   const member = await factory.create('member', { user });
   const client = await factory.create('client', { members: member });
@@ -346,17 +336,15 @@ test('POST dashboard/clients/settings > successfully', async (t) => {
       query.gender === client.gender
   );
 
-  const res = await web
-    .post(`/en/dashboard/clients/${client.id}/settings`)
-    .send({
-      first_name: newClient.first_name,
-      last_name: newClient.last_name,
-      dob: newClient.dob,
-      gender: newClient.gender
-    });
+  const res = await web.post(`/en/dashboard/clients/${client.id}`).send({
+    first_name: newClient.first_name,
+    last_name: newClient.last_name,
+    dob: newClient.dob,
+    gender: newClient.gender
+  });
 
   t.is(res.status, 302);
-  t.is(res.header.location, `/en/dashboard/clients/${client.id}/settings`);
+  t.is(res.header.location, `/en/dashboard/clients`);
 
   query = await Clients.findOne({ id: client.id });
   t.true(
@@ -368,37 +356,33 @@ test('POST dashboard/clients/settings > successfully', async (t) => {
   );
 });
 
-test('POST dashboard/clients/settings > fails if dob is invalid', async (t) => {
+test('POST /dashboard/clients/:client_id > fails if dob is invalid', async (t) => {
   const { web, user } = t.context;
   const member = await factory.create('member', { user });
   const client = await factory.create('client', { members: member });
 
-  const res = await web
-    .post(`/en/dashboard/clients/${client.id}/settings`)
-    .send({
-      first_name: client.first_name,
-      last_name: client.last_name,
-      dob: 'nonsense',
-      gender: client.gender
-    });
+  const res = await web.post(`/en/dashboard/clients/${client.id}`).send({
+    first_name: client.first_name,
+    last_name: client.last_name,
+    dob: 'nonsense',
+    gender: client.gender
+  });
 
   t.is(res.status, 400);
   t.is(JSON.parse(res.text).message, phrases.INVALID_DOB);
 });
 
-test('POST dashboard/clients/settings > fails if name is invalid', async (t) => {
+test('POST /dashboard/clients/:client_id > fails if name is invalid', async (t) => {
   const { web, user } = t.context;
   const member = await factory.create('member', { user });
   const client = await factory.create('client', { members: member });
 
-  const res = await web
-    .post(`/en/dashboard/clients/${client.id}/settings`)
-    .send({
-      first_name: undefined,
-      last_name: client.last_name,
-      dob: client.dob,
-      gender: client.gender
-    });
+  const res = await web.post(`/en/dashboard/clients/${client.id}`).send({
+    first_name: undefined,
+    last_name: client.last_name,
+    dob: client.dob,
+    gender: client.gender
+  });
 
   t.is(res.status, 400);
   t.is(JSON.parse(res.text).message, phrases.INVALID_NAME);

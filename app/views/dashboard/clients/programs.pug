@@ -5,70 +5,58 @@ append scripts
   script(defer, src=manifest('js/programs.js'), integrity=manifest('js/programs.js', 'integrity'), crossorigin='anonymous')
 
 block body
-  #modal-add-program(tabindex='-1', role='dialog').modal.fade
-    .modal-dialog(role='document')
-      .modal-content
-        .modal-header.d-block.text-center
-          h5.modal-title= t('Add Program')
-        form(action=ctx.path, method='POST').ajax-form.mt-3
-          input(type='hidden', name='_method', value='PUT')
-          input(type='hidden', name='_csrf', value=ctx.csrf)
-          input(type='hidden', name='add_program', value='true')
-          .modal-body
-            .form-group.floating-label
-              input#input-name(type='text', name='name', required, placeholder=" ").form-control
-              label(for='input-name')= t('Name')
-            .form-group.floating-label
-              input#input-description(type='text', name='description', placeholder=" ").form-control
-              label(for='input-description')= t('Description')
-          .modal-footer.text-right
-            button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
-            button(type='submit').btn.btn-primary= t('Submit')
-  #modal-edit-program(tabindex='-1', role='dialog').modal.fade
-    .modal-dialog(role='document')
-      .modal-content
-        .modal-header.d-block.text-center
-          h5.modal-title= t('Edit Program')
-        form#edit-form(method='POST').ajax-form.confirm-prompt.mt-3
-          input(type='hidden', name='_method', value='POST')
-          input(type='hidden', name='_csrf', value=ctx.csrf)
-          input(type='hidden', name='edit_program', value='true')
-          .modal-body
-            .form-group.floating-label
-              input#edit-input-name(type='text', name='name', required, placeholder=" ").form-control
-              label(for='input-name')= t('Name')
-            .form-group.floating-label
-              input#edit-input-description(type='text', name='description', placeholder=" ").form-control
-              label(for='input-description')= t('Description')
-          .modal-footer.text-right
-            button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
-            button(type='submit').btn.btn-primary= t('Submit')
+  form#add(action=ctx.path, method='PUT').ajax-form
+  form#edit(method='POST').ajax-form.confirm-prompt
   .container-fluid.py-3
     .row.mt-1
       .col
         include ../../_breadcrumbs
         if programs.length === 0
           .alert.alert-info= t('No programs for this client yet.')
-        else
-          .table-responsive
-            table.table.table-hover.table-bordered
-              thead.thead-dark
-                tr
-                  th(scope='col')= t('Name')
-                  th(scope='col')= t('Description')
-                  th(scope='col')= t('Actions')
-                tbody
-                  each program in programs
-                    tr
-                      td.align-middle= t(program.name)
-                      td.align-middle= t(program.description)
-                      td.align-middle
-                        .btn-group(role='group', aria-label=t('Actions'))
-                          #editProgramBtn(data-toggle='modal', data-target='#modal-edit-program', data-id=program.id, data-name=t(program.name), data-description=t(program.description)).btn.btn-secondary
-                            a(data-toggle='tooltip',  data-title=t('Edit')): i.fa.fa-fw.fa-edit
-                          a(href=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets`), data-toggle='tooltip', data-title=t('Targets')).btn.btn-secondary: i.fa.fa-fw.fa-list
-                          form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}`), method="POST", autocomplete="off")
-                            input(type='hidden', name='_csrf', value=ctx.csrf)
-                            input(type='hidden', name='_method', value='DELETE')
-                            button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
+        .table-responsive
+          table.table.table-hover.table-bordered
+            thead.thead-dark
+              tr
+                th(scope='col')= t('Name')
+                th(scope='col')= t('Description')
+                th(scope='col')
+                  = t('Actions')
+                  a#addBtn(type='button', data-toggle='tooltip', data-title=t('Add'), aria-label=t('Add')).btn.btn-success.btn-sm.float-right: i.fas.fa-plus
+              tbody
+                tr#addForm(hidden)
+                  input(type='hidden', name='_method', value='PUT', form='add')
+                  input(type='hidden', name='_csrf', value=ctx.csrf, form='add')
+                  input(type='hidden', name='add_program', value='true', form='add')
+                  td.align-middle
+                    input#input-name(type='text', name='name', required, placeholder=t("Name"), form='add').form-control
+                  td.align-middle
+                    input#input-description(type='text', name='description', placeholder=t("Description"), form='add').form-control
+                  td.align-middle
+                    .btn-group(role='group', aria-label=t('Actions'))
+                      button(type='submit', form='add').btn.btn-success: i.fa.fa-fw.fa-check
+                      button#cancelAddBtn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
+                each program in programs
+                  tr(id=program.id)
+                    td.align-middle= t(program.name)
+                    td.align-middle= t(program.description)
+                    td.align-middle
+                      .btn-group(role='group', aria-label=t('Actions'))
+                        a.edit-btn(href='#', data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
+                        a(href=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets`), data-toggle='tooltip', data-title=t('Targets')).btn.btn-secondary: i.fa.fa-fw.fa-list
+                        form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}`), method="POST", autocomplete="off")
+                          input(type='hidden', name='_csrf', value=ctx.csrf)
+                          input(type='hidden', name='_method', value='DELETE')
+                          button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
+                  tr.edit-form(id=`${program.id}-form`, hidden)
+                    input(type='hidden', name='_method', value='POST', form='edit')
+                    input(type='hidden', name='_csrf', value=ctx.csrf, form='edit')
+                    input(type='hidden', name='edit_program', value='true', form='edit')
+                    td.align-middle
+                      input#edit-input-name(type='text', name='name', required, value=t(program.name), placeholder=t('Name'), form='edit').form-control
+                    td.align-middle
+                      input#edit-input-description(type='text', name='description', value=t(program.description), placeholder=t('Description'), form='edit').form-control
+                    td.align-middle
+                      .btn-group
+                        button(type='submit', formaction=l(`/dashboard/clients/${client.id}/programs/${program.id}`), form='edit').btn.btn-success: i.fa.fa-fw.fa-check
+                        button.edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
           include ../../_pagination

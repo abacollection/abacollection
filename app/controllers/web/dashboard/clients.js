@@ -187,9 +187,7 @@ async function settings(ctx) {
     position: 'top'
   });
 
-  const redirectTo = ctx.state.l(
-    `/dashboard/clients/${ctx.state.client._id}/settings`
-  );
+  const redirectTo = ctx.state.l(`/dashboard/clients`);
   if (ctx.accepts('html')) ctx.redirect(redirectTo);
   else ctx.body = { redirectTo };
 }

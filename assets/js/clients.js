@@ -1,6 +1,6 @@
 const $ = require('jquery');
 
-$(document).on('click', '#addBtn', function () {
+$(document).on('click', '#addClientBtn', function () {
   $('#addForm').prop('hidden', false);
 });
 

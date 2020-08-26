@@ -1,36 +1,12 @@
 
 extends ../../layout
 
+append scripts
+  script(defer, src=manifest('js/clients.js'), integrity=manifest('js/clients.js', 'integrity'), crossorigin='anonymous')
+
 block body
-  #modal-add-client(tabindex='-1', role='dialog').modal.fade
-    .modal-dialog(role='document')
-      .modal-content
-        .modal-header.d-block.text-center
-          h5.modal-title= t('Add Client')
-        form(action=ctx.path, method='POST').ajax-form.mt-3
-          input(type='hidden', name='_method', value='PUT')
-          input(type='hidden', name='_csrf', value=ctx.csrf)
-          input(type='hidden', name='add_client', value='true')
-          .modal-body
-            .form-row
-              .form-group.floating-label.col
-                input#input-first-name(type='text', name='first_name', required, placeholder=" ").form-control
-                label(for='input-first-name')= t('First Name')
-              .form-group.floating-label.col
-                input#input-last-name(type='text', name='last_name', required, placeholder=" ").form-control
-                label(for='input-last-name')= t('Last Name')
-            .form-group.floating-label
-              input#input-dob(type='date', name='dob').form-control
-              label(for='input-dob')= t('Date of Birth')
-            .form-group.floating-label
-              select#input-gender(name='gender').form-control
-                option(value='')= t('-- Select --')
-                option(value='Male')= t('Male')
-                option(value='Female')= t('Female')
-              label(for='input-gender')= t('Gender')
-          .modal-footer.text-right
-            button(type='button', data-dismiss='modal', aria-label=t('Cancel')).btn.btn-secondary= t('Cancel')
-            button(type='submit').btn.btn-primary= t('Submit')
+  form#add(action=ctx.path, method='PUT').ajax-form
+  form#edit(method='POST').ajax-form.confirm-prompt
   .container-fluid.py-3
     .row.mt-1
       .col
@@ -46,21 +22,69 @@ block body
                   th(scope='col')= t('Last Name')
                   th(scope='col')= t('Date of Birth')
                   th(scope='col')= t('Gender')
-                  th(scope='col')= t('Actions')
+                  th(scope='col')
+                    = t('Actions')
+                    a#addClientBtn(type='button', data-toggle='tooltip', data-title=t('Add'), aria-label=t('Add Client')).btn.btn-success.btn-sm.float-right: i.fas.fa-plus
                 tbody
+                  tr#addForm(hidden)
+                    input(type='hidden', name='_method', value='PUT', form='add')
+                    input(type='hidden', name='_csrf', value=ctx.csrf, form='add')
+                    input(type='hidden', name='add_client', value='true', form='add')
+                    td.align-middle
+                      input#input-first-name(type='text', name='first_name', required, placeholder=t("First Name"), form='add').form-control
+                    td.align-middle
+                      input#input-last-name(type='text', name='last_name', required, placeholder=t("Last Name"), form='add').form-control
+                    td.align-middle
+                      input#input-dob(type='date', name='dob', form='add').form-control
+                    td.align-middle
+                      select#input-gender(name='gender', form='add').form-control
+                        option(value='')= t('-- Select --')
+                        option(value='Male')= t('Male')
+                        option(value='Female')= t('Female')
+                    td.align-middle
+                      .btn-group(role='group', aria-label=t('Actions'))
+                        button(type='submit', form='add').btn.btn-success: i.fa.fa-fw.fa-check
+                        button#cancelAddBtn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
                   each client in clients
-                    tr
+                    tr(id=client.id)
                       td.align-middle= client.first_name
                       td.align-middle= client.last_name
-                      td.align-middle= dayjs(client.dob).format('M/D/YY')
+                      td.align-middle= client.dob ? dayjs(client.dob).format('MM/DD/YYYY') : ''
                       td.align-middle= client.gender
                       td.align-middle
                         .btn-group(role='group', aria-label=t('Actions'))
-                          a(href=l(`/dashboard/clients/${client.id}/settings`), data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
+                          a.edit-btn(href='#', data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
                           a(href=l(`/dashboard/clients/${client.id}/programs`), data-toggle='tooltip', data-title=t('Programs')).btn.btn-secondary: i.fa.fa-fw.fa-list
-                          a(href=l(`/collection/${client.id}`), data-toggle='tooltip', data-title=t('Data Collection')).btn.btn-seconday: i.fa.fa-fw.fa-list
+                          a(href=l(`/collection/${client.id}`), data-toggle='tooltip', data-title=t('Data Collection')).btn.btn-secondary: i.fa.fa-fw.fa-table
                           form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}`), method="POST", autocomplete="off")
                             input(type='hidden', name='_csrf', value=ctx.csrf)
                             input(type='hidden', name='_method', value='DELETE')
                             button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
+                    tr.edit-form(id=`${client.id}-form`, hidden)
+                      input(type='hidden', name='_csrf', value=ctx.csrf, form='edit')
+                      input(type='hidden', name='edit_client', value='true', form='edit')
+                      td.align-middle
+                        input(type='text', name='first_name', required, value=client.first_name, placeholder=t('First Name'), form='edit').form-control
+                      td.align-middle
+                        input(type='text', name='last_name', required, value=client.last_name, placeholder=t('Last Name'), form='edit').form-control
+                      td.align-middle
+                        input(type='date', name='dob', value=client.dob ? client.dob.toISOString().split('T')[0] : '', form='edit').form-control
+                      td.align-middle
+                        select(name='gender', form='edit').form-control
+                          if client.gender === 'Male'
+                            option(value='')= t('-- Select --')
+                            option(value='Male' selected)= t('Male')
+                            option(value='Female')= t('Female')
+                          else if client.gender === 'Female'
+                            option(value='')= t('-- Select --')
+                            option(value='Male')= t('Male')
+                            option(value='Female' selected)= t('Female')
+                          else
+                            option(value='')= t('-- Select --')
+                            option(value='Male')= t('Male')
+                            option(value='Female')= t('Female')
+                      td.align-middle
+                        .btn-group
+                          button(type='submit', form='edit', formaction=l(`/dashboard/clients/${client.id}`)).btn.btn-success: i.fa.fa-fw.fa-check
+                          button.edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
           include ../../_pagination
