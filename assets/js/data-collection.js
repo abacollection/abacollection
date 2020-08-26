@@ -15,6 +15,13 @@ let hash;
 let updatePC = false;
 
 //
+// handle instructions toggle
+//
+$('.instructions').click(function () {
+  $(this).find('i').toggleClass('fa-chevron-right fa-chevron-down');
+});
+
+//
 // handle clicker
 //
 // plus button

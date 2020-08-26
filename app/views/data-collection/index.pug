@@ -46,13 +46,20 @@ block body
                   h6.card-subtitle.text-muted
                     = t('Phase')
                 .col.ml-auto.text-right
+                  h6.card-subtitle
+                    .previous-data.text-muted.small.mb-0
+                      = t(`Previous: ${previous[target._id] ? previous[target._id] : 'NA'}`)
+                    .current-data.text-muted.small.mb-0
+                      = t(`Current: ${current[target._id] ? current[target._id]: 'NA'}`)
+              .row
+                .col
                   h6.card-subtitle.small
-                    a.btn.p-0.mt-n1
-                      i.fa.fa-fas.fa-ellipsis-h
-                  p.previous-data.text-muted.small.mb-0
-                    = t(`Previous: ${previous[target._id] ? previous[target._id] : 'NA'}`)
-                  p.current-data.text-muted.small.mb-0
-                    = t(`Current: ${current[target._id] ? current[target._id]: 'NA'}`)
+                    a.btn.px-0.instructions(data-toggle='collapse', href=`#instructions-${target.id}`, role='button', aria-expanded='false', aria-controls=`instructions-${target.id}`)
+                      i.fa.fa-fw.fa-chevron-right
+                      = ' '
+                      = t('Instructions')
+                    .collapse(id=`instructions-${target.id}`)
+                      = t(target.description)
             .card-body
               case target.data_type
                 when 'Frequency'
