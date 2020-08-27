@@ -190,7 +190,7 @@ async function getData(ctx) {
     Rate: ctx.state.t('Count per Minute (first)')
   };
 
-  const data = await target.getDailyData();
+  const data = await target.getData('D');
 
   if (ctx.accepts('html'))
     return ctx.render('dashboard/clients/_data-table', {

@@ -8,6 +8,12 @@ const Datas = require('./data');
 // <https://github.com/Automattic/mongoose/issues/5534>
 mongoose.Error.messages = require('@ladjs/mongoose-error-messages');
 
+const format = {
+  D: 'MM/DD/YYYY',
+  M: 'MM/YYYY',
+  Y: 'YYYY'
+};
+
 const targetSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -54,14 +60,18 @@ targetSchema.post('findOneAndRemove', async function () {
   });
 });
 
-targetSchema.method('getDailyData', async function () {
+targetSchema.method('getData', async function (interval = 'D') {
+  const form = format[interval];
   let ret = {};
 
-  const datas = await Datas.find({ target: this._id }).sort('date').exec();
+  const datas = await Datas.find({ target: this._id })
+    .sort('date')
+    .lean()
+    .exec();
 
   if (this.data_type === 'Frequency') {
     datas.forEach((data) => {
-      const date = dayjs(data.date).format('MM/DD/YYYY');
+      const date = dayjs(data.date).format(form);
 
       if (ret[date]) ret[date] += data.value;
       else ret[date] = data.value;
@@ -72,7 +82,7 @@ targetSchema.method('getDailyData', async function () {
     });
   } else if (this.data_type === 'Percent Correct') {
     datas.forEach((data) => {
-      const date = dayjs(data.date).format('MM/DD/YYYY');
+      const date = dayjs(data.date).format(form);
 
       if (ret[date]) ret[date].push(data.value);
       else ret[date] = [data.value];
@@ -90,7 +100,7 @@ targetSchema.method('getDailyData', async function () {
     });
   } else if (this.data_type === 'Duration') {
     datas.forEach((data) => {
-      const date = dayjs(data.date).format('MM/DD/YYYY');
+      const date = dayjs(data.date).format(form);
 
       if (ret[date]) ret[date] += data.value;
       else ret[date] = data.value;
@@ -104,7 +114,7 @@ targetSchema.method('getDailyData', async function () {
     });
   } else if (this.data_type === 'Rate') {
     datas.forEach((data) => {
-      const date = dayjs(data.date).format('MM/DD/YYYY');
+      const date = dayjs(data.date).format(form);
 
       if (!ret[date]) {
         const { value } = data;
