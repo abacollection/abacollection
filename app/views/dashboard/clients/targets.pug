@@ -8,7 +8,7 @@ block body
   #modal-graph-target(tabindex='-1', role='dialog').modal.fade
     .modal-dialog.modal-lg(role='document')
       .modal-content
-        .modal-header.d-block.text-center
+        .modal-header.d-inline-flex
           h5.modal-title#graph-title= t('Target Graph')
         .modal-body
           .text-center#graphSpinner
@@ -20,8 +20,12 @@ block body
   #modal-data-target(tabindex='-1', role='dialog').modal.fade
     .modal-dialog.modal-lg(role='document')
       .modal-content
-        .modal-header.d-block.text-center
+        .modal-header.d-inline-flex
           h5.modal-title#data-title= t('Target Data')
+          .btn-group.float-right
+            button(type='button', data-interval='D', data-toggle='tooltip', data-title=t('Daily'), aria-label=t('Daily')).btn.btn-secondary.btn-sm.interval.active= t('D')
+            button(type='button', data-interval='M', data-toggle='tooltip', data-title=t('Monthly'), aria-label=t('Monthly')).btn.btn-secondary.btn-sm.interval= t('M')
+            button(type='button', data-interval='Y', data-toggle='tooltip', data-title=t('Yearly'), aria-label=t('Yearly')).btn.btn-secondary.btn-sm.interval= t('Y')
         .modal-body
           .text-center#dataSpinner
             .spinner-border.text-secondary(role='status')

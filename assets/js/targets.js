@@ -98,6 +98,8 @@ $(document).on('click', '#dataTargetBtn', async function (event) {
 
     $('#data-title').text(name);
 
+    $modal.find('.modal-header .btn-group').data('id', id);
+
     $modal.modal('show');
 
     const res = await superagent
@@ -107,6 +109,33 @@ $(document).on('click', '#dataTargetBtn', async function (event) {
 
     $spinner.prop('hidden', true);
     $('#data').html(res.text);
+  } catch (err) {
+    logger.error(err);
+  }
+});
+
+$('.interval').click(async function () {
+  try {
+    const $parent = $(this).parent('.btn-group');
+    const $spinner = $('#dataSpinner');
+
+    const id = $parent.data('id');
+
+    $('#data').empty();
+    $spinner.prop('hidden', false);
+
+    const res = await superagent
+      .get(
+        `${window.location.pathname}/${id}?interval=${$(this).data('interval')}`
+      )
+      .retry(3)
+      .send();
+
+    $spinner.prop('hidden', true);
+    $('#data').html(res.text);
+
+    $parent.find('.interval').removeClass('active');
+    $(this).addClass('active');
   } catch (err) {
     logger.error(err);
   }
@@ -130,4 +159,7 @@ $('#modal-edit-target').on('hidden.bs.modal', function () {
 $('#modal-data-target').on('hidden.bs.modal', function () {
   $('#data').empty();
   $('#dataSpinner').prop('hidden', false);
+
+  $(this).find('.interval').removeClass('active');
+  $('#modal-data-target .interval').first().addClass('active');
 });

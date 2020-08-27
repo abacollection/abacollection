@@ -319,6 +319,53 @@ test('GET data(JSON) > frequency > default', async (t) => {
   }
 });
 
+test('GET data(JSON) > frequency > monthly', async (t) => {
+  t.plan(5);
+
+  const { web, client, program } = t.context;
+
+  const target = await factory.create('target', {
+    program,
+    data_type: 'Frequency'
+  });
+  const datas = [];
+  for (let i = 0; i < 10; i++) {
+    datas.push(
+      factory.create('data', {
+        value: 1,
+        target,
+        date: dayjs().subtract(i, 'day').toDate(),
+        data_type: 'Frequency'
+      })
+    );
+  }
+
+  datas.push(
+    factory.create('data', {
+      value: 1,
+      target,
+      date: dayjs().subtract(1, 'day').toDate(),
+      data_type: 'Frequency'
+    })
+  );
+
+  await Promise.all(datas);
+
+  const res = await web
+    .get(
+      `/en/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}?interval=M`
+    )
+    .set('Accept', 'application/json')
+    .send();
+
+  t.is(res.status, 200);
+  t.is(res.body.series[0].data.length, 1);
+  t.is(res.body.xaxisTitle, 'Date');
+  t.is(res.body.yaxisTitle, 'Count per Day');
+
+  t.is(res.body.series[0].data[0].y, 11);
+});
+
 test('GET data(JSON) > percent correct > default', async (t) => {
   t.plan(15);
 
