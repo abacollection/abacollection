@@ -10,6 +10,8 @@ block body
       .modal-content
         .modal-header.d-inline-flex
           h5.modal-title#graph-title= t('Target Graph')
+          button(type='button', data-dismiss='modal', aria-label=t('Close')).close
+            span(aria-hidden='true')!= '&times;'
         .modal-body
           .text-center#graphSpinner
             .spinner-border.text-secondary(role='status')
@@ -21,18 +23,18 @@ block body
     .modal-dialog.modal-lg(role='document')
       .modal-content
         .modal-header.d-inline-flex
-          h5.modal-title#data-title= t('Target Data')
-          .btn-group.float-right
+          h5.modal-title.flex-grow-1#data-title= t('Target Data')
+          .btn-group.mr-auto
             button(type='button', data-interval='D', data-toggle='tooltip', data-title=t('Daily'), aria-label=t('Daily')).btn.btn-secondary.btn-sm.interval.active= t('D')
             button(type='button', data-interval='M', data-toggle='tooltip', data-title=t('Monthly'), aria-label=t('Monthly')).btn.btn-secondary.btn-sm.interval= t('M')
             button(type='button', data-interval='Y', data-toggle='tooltip', data-title=t('Yearly'), aria-label=t('Yearly')).btn.btn-secondary.btn-sm.interval= t('Y')
+          button(type='button', data-dismiss='modal', aria-label=t('Close')).close
+            span(aria-hidden='true')!= '&times;'
         .modal-body
           .text-center#dataSpinner
             .spinner-border.text-secondary(role='status')
               span.sr-only= t('Loading...')
           #data
-        .modal-footer.text-right
-          button(type='button', data-dismiss='modal', aria-label=t('Close')).btn.btn-secondary= t('Close')
   form#add(action=ctx.path, method='PUT').ajax-form
   form#edit(method='POST').ajax-form.confirm-prompt
   .container-fluid.py-3
