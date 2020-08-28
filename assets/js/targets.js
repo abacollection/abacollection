@@ -15,7 +15,7 @@ $(document).on('click', '#cancelAddBtn', function () {
 });
 
 $(document).on('click', '.edit-btn', function () {
-  const $parent = $(this).parents('tr');
+  const $parent = $(this).parents('tr:first');
   const id = $parent.prop('id');
 
   $parent.prop('hidden', true);
@@ -23,7 +23,7 @@ $(document).on('click', '.edit-btn', function () {
 });
 
 $(document).on('click', '.edit-cancel-btn', function () {
-  const $parent = $(this).parents('tr');
+  const $parent = $(this).parents('tr:first');
   const id = $parent.prop('id').replace('-form', '');
 
   $parent.prop('hidden', true);
@@ -31,23 +31,23 @@ $(document).on('click', '.edit-cancel-btn', function () {
 });
 
 $(document).on('click', '#dataAddBtn', function () {
-  $('#addForm').prop('hidden', false);
+  $('#dataAddForm').prop('hidden', false);
 });
 
 $(document).on('click', '#dataCancelAddBtn', function () {
-  $('#addForm').prop('hidden', true);
+  $('#dataAddForm').prop('hidden', true);
 });
 
 $(document).on('click', '.data-edit-btn', function () {
-  const $parent = $(this).parents('tr');
+  const $parent = $(this).parents('tr:first');
   const id = $parent.prop('id');
 
   $parent.prop('hidden', true);
   $(`.data-edit-form#${id}-form`).prop('hidden', false);
 });
 
-$(document).on('click', '.edit-cancel-btn', function () {
-  const $parent = $(this).parents('tr');
+$(document).on('click', '.data-edit-cancel-btn', function () {
+  const $parent = $(this).parents('tr:first');
   const id = $parent.prop('id').replace('-form', '');
 
   $parent.prop('hidden', true);
@@ -59,7 +59,9 @@ $(document).on('click', '#graphTargetBtn', async function (event) {
     event.preventDefault();
 
     const $modal = $('#modal-graph-target');
-    const $spinner = $('#graphSpinner');
+
+    // show spinner
+    $('#spinner').addClass('show d-block');
 
     const id = $(this).data('id');
     const name = $(this).data('name');
@@ -103,7 +105,7 @@ $(document).on('click', '#graphTargetBtn', async function (event) {
 
     graph = new Apex(document.querySelector('#graph'), options);
     // hide spinner
-    $spinner.prop('hidden', true);
+    $('#spinner').removeClass('show d-block');
     graph.render();
   } catch (err) {
     logger.error(err);
@@ -115,7 +117,7 @@ $(document).on('click', '#dataTargetBtn', async function (event) {
     event.preventDefault();
 
     const $modal = $('#modal-data-target');
-    const $spinner = $('#dataSpinner');
+    $('#spinner').addClass('show d-block');
 
     const id = $(this).data('id');
     const name = $(this).data('name');
@@ -131,8 +133,11 @@ $(document).on('click', '#dataTargetBtn', async function (event) {
       .retry(3)
       .send();
 
-    $spinner.prop('hidden', true);
+    // hide spinner
+    $('#spinner').removeClass('show d-block');
     $('#data').html(res.text);
+
+    $('#dataAdd').prop('action', `${window.location.pathname}/${id}/data`);
   } catch (err) {
     logger.error(err);
   }
@@ -141,12 +146,11 @@ $(document).on('click', '#dataTargetBtn', async function (event) {
 $('.interval').click(async function () {
   try {
     const $parent = $(this).parent('.btn-group');
-    const $spinner = $('#dataSpinner');
+    $('#spinner').addClass('show d-block');
 
     const id = $parent.data('id');
 
     $('#data').empty();
-    $spinner.prop('hidden', false);
 
     const res = await superagent
       .get(
@@ -155,7 +159,7 @@ $('.interval').click(async function () {
       .retry(3)
       .send();
 
-    $spinner.prop('hidden', true);
+    $('#spinner').removeClass('show d-block');
     $('#data').html(res.text);
 
     $parent.find('.interval').removeClass('active');
@@ -172,8 +176,6 @@ $('#modal-graph-target').on('hidden.bs.modal', function () {
 
     $('#graph').empty();
   }
-
-  $('#graphSpinner').prop('hidden', false);
 });
 
 $('#modal-edit-target').on('hidden.bs.modal', function () {
@@ -182,7 +184,6 @@ $('#modal-edit-target').on('hidden.bs.modal', function () {
 
 $('#modal-data-target').on('hidden.bs.modal', function () {
   $('#data').empty();
-  $('#dataSpinner').prop('hidden', false);
 
   $(this).find('.interval').removeClass('active');
   $('#modal-data-target .interval').first().addClass('active');

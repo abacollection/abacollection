@@ -1160,6 +1160,17 @@
     request-received "^0.0.3"
     response-time "^2.3.2"
 
+"@ladjs/assets@../assets":
+  version "1.0.2"
+  dependencies:
+    clipboard "^2.0.6"
+    is-string-and-not-blank "^0.0.2"
+    qs "^6.9.4"
+    spinkit "1.x"
+    superagent "^6.0.0"
+    sweetalert2 "8.x"
+    url-parse "^1.4.7"
+
 "@ladjs/assets@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@ladjs/assets/-/assets-1.0.2.tgz#889a32e37372aadadc88da2004f7b151ef86e84f"

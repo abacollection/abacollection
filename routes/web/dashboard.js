@@ -70,7 +70,6 @@ programRouter.put('/targets', web.dashboard.targets.addTarget);
 const targetRouter = new Router({ prefix: '/targets/:target_id' });
 targetRouter.use(web.dashboard.targets.retrieveTarget);
 
-targetRouter.get('/', web.dashboard.targets.getData);
 targetRouter.post('/', web.dashboard.targets.editTarget);
 targetRouter.delete(
   '/',
@@ -78,6 +77,20 @@ targetRouter.delete(
   web.dashboard.targets.deleteTarget
 );
 
+targetRouter.get(
+  '/',
+  web.dashboard.datas.retrieveDatas,
+  web.dashboard.targets.getData
+);
+//
+// data
+//
+const dataRouter = new Router({ prefix: '/data' });
+
+dataRouter.put('/', web.dashboard.datas.addData);
+dataRouter.post('/', web.dashboard.datas.editData);
+
+targetRouter.use(dataRouter.routes());
 programRouter.use(targetRouter.routes());
 clientRouter.use(programRouter.routes());
 router.use(clientRouter.routes());

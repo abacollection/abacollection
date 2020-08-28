@@ -12,11 +12,7 @@ block body
           h5.modal-title#graph-title= t('Target Graph')
           button(type='button', data-dismiss='modal', aria-label=t('Close')).close
             span(aria-hidden='true')!= '&times;'
-        .modal-body
-          .text-center#graphSpinner
-            .spinner-border.text-secondary(role='status')
-              span.sr-only= t('Loading...')
-          #graph
+        .modal-body#graph
         .modal-footer.text-right
           button(type='button', data-dismiss='modal', aria-label=t('Close')).btn.btn-secondary= t('Close')
   #modal-data-target(tabindex='-1', role='dialog').modal.fade
@@ -30,11 +26,7 @@ block body
             button(type='button', data-interval='Y', data-toggle='tooltip', data-title=t('Yearly'), aria-label=t('Yearly')).btn.btn-secondary.btn-sm.interval= t('Y')
           button(type='button', data-dismiss='modal', aria-label=t('Close')).close
             span(aria-hidden='true')!= '&times;'
-        .modal-body
-          .text-center#dataSpinner
-            .spinner-border.text-secondary(role='status')
-              span.sr-only= t('Loading...')
-          #data
+        .modal-body#data
   form#add(action=ctx.path, method='PUT').ajax-form
   form#edit(method='POST').ajax-form.confirm-prompt
   .container-fluid.py-3
@@ -98,9 +90,9 @@ block body
                     input(type='hidden', name='_csrf', value=ctx.csrf, form='edit')
                     input(type='hidden', name='edit_program', value='true', form='edit')
                     td.align-middle
-                      input#edit-input-name(type='text', name='name', required, placeholder=t('Name'), value=t(target.name), form='edit').form-control
+                      input(type='text', name='name', required, placeholder=t('Name'), value=t(target.name), form='edit').form-control
                     td.align-middle
-                      input#edit-input-description(type='text', name='description', placeholder=t('Description'), value=t(target.description), form='edit').form-control
+                      input(type='text', name='description', placeholder=t('Description'), value=t(target.description), form='edit').form-control
                     td.align-middle= t(target.data_type)
                     td.align-middle
                       .btn-group

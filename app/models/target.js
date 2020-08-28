@@ -72,7 +72,6 @@ targetSchema.method('getData', async function (interval) {
   if (this.data_type === 'Frequency') {
     datas.forEach((data) => {
       const date = dayjs(data.date).format(form);
-      console.log('jungle', date, form, interval);
 
       if (ret[date]) ret[date] += data.value;
       else ret[date] = data.value;

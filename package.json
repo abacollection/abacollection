@@ -15,7 +15,7 @@
     "timeout": "30s"
   },
   "bugs": {
-    "url": "https://github.com/shadowgate15/abacollection/issues",
+    "url": "https://github.com/abacollection/abacollection/issues",
     "email": "taylorschley@me.com"
   },
   "commitlint": {
@@ -31,7 +31,7 @@
     "@hapi/boom": "^9.1.0",
     "@koa/router": "^9.4.0",
     "@ladjs/api": "^5.0.1",
-    "@ladjs/assets": "^1.0.2",
+    "@ladjs/assets": "../assets",
     "@ladjs/env": "^2.0.1",
     "@ladjs/graceful": "^1.0.4",
     "@ladjs/i18n": "^5.0.0",
@@ -213,7 +213,7 @@
   "engines": {
     "node": ">=12.11.0"
   },
-  "homepage": "https://github.com/shadowgate15/abacollection",
+  "homepage": "https://github.com/abacollection/abacollection",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
@@ -264,7 +264,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shadowgate15/abacollection"
+    "url": "https://github.com/abacollection/abacollection"
   },
   "scripts": {
     "build": "nps build",

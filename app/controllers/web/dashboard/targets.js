@@ -181,7 +181,7 @@ async function editTarget(ctx) {
 }
 
 async function getData(ctx) {
-  const { target } = ctx.state;
+  const { target, data } = ctx.state;
 
   const yaxisTitles = {
     Frequency: ctx.state.t('Count per Day'),
@@ -190,15 +190,7 @@ async function getData(ctx) {
     Rate: ctx.state.t('Count per Minute (first)')
   };
 
-  const data = await target.getData(
-    ctx.query ? (ctx.query.interval ? ctx.query.interval : 'D') : 'D'
-  );
-
-  if (ctx.accepts('html'))
-    return ctx.render('dashboard/clients/_data-table', {
-      data,
-      data_type: target.data_type
-    });
+  if (ctx.accepts('html')) return ctx.render('dashboard/clients/_data-table');
 
   let series = [];
 

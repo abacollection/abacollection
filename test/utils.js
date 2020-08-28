@@ -140,7 +140,8 @@ exports.defineDataFactory = async () => {
       value: factory.chance('floating', { min: 0, max: 100 }),
       target: buildOptions.target
         ? buildOptions.target
-        : factory.assoc('target', '_id')
+        : factory.assoc('target', '_id'),
+      date: factory.chance('date')
     };
   });
 };
