@@ -240,7 +240,7 @@ test('deletes target when program is deleted', async (t) => {
 });
 
 test('POST targets > modifies name and description', async (t) => {
-  const { web, client, program } = t.context;
+  const { web, root, program } = t.context;
 
   const target = await factory.create('target', { program });
   const newTarget = await factory.build('target', { program });
@@ -249,20 +249,13 @@ test('POST targets > modifies name and description', async (t) => {
   t.is(query.name, target.name);
   t.is(query.description, target.description);
 
-  const res = await web
-    .post(
-      `/en/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`
-    )
-    .send({
-      name: newTarget.name,
-      description: newTarget.description
-    });
+  const res = await web.post(`${root}/targets/${target.id}`).send({
+    name: newTarget.name,
+    description: newTarget.description
+  });
 
   t.is(res.status, 302);
-  t.is(
-    res.header.location,
-    `/en/dashboard/clients/${client.id}/programs/${program.id}/targets`
-  );
+  t.is(res.header.location, `${root}/targets`);
 
   query = await Targets.findOne({ name: newTarget.name });
   t.is(query.name, newTarget.name);
@@ -272,7 +265,7 @@ test('POST targets > modifies name and description', async (t) => {
 test('GET data(JSON) > frequency > default', async (t) => {
   t.plan(14);
 
-  const { web, client, program } = t.context;
+  const { web, root, program } = t.context;
 
   const target = await factory.create('target', {
     program,
@@ -302,9 +295,7 @@ test('GET data(JSON) > frequency > default', async (t) => {
   await Promise.all(datas);
 
   const res = await web
-    .get(
-      `/en/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`
-    )
+    .get(`${root}/targets/${target.id}`)
     .set('Accept', 'application/json')
     .send();
 
@@ -322,7 +313,7 @@ test('GET data(JSON) > frequency > default', async (t) => {
 test('GET data(JSON) > frequency > monthly', async (t) => {
   t.plan(5);
 
-  const { web, client, program } = t.context;
+  const { web, root, program } = t.context;
 
   const target = await factory.create('target', {
     program,
@@ -352,9 +343,7 @@ test('GET data(JSON) > frequency > monthly', async (t) => {
   await Promise.all(datas);
 
   const res = await web
-    .get(
-      `/en/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}?interval=M`
-    )
+    .get(`${root}/targets/${target.id}?interval=M`)
     .set('Accept', 'application/json')
     .send();
 
@@ -369,7 +358,7 @@ test('GET data(JSON) > frequency > monthly', async (t) => {
 test('GET data(JSON) > percent correct > default', async (t) => {
   t.plan(15);
 
-  const { web, client, program } = t.context;
+  const { web, root, program } = t.context;
 
   const target = await factory.create('target', {
     program,
@@ -399,9 +388,7 @@ test('GET data(JSON) > percent correct > default', async (t) => {
   await Promise.all(datas);
 
   const res = await web
-    .get(
-      `/en/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`
-    )
+    .get(`${root}/targets/${target.id}`)
     .set('Accept', 'application/json')
     .send();
 
@@ -420,7 +407,7 @@ test('GET data(JSON) > percent correct > default', async (t) => {
 test('GET data(JSON) > duration > default', async (t) => {
   t.plan(14);
 
-  const { web, client, program } = t.context;
+  const { web, root, program } = t.context;
 
   const target = await factory.create('target', {
     program,
@@ -450,9 +437,7 @@ test('GET data(JSON) > duration > default', async (t) => {
   await Promise.all(datas);
 
   const res = await web
-    .get(
-      `/en/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`
-    )
+    .get(`${root}/targets/${target.id}`)
     .set('Accept', 'application/json')
     .send();
 
@@ -470,7 +455,7 @@ test('GET data(JSON) > duration > default', async (t) => {
 test('GET data(JSON) > rate > default', async (t) => {
   t.plan(28);
 
-  const { web, client, program } = t.context;
+  const { web, root, program } = t.context;
 
   const target = await factory.create('target', {
     program,
@@ -500,9 +485,7 @@ test('GET data(JSON) > rate > default', async (t) => {
   await Promise.all(datas);
 
   const res = await web
-    .get(
-      `/en/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`
-    )
+    .get(`${root}/targets/${target.id}`)
     .set('Accept', 'application/json')
     .send();
 
