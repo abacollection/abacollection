@@ -9,9 +9,18 @@ $font-family-base: $font-family-sans-serif !default;
 
 $headings-font-family: 'Poppins', $font-family-sans-serif;
 
-$blue: #20C1ED !default;
-$cyan: #9DE5F9 !default;
-$green: #8CC63F !default;
+// colors
+$blue:    #2980b9 !default;
+$indigo:  #9b59b6 !default;
+$purple:  #8e44ad !default;
+$pink:    #e74c3c !default;
+$red:     #c0392b !default;
+$orange:  #e67e22 !default;
+$yellow:  #f1c40f !default;
+$green:   #27ae60 !default;
+$teal:    #1abc9c !default;
+$cyan:    #3498db !default;
+
 $yiq-contrasted-threshold:  200 !default;
 
 $enable-responsive-font-sizes: true !default;
