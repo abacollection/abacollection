@@ -6,7 +6,6 @@ append scripts
 
 block body
   form#add(action=ctx.path, method='PUT').ajax-form
-  form#edit(method='POST').ajax-form.confirm-prompt
   .container-fluid.py-3
     .row.mt-1
       .col
@@ -61,16 +60,17 @@ block body
                             input(type='hidden', name='_method', value='DELETE')
                             button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
                     tr.edit-form(id=`${client.id}-form`, hidden)
-                      input(type='hidden', name='_csrf', value=ctx.csrf, form='edit')
-                      input(type='hidden', name='edit_client', value='true', form='edit')
+                      form(id=`${client.id}-edit`, method='POST', action=l(`/dashboard/clients/${client.id}`)).ajax-form.confirm-prompt
+                      input(type='hidden', name='_csrf', value=ctx.csrf, form=`${client.id}-edit`)
+                      input(type='hidden', name='edit_client', value='true', form=`${client.id}-edit`)
                       td.align-middle
-                        input(type='text', name='first_name', required, value=client.first_name, placeholder=t('First Name'), form='edit').form-control
+                        input(type='text', name='first_name', required, value=client.first_name, placeholder=t('First Name'), form=`${client.id}-edit`).form-control
                       td.align-middle
-                        input(type='text', name='last_name', required, value=client.last_name, placeholder=t('Last Name'), form='edit').form-control
+                        input(type='text', name='last_name', required, value=client.last_name, placeholder=t('Last Name'), form=`${client.id}-edit`).form-control
                       td.align-middle
-                        input(type='date', name='dob', value=client.dob ? client.dob.toISOString().split('T')[0] : '', form='edit').form-control
+                        input(type='date', name='dob', value=client.dob ? client.dob.toISOString().split('T')[0] : '', form=`${client.id}-edit`).form-control
                       td.align-middle
-                        select(name='gender', form='edit').form-control
+                        select(name='gender', form=`${client.id}-edit`).form-control
                           if client.gender === 'Male'
                             option(value='')= t('-- Select --')
                             option(value='Male' selected)= t('Male')
@@ -85,6 +85,6 @@ block body
                             option(value='Female')= t('Female')
                       td.align-middle
                         .btn-group
-                          button(type='submit', form='edit', formaction=l(`/dashboard/clients/${client.id}`)).btn.btn-success: i.fa.fa-fw.fa-check
+                          button(type='submit', form=`${client.id}-edit`).btn.btn-success: i.fa.fa-fw.fa-check
                           button.edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
           include ../../_pagination

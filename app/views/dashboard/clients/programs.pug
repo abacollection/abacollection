@@ -6,7 +6,6 @@ append scripts
 
 block body
   form#add(action=ctx.path, method='PUT').ajax-form
-  form#edit(method='POST').ajax-form.confirm-prompt
   .container-fluid.py-3
     .row.mt-1
       .col
@@ -48,15 +47,16 @@ block body
                           input(type='hidden', name='_method', value='DELETE')
                           button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
                   tr.edit-form(id=`${program.id}-form`, hidden)
-                    input(type='hidden', name='_method', value='POST', form='edit')
-                    input(type='hidden', name='_csrf', value=ctx.csrf, form='edit')
-                    input(type='hidden', name='edit_program', value='true', form='edit')
+                    form(id=`${program.id}-edit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}`)).ajax-form.confirm-prompt
+                    input(type='hidden', name='_method', value='POST', form=`${program.id}-edit`)
+                    input(type='hidden', name='_csrf', value=ctx.csrf, form=`${program.id}-edit`)
+                    input(type='hidden', name='edit_program', value='true', form=`${program.id}-edit`)
                     td.align-middle
-                      input#edit-input-name(type='text', name='name', required, value=t(program.name), placeholder=t('Name'), form='edit').form-control
+                      input#edit-input-name(type='text', name='name', required, value=t(program.name), placeholder=t('Name'), form=`${program.id}-edit`).form-control
                     td.align-middle
-                      input#edit-input-description(type='text', name='description', value=t(program.description), placeholder=t('Description'), form='edit').form-control
+                      input#edit-input-description(type='text', name='description', value=t(program.description), placeholder=t('Description'), form=`${program.id}-edit`).form-control
                     td.align-middle
                       .btn-group
-                        button(type='submit', formaction=l(`/dashboard/clients/${client.id}/programs/${program.id}`), form='edit').btn.btn-success: i.fa.fa-fw.fa-check
+                        button(type='submit', form=`${program.id}-edit`).btn.btn-success: i.fa.fa-fw.fa-check
                         button.edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
           include ../../_pagination
