@@ -199,3 +199,13 @@ $body.on('click', '.generate-random-alias', function () {
   });
   $target.val(string);
 });
+
+//
+// toggle display of element
+//
+$body.on('click', '[data-toggle="toggle"]', function () {
+  const target = $(this).data('target');
+  $(target).slideToggle('slow');
+
+  $(this).children('i').toggleClass('fa-caret-right fa-caret-down');
+});

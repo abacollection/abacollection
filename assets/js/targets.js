@@ -71,7 +71,7 @@ $(document).on('click', '#graphTargetBtn', async function (event) {
     $modal.modal('show');
 
     const res = await superagent
-      .get(`${window.location.pathname}/${id}`)
+      .get(`${window.location.pathname}/${id}/graph`)
       .set('Accept', 'application/json')
       .retry(3)
       .send();
@@ -129,15 +129,13 @@ $(document).on('click', '#dataTargetBtn', async function (event) {
     $modal.modal('show');
 
     const res = await superagent
-      .get(`${window.location.pathname}/${id}`)
+      .get(`${window.location.pathname}/${id}?rawData=true`)
       .retry(3)
       .send();
 
     // hide spinner
     $('#spinner').removeClass('show d-block');
     $('#data').html(res.text);
-
-    $('#dataAdd').prop('action', `${window.location.pathname}/${id}/data`);
   } catch (err) {
     logger.error(err);
   }
@@ -154,7 +152,9 @@ $('.interval').click(async function () {
 
     const res = await superagent
       .get(
-        `${window.location.pathname}/${id}?interval=${$(this).data('interval')}`
+        `${window.location.pathname}/${id}?interval=${$(this).data(
+          'interval'
+        )}&rawData=true`
       )
       .retry(3)
       .send();

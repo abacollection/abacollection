@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const mongooseCommonPlugin = require('mongoose-common-plugin');
 const dayjs = require('dayjs');
 const ms = require('ms');
+const prettyMs = require('pretty-ms');
 
 const Datas = require('./data');
 
@@ -60,8 +61,10 @@ targetSchema.post('findOneAndRemove', async function () {
   });
 });
 
-targetSchema.method('getData', async function (interval) {
-  const form = format[interval];
+targetSchema.method('getGraph', async function (query) {
+  let form = format.D;
+  if (query && query.interval) form = format[query.interval];
+
   let ret = {};
 
   const datas = await Datas.find({ target: this._id })
@@ -140,6 +143,120 @@ targetSchema.method('getData', async function (interval) {
       };
     });
   }
+
+  return ret;
+});
+
+targetSchema.method('getData', async function (query) {
+  let form = format.D;
+  if (query && query.interval) form = format[query.interval];
+
+  let rawData;
+
+  if (query && query.rawData) rawData = {};
+
+  let ret = {};
+
+  const datas = await Datas.find({ target: this._id })
+    .sort('date')
+    .lean()
+    .exec();
+
+  if (this.data_type === 'Frequency') {
+    datas.forEach((data) => {
+      const date = dayjs(data.date).format(form);
+
+      if (ret[date]) ret[date] += data.value;
+      else ret[date] = data.value;
+
+      if (rawData) {
+        if (rawData[date]) rawData[date].push(data);
+        else rawData[date] = [data];
+      }
+    });
+
+    ret = Object.entries(ret).map((r) => {
+      return { date: r[0], value: Number.parseInt(r[1].toFixed(0), 10) };
+    });
+  } else if (this.data_type === 'Percent Correct') {
+    datas.forEach((data) => {
+      const date = dayjs(data.date).format(form);
+
+      if (ret[date]) ret[date].push(data.value);
+      else ret[date] = [data.value];
+
+      if (rawData) {
+        if (rawData[date]) rawData[date].push(data);
+        else rawData[date] = [data];
+      }
+    });
+
+    ret = Object.entries(ret).map((r) => {
+      const [key, value] = r;
+
+      const total = value.length;
+      const correct = value.filter((d) => d === 'correct').length;
+
+      const percent = ((correct / total) * 100).toFixed(0);
+
+      return { date: key, value: Number.parseInt(percent, 10) };
+    });
+  } else if (this.data_type === 'Duration') {
+    datas.forEach((data) => {
+      const date = dayjs(data.date).format(form);
+
+      if (ret[date]) ret[date] += data.value;
+      else ret[date] = data.value;
+
+      if (rawData) {
+        data.value = prettyMs(data.value, { colonNotation: true });
+
+        if (rawData[date]) rawData[date].push(data);
+        else rawData[date] = [data];
+      }
+    });
+
+    ret = Object.entries(ret).map((r) => {
+      return {
+        date: r[0],
+        value: prettyMs(r[1], { colonNotation: true })
+      };
+    });
+  } else if (this.data_type === 'Rate') {
+    datas.forEach((data) => {
+      const date = dayjs(data.date).format(form);
+
+      if (!ret[date]) {
+        const { value } = data;
+        const counting_time = value.counting_time / ms('1m');
+        const correct = Number.parseInt(
+          (value.correct / counting_time).toFixed(3),
+          10
+        );
+        const incorrect = Number.parseInt(
+          (value.incorrect / counting_time).toFixed(3),
+          10
+        );
+
+        ret[date] = { correct, incorrect };
+      }
+
+      if (rawData) {
+        if (rawData[date]) rawData[date].push(data);
+        else rawData[date] = [data];
+      }
+    });
+
+    ret = Object.entries(ret).map((r) => {
+      return {
+        date: r[0],
+        correct: r[1].correct,
+        incorrect: r[1].incorrect
+      };
+    });
+  }
+
+  if (rawData) return { data: ret, rawData };
 
   return ret;
 });

@@ -1171,19 +1171,6 @@
     sweetalert2 "8.x"
     url-parse "^1.4.7"
 
-"@ladjs/assets@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@ladjs/assets/-/assets-1.0.2.tgz#889a32e37372aadadc88da2004f7b151ef86e84f"
-  integrity sha512-5rNFRG0LF6ICkbGLLdfOm/qvbh+8w5d4FD8VvsIlw8yrmda/djMwCdegsKjRezR+Po/m77SKvj1fl3NcTPx1mg==
-  dependencies:
-    clipboard "^2.0.6"
-    is-string-and-not-blank "^0.0.2"
-    qs "^6.9.4"
-    spinkit "1.x"
-    superagent "^6.0.0"
-    sweetalert2 "8.x"
-    url-parse "^1.4.7"
-
 "@ladjs/browserslist-config@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@ladjs/browserslist-config/-/browserslist-config-0.0.1.tgz#1597c7845d4c75bafd8fedc36e52ee246f0ff20e"

@@ -115,6 +115,7 @@
     "pluralize": "^8.0.0",
     "popper.js": "^1.16.1",
     "prepare-stack-trace": "^0.0.4",
+    "pretty-ms": "^7.0.0",
     "pug": "^3.0.0",
     "qrcode": "^1.4.4",
     "qs": "^6.9.4",

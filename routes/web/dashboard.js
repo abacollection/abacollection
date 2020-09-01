@@ -82,6 +82,12 @@ targetRouter.get(
   web.dashboard.datas.retrieveDatas,
   web.dashboard.targets.getData
 );
+
+targetRouter.get(
+  '/graph',
+  web.dashboard.datas.retrieveGraph,
+  web.dashboard.targets.getData
+);
 //
 // data
 //
@@ -89,6 +95,7 @@ const dataRouter = new Router({ prefix: '/data' });
 
 dataRouter.put('/', web.dashboard.datas.addData);
 dataRouter.post('/', web.dashboard.datas.editData);
+dataRouter.delete('/', web.dashboard.datas.deleteData);
 
 targetRouter.use(dataRouter.routes());
 programRouter.use(targetRouter.routes());
