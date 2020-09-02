@@ -38,6 +38,11 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                 else if target.data_type === 'Duration'
                   td.align-middle
                     input(type='text', name='data', required, form='dataAdd', placeholder=t('HH:mm:ss')).form-control
+                else if target.data_type === 'Percent Correct'
+                  td.align-middle
+                    select(name='data', required, form='dataAdd').form-control
+                      each val in ['--- Select ---', 'correct', 'approximation', 'incorrect']
+                        option(value=val)= t(val)
                 else
                   td.align-middle
                     input(type='text', name='data', required, form='dataAdd', placeholder=t('Data')).form-control
@@ -63,12 +68,14 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                     td.align-middle= d.correct
                     td.align-middle= d.incorrect
                     td.align-middle= d.counting_time
+                  else if target.data_type === 'Percent Correct'
+                    td.align-middle= `${d.value}%`
                   else
                     td.align-middle= d.value
                   //- Actions column
                   td.align-middle
                     //- edit button
-                    if !['Duration', 'Rate'].includes(target.data_type)
+                    if !['Duration', 'Rate', 'Percent Correct'].includes(target.data_type)
                       a.data-edit-btn(href='#', data-toggle='tooltip', data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
                 //- Data edit form
                 if !['Duration', 'Rate'].includes(target.data_type)
@@ -154,6 +161,14 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                                 else if target.data_type === 'Duration'
                                   td.align-middle
                                     input(type='text', name='data', required, form=`${rawD.id}-dataEdit`, placeholder=t('HH:mm:ss'), value=rawD.value).form-control
+                                else if target.data_type === 'Percent Correct'
+                                  td.align-middle
+                                    select(name='data', required, form=`${rawD.id}-dataEdit`).form-control
+                                      each val in ['--- Select ---', 'correct', 'approximation', 'incorrect']
+                                        if val === rawD.value
+                                          option(value=val, selected)= t(val)
+                                        else
+                                          option(value=val)= t(val)
                                 else
                                   td.align-middle
                                     input(type='text', name='data', required, form=`${rawD.id}-dataEdit`, placeholder=t('Data'), value=rawD.value).form-control

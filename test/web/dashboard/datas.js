@@ -326,3 +326,76 @@ test('POST data(JSON) > rate > raw data', async (t) => {
   t.is(query[0].value.incorrect, value.incorrect);
   t.is(query[0].value.counting_time, ms('1m'));
 });
+
+test('PUT data(JSON) > percent correct', async (t) => {
+  const { web, root, program } = t.context;
+
+  const target = await factory.create('target', {
+    program,
+    data_type: 'Percent Correct'
+  });
+
+  const data = await factory.build('data', {
+    value: 'incorrect',
+    target,
+    data_type: 'Percent Correct'
+  });
+
+  let query = await Datas.findOne({
+    $and: [{ target: target.id, date: data.date }]
+  });
+  t.is(query, null);
+
+  const res = await web.put(`${root}/${target.id}/data`).send({
+    date: data.date,
+    data: data.value
+  });
+
+  t.is(res.status, 200);
+
+  query = await Datas.findOne({
+    $and: [{ target: target.id, date: data.date }]
+  });
+  t.deepEqual(query.date, data.date);
+  t.is(query.value, data.value);
+});
+
+test('POST data(JSON) > percent correct > raw data', async (t) => {
+  const { web, root, program } = t.context;
+
+  const target = await factory.create('target', {
+    program,
+    data_type: 'Percent Correct'
+  });
+
+  const data = await factory.create('data', {
+    value: 'correct',
+    target,
+    data_type: 'Percent Correct'
+  });
+
+  const newData = await factory.build('data', {
+    value: 'incorrect',
+    target,
+    data_type: 'Percent Correct'
+  });
+
+  let query = await Datas.findOne({
+    $and: [{ target: target.id, date: data.date }]
+  });
+  t.is(query.value, data.value);
+
+  const res = await web.post(`${root}/${target.id}/data`).send({
+    id: data.id,
+    data: newData.value
+  });
+
+  t.is(res.status, 200);
+
+  query = await Datas.find({
+    $and: [{ target: target.id, date: data.date }]
+  });
+  t.is(query.length, 1);
+  t.deepEqual(query[0].date, data.date);
+  t.is(query[0].value, newData.value);
+});
