@@ -1,6 +1,7 @@
 const test = require('ava');
 const { factory } = require('factory-girl');
 const prettyMs = require('pretty-ms');
+const ms = require('ms');
 
 const config = require('../../../config');
 const { Users, Datas } = require('../../../app/models');
@@ -85,11 +86,13 @@ test('POST data(JSON) > frequency', async (t) => {
   });
 
   const data = await factory.create('data', {
+    value: 3,
     target,
     data_type: 'Frequency'
   });
 
   const newData = await factory.build('data', {
+    value: 4,
     target,
     data_type: 'Frequency'
   });
@@ -242,3 +245,84 @@ test(
   '01:01:10',
   '1:01:10'
 );
+
+test('PUT data(JSON) > rate', async (t) => {
+  const { web, root, program } = t.context;
+
+  const target = await factory.create('target', {
+    program,
+    data_type: 'Rate'
+  });
+
+  const date = new Date(Date.now());
+
+  let query = await Datas.findOne({
+    $and: [{ target: target.id, date }]
+  });
+  t.is(query, null);
+
+  const res = await web.put(`${root}/${target.id}/data`).send({
+    date,
+    correct: 3,
+    incorrect: 4,
+    counting_time: '1:00'
+  });
+
+  t.is(res.status, 200);
+
+  query = await Datas.findOne({
+    $and: [{ target: target.id, date }]
+  });
+  t.deepEqual(query.date, date);
+  t.is(query.value.correct, 3);
+  t.is(query.value.incorrect, 4);
+  t.is(query.value.counting_time, ms('1m'));
+});
+
+test('POST data(JSON) > rate > raw data', async (t) => {
+  const { web, root, program } = t.context;
+
+  const target = await factory.create('target', {
+    program,
+    data_type: 'Rate'
+  });
+
+  const data = await factory.create('data', {
+    value: {
+      correct: 3,
+      incorrect: 4,
+      counting_time: ms('1m')
+    },
+    target,
+    data_type: 'Rate'
+  });
+
+  const value = {
+    correct: 4,
+    incorrect: 3,
+    counting_time: '1:00'
+  };
+
+  let query = await Datas.findOne({
+    $and: [{ target: target.id, date: data.date }]
+  });
+  t.is(query.value.correct, data.value.correct);
+  t.is(query.value.incorrect, data.value.incorrect);
+  t.is(query.value.counting_time, data.value.counting_time);
+
+  const res = await web.post(`${root}/${target.id}/data`).send({
+    id: data.id,
+    ...value
+  });
+
+  t.is(res.status, 200);
+
+  query = await Datas.find({
+    $and: [{ target: target.id, date: data.date }]
+  });
+  t.is(query.length, 1);
+  t.deepEqual(query[0].date, data.date);
+  t.is(query[0].value.correct, value.correct);
+  t.is(query[0].value.incorrect, value.incorrect);
+  t.is(query[0].value.counting_time, ms('1m'));
+});

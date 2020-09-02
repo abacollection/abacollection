@@ -23,7 +23,7 @@ async function addData(ctx, next) {
   try {
     const { body } = ctx.request;
 
-    let value = body.data;
+    let value;
 
     if (ctx.state.target.data_type === 'Duration') {
       const vals = body.data.split(':');
@@ -41,6 +41,32 @@ async function addData(ctx, next) {
         default:
           break;
       }
+    } else if (ctx.state.target.data_type === 'Rate') {
+      let counting_time;
+      const vals = body.counting_time.split(':');
+
+      switch (vals.length) {
+        case 3:
+          counting_time =
+            vals[0] * ms('1h') + vals[1] * ms('1m') + vals[2] * ms('1s');
+          break;
+        case 2:
+          counting_time = vals[0] * ms('1m') + vals[1] * ms('1s');
+          break;
+        case 1:
+          counting_time = vals[0] * ms('1s');
+          break;
+        default:
+          break;
+      }
+
+      value = {
+        correct: body.correct,
+        incorrect: body.incorrect,
+        counting_time
+      };
+    } else {
+      value = body.data;
     }
 
     await Datas.create({
@@ -69,7 +95,7 @@ async function editData(ctx, next) {
   try {
     const { body } = ctx.request;
 
-    let value = body.data;
+    let value;
 
     if (ctx.state.target.data_type === 'Duration') {
       const vals = body.data.split(':');
@@ -87,6 +113,32 @@ async function editData(ctx, next) {
         default:
           break;
       }
+    } else if (ctx.state.target.data_type === 'Rate') {
+      let counting_time;
+      const vals = body.counting_time.split(':');
+
+      switch (vals.length) {
+        case 3:
+          counting_time =
+            vals[0] * ms('1h') + vals[1] * ms('1m') + vals[2] * ms('1s');
+          break;
+        case 2:
+          counting_time = vals[0] * ms('1m') + vals[1] * ms('1s');
+          break;
+        case 1:
+          counting_time = vals[0] * ms('1s');
+          break;
+        default:
+          break;
+      }
+
+      value = {
+        correct: body.correct,
+        incorrect: body.incorrect,
+        counting_time
+      };
+    } else {
+      value = body.data;
     }
 
     if (body.id) {

@@ -13,6 +13,7 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
               if target.data_type === 'Rate'
                 th(scope='col')= t('Correct')
                 th(scope='col')= t('Incorrect')
+                th(scope='col')= t('Counting Time')
               else
                 th(scope='col')= t('Data')
               th(scope='col')= t('Actions')
@@ -32,6 +33,8 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                     input(type='text', name='correct', required, form='dataAdd', placeholder=t('Correct')).form-control
                   td.align-middle
                     input(type='text', name='incorrect', required, form='dataAdd', placeholder=t('Incorrect')).form-control
+                  td.align-middle
+                    input(type='text', name='counting_time', required, form='dataAdd', placeholder=t('HH:mm:ss')).form-control
                 else if target.data_type === 'Duration'
                   td.align-middle
                     input(type='text', name='data', required, form='dataAdd', placeholder=t('HH:mm:ss')).form-control
@@ -59,15 +62,16 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                   if target.data_type === 'Rate'
                     td.align-middle= d.correct
                     td.align-middle= d.incorrect
+                    td.align-middle= d.counting_time
                   else
                     td.align-middle= d.value
                   //- Actions column
                   td.align-middle
                     //- edit button
-                    if target.data_type !== 'Duration'
+                    if !['Duration', 'Rate'].includes(target.data_type)
                       a.data-edit-btn(href='#', data-toggle='tooltip', data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
                 //- Data edit form
-                if target.data_type !== 'Duration'
+                if !['Duration', 'Rate'].includes(target.data_type)
                   tr.data-edit-form(id=`${d.date.replace(/\//g, '')}-form`, hidden)
                     form(id=`${d.date.replace(/\//g, '')}-dataEdit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`)).ajax-form.confirm-prompt
                     input(type='hidden', name='_method', value='POST', form=`${d.date.replace(/\//g, '')}-dataEdit`)
@@ -83,6 +87,10 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                         input(type='text', name='correct', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('Correct'), value=d.correct).form-control
                       td.align-middle
                         input(type='text', name='incorrect', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('Incorrect'), value=d.incorrect).form-control
+                      td.align-middle
+                        input(type='text', name='counting_time', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('HH:mm:ss'), value=d.counting_time).form-control
+                    else if target.data_type === 'Duration'
+                      input(type='text', name='data', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('HH:mm:ss'), value=d.value).form-control
                     else
                       td.align-middle
                         input(type='text', name='data', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('Data'), value=d.value).form-control
@@ -94,21 +102,31 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                 //- Raw Data
                 if rawData
                   tr(id=`${d.date.replace(/\//g, '')}-raw`, style='display: none')
-                    td.align-middle(colspan='3')
+                    td.align-middle(colspan=target.data_type === 'Rate' ? '5' : '3')
                       .table-responsive
                         table.table.table-hover.table-sm
                           thead
                             tr
-                              th(scope='col')= 'Date'
-                              th(scope='col')= 'Data'
-                              th(scope='col')= 'Actions'
+                              th(scope='col')= t('Date')
+                              if (target.data_type === 'Rate')
+                                th(scope='col')= t('Correct')
+                                th(scope='col')= t('Incorrect')
+                                th(scope='col')= t('Counting Time')
+                              else
+                                th(scope='col')= t('Data')
+                              th(scope='col')= t('Actions')
                           tbody
                             each rawD in rawData[d.date]
                               tr(id=rawD.id)
                                 //- Date column
                                 td.align-middle= dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
                                 //- Data columns
-                                td.align-middle= rawD.value
+                                if target.data_type === 'Rate'
+                                  td.align-middle= rawD.value.correct
+                                  td.align-middle= rawD.value.incorrect
+                                  td.align-middle= rawD.value.counting_time
+                                else
+                                  td.align-middle= rawD.value
                                 //- Action columns
                                 td.align-middle
                                   .btn-group(role='group', aria-label=t('Actions'))
@@ -126,10 +144,18 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                                 //- Date column
                                 td.align-middle= dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
                                 //- Data columns
-                                td.align-middle
-                                  if target.data_type === 'Duration'
+                                if target.data_type === 'Rate'
+                                  td.align-middle
+                                    input(type='text', name='correct', required, form=`${rawD.id}-dataEdit`, placeholder=t('Correct'), value=rawD.value.correct).form-control
+                                  td.align-middle
+                                    input(type='text', name='incorrect', required, form=`${rawD.id}-dataEdit`, placeholder=t('Incorrect'), value=rawD.value.incorrect).form-control
+                                  td.align-middle
+                                    input(type='text', name='counting_time', required, form=`${rawD.id}-dataEdit`, placeholder=t('HH:mm:ss'), value=rawD.value.counting_time).form-control
+                                else if target.data_type === 'Duration'
+                                  td.align-middle
                                     input(type='text', name='data', required, form=`${rawD.id}-dataEdit`, placeholder=t('HH:mm:ss'), value=rawD.value).form-control
-                                  else
+                                else
+                                  td.align-middle
                                     input(type='text', name='data', required, form=`${rawD.id}-dataEdit`, placeholder=t('Data'), value=rawD.value).form-control
                                 td.align-middle
                                   .btn-group(role='group', aria-label=t('Actions'))

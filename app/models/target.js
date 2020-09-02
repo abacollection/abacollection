@@ -238,10 +238,18 @@ targetSchema.method('getData', async function (query) {
           10
         );
 
-        ret[date] = { correct, incorrect };
+        ret[date] = {
+          correct,
+          incorrect,
+          counting_time: prettyMs(value.counting_time, { colonNotation: true })
+        };
       }
 
       if (rawData) {
+        data.value.counting_time = prettyMs(data.value.counting_time, {
+          colonNotation: true
+        });
+
         if (rawData[date]) rawData[date].push(data);
         else rawData[date] = [data];
       }
@@ -251,7 +259,8 @@ targetSchema.method('getData', async function (query) {
       return {
         date: r[0],
         correct: r[1].correct,
-        incorrect: r[1].incorrect
+        incorrect: r[1].incorrect,
+        counting_time: r[1].counting_time
       };
     });
   }
