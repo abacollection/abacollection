@@ -1,4 +1,7 @@
 const ms = require('ms');
+const Boom = require('@hapi/boom');
+const isSANB = require('is-string-and-not-blank');
+const { isISO8601 } = require('validator');
 
 const { Datas } = require('../../../models');
 
@@ -22,8 +25,26 @@ async function retrieveGraph(ctx, next) {
 async function addData(ctx, next) {
   try {
     const { body } = ctx.request;
-
     let value;
+
+    if (!body.date || (body.date && !isISO8601(body.date)))
+      return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DATE')));
+
+    if (!isSANB(body.data)) {
+      if (!isSANB(body.correct))
+        return ctx.throw(
+          Boom.badRequest(ctx.translateError('INVALID_CORRECT'))
+        );
+      if (!isSANB(body.incorrect))
+        return ctx.throw(
+          Boom.badRequest(ctx.translateError('INVALID_INCORRECT'))
+        );
+      if (!isSANB(body.counting_time))
+        return ctx.throw(
+          Boom.badRequest(ctx.translateError('INVALID_COUNTING_TIME'))
+        );
+      return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DATA')));
+    }
 
     if (ctx.state.target.data_type === 'Duration') {
       const vals = body.data.split(':');
@@ -94,8 +115,26 @@ async function addData(ctx, next) {
 async function editData(ctx, next) {
   try {
     const { body } = ctx.request;
-
     let value;
+
+    if (!body.date || (body.date && !isISO8601(body.date)))
+      return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DATE')));
+
+    if (!isSANB(body.data)) {
+      if (!isSANB(body.correct))
+        return ctx.throw(
+          Boom.badRequest(ctx.translateError('INVALID_CORRECT'))
+        );
+      if (!isSANB(body.incorrect))
+        return ctx.throw(
+          Boom.badRequest(ctx.translateError('INVALID_INCORRECT'))
+        );
+      if (!isSANB(body.counting_time))
+        return ctx.throw(
+          Boom.badRequest(ctx.translateError('INVALID_COUNTING_TIME'))
+        );
+      return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DATA')));
+    }
 
     if (ctx.state.target.data_type === 'Duration') {
       const vals = body.data.split(':');

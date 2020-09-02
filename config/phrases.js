@@ -98,5 +98,10 @@ module.exports = {
   // Targets
   //
   INVALID_TARGET_NAME: 'Target name is invalid.',
-  TARGET_DOES_NOT_EXIST: 'Target does not exist.'
+  TARGET_DOES_NOT_EXIST: 'Target does not exist.',
+  INVALID_DATE: 'Date is not a valid date.',
+  INVALID_CORRECT: 'Correct is invalid.',
+  INVALID_INCORRECT: 'Incorrect is invalid.',
+  INVALID_COUNTING_TIME: 'Counting time is invalid.',
+  INVALID_DATA: 'Data is invalid.'
 };
