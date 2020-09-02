@@ -64,7 +64,7 @@ test('PUT data(JSON) > frequency', async (t) => {
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
-    date: data.date,
+    date: data.date.toString(),
     data: data.value
   });
 
@@ -103,7 +103,7 @@ test('POST data(JSON) > frequency', async (t) => {
   t.is(query.value, data.value);
 
   const res = await web.post(`${root}/${target.id}/data`).send({
-    date: data.date,
+    date: data.date.toString(),
     data: newData.value,
     origData: data.value
   });
@@ -177,7 +177,7 @@ async function putDuration(t, input, expected) {
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
-    date: data.date,
+    date: data.date.toString(),
     data: input
   });
 
@@ -262,7 +262,7 @@ test('PUT data(JSON) > rate', async (t) => {
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
-    date,
+    date: date.toString(),
     correct: 3,
     incorrect: 4,
     counting_time: '1:00'
@@ -347,7 +347,7 @@ test('PUT data(JSON) > percent correct', async (t) => {
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
-    date: data.date,
+    date: data.date.toString(),
     data: data.value
   });
 
