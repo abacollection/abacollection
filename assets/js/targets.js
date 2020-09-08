@@ -1,6 +1,10 @@
 const $ = require('jquery');
 const superagent = require('superagent');
 const Apex = require('apexcharts');
+const dayjs = require('dayjs');
+
+dayjs.extend(require('dayjs/plugin/utc'));
+dayjs.extend(require('dayjs/plugin/timezone'));
 
 const logger = require('./logger.js');
 
@@ -136,6 +140,9 @@ $(document).on('click', '#dataTargetBtn', async function (event) {
     // hide spinner
     $('#spinner').removeClass('show d-block');
     $('#data').html(res.text);
+
+    // add timezone
+    $('input[name="timezone"]').prop('value', dayjs.tz.guess());
   } catch (err) {
     logger.error(err);
   }

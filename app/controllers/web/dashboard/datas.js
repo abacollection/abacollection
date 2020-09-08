@@ -2,6 +2,10 @@ const ms = require('ms');
 const Boom = require('@hapi/boom');
 const isSANB = require('is-string-and-not-blank');
 const { isISO8601 } = require('validator');
+const dayjs = require('dayjs');
+
+dayjs.extend(require('dayjs/plugin/utc'));
+dayjs.extend(require('dayjs/plugin/timezone'));
 
 const { Datas } = require('../../../models');
 
@@ -27,10 +31,13 @@ async function addData(ctx, next) {
     const { body } = ctx.request;
     let value;
 
-    if (!body.date || (body.date && !isISO8601(body.date)))
+    if (
+      (!body.date || (body.date && !isISO8601(body.date))) &&
+      body.add_data === 'true'
+    )
       return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DATE')));
 
-    if (!isSANB(body.data)) {
+    if (ctx.state.target.data_type === 'Rate') {
       if (!isSANB(body.correct))
         return ctx.throw(
           Boom.badRequest(ctx.translateError('INVALID_CORRECT'))
@@ -43,8 +50,8 @@ async function addData(ctx, next) {
         return ctx.throw(
           Boom.badRequest(ctx.translateError('INVALID_COUNTING_TIME'))
         );
+    } else if (!isSANB(body.data))
       return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DATA')));
-    }
 
     if (ctx.state.target.data_type === 'Duration') {
       const vals = body.data.split(':');
@@ -91,7 +98,7 @@ async function addData(ctx, next) {
     }
 
     await Datas.create({
-      date: body.date,
+      date: dayjs.tz(body.date, body.timezone).toDate(),
       value,
       data_type: ctx.state.target.data_type,
       creation_date: new Date(),
@@ -117,10 +124,13 @@ async function editData(ctx, next) {
     const { body } = ctx.request;
     let value;
 
-    if (!body.date || (body.date && !isISO8601(body.date)))
+    if (
+      (!body.date || (body.date && !isISO8601(body.date))) &&
+      body.edit_data === 'true'
+    )
       return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DATE')));
 
-    if (!isSANB(body.data)) {
+    if (ctx.state.target.data_type === 'Rate') {
       if (!isSANB(body.correct))
         return ctx.throw(
           Boom.badRequest(ctx.translateError('INVALID_CORRECT'))
@@ -133,8 +143,8 @@ async function editData(ctx, next) {
         return ctx.throw(
           Boom.badRequest(ctx.translateError('INVALID_COUNTING_TIME'))
         );
+    } else if (!isSANB(body.data))
       return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DATA')));
-    }
 
     if (ctx.state.target.data_type === 'Duration') {
       const vals = body.data.split(':');
@@ -186,7 +196,7 @@ async function editData(ctx, next) {
       await data.save();
     } else
       await Datas.create({
-        date: body.date,
+        date: dayjs.tz(body.date, body.timezone).toDate(),
         value:
           Number.parseInt(body.data, 10) - Number.parseInt(body.origData, 10),
         data_type: ctx.state.target.data_type,

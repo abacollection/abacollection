@@ -24,9 +24,10 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                 input(type='hidden', name='_method', value='PUT', form='dataAdd')
                 input(type='hidden', name='_csrf', value=ctx.csrf, form='dataAdd')
                 input(type='hidden', name='add_data', value='true', form='dataAdd')
+                input(type='hidden', name='timezone', form='dataAdd')
                 //- Date input
                 td.align-middle
-                  input(type='date', name='date', required, form='dataAdd').form-control
+                  input(type='datetime-local', name='date', required, form='dataAdd').form-control
                 //- Data inputs
                 if target.data_type === 'Rate'
                   td.align-middle
@@ -86,6 +87,7 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                     input(type='hidden', name='edit_data', value='true', form=`${d.date.replace(/\//g, '')}-dataEdit`)
                     input(type='hidden', name='origData', value=d.value, form=`${d.date.replace(/\//g, '')}-dataEdit`)
                     input(type='hidden', name='date', value=d.date, form=`${d.date.replace(/\//g, '')}-dataEdit`)
+                    input(type='hidden', name='timezone', form=`${d.date.replace(/\//g, '')}-dataEdit`)
                     //- Date
                     td.align-middle= d.date
                     //- Data inputs
@@ -147,6 +149,7 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                                 form(id=`${rawD.id}-dataEdit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`)).ajax-form.confirm-prompt
                                 input(type='hidden', name='_method', value='POST', form=`${rawD.id}-dataEdit`)
                                 input(type='hidden', name='_csrf', value=ctx.csrf, form=`${rawD.id}-dataEdit`)
+                                input(type='hidden', name='edit_raw_data', value='true', form=`${rawD.id}-dataEdit`)
                                 input(type='hidden', name='id', value=rawD.id, form=`${rawD.id}-dataEdit`)
                                 //- Date column
                                 td.align-middle= dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')

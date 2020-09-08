@@ -2,6 +2,7 @@ const test = require('ava');
 const { factory } = require('factory-girl');
 const prettyMs = require('pretty-ms');
 const ms = require('ms');
+const dayjs = require('dayjs');
 
 const config = require('../../../config');
 const { Users, Datas } = require('../../../app/models');
@@ -58,22 +59,23 @@ test('PUT data(JSON) > frequency', async (t) => {
     data_type: 'Frequency'
   });
 
-  let query = await Datas.findOne({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  let query = await Datas.findOne({ target: target.id });
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
-    date: data.date.toString(),
-    data: data.value
+    date: dayjs(data.date).format('YYYY-MM-DDThh:mm'),
+    data: data.value.toString(),
+    add_data: 'true',
+    timezone: 'America/Chicago'
   });
 
   t.is(res.status, 200);
 
-  query = await Datas.findOne({
-    $and: [{ target: target.id, date: data.date }]
-  });
-  t.deepEqual(query.date, data.date);
+  query = await Datas.findOne({ target: target.id });
+  t.is(
+    dayjs(query.date).format('YYYY-MM-DDThh:mm'),
+    dayjs(data.date).format('YYYY-MM-DDThh:mm')
+  );
   t.is(query.value, data.value);
 });
 
@@ -97,26 +99,30 @@ test('POST data(JSON) > frequency', async (t) => {
     data_type: 'Frequency'
   });
 
-  let query = await Datas.findOne({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  let query = await Datas.findOne({ target: target.id });
   t.is(query.value, data.value);
 
   const res = await web.post(`${root}/${target.id}/data`).send({
-    date: data.date.toString(),
-    data: newData.value,
-    origData: data.value
+    date: data.date.toISOString(),
+    data: newData.value.toString(),
+    origData: data.value.toString(),
+    edit_data: 'true',
+    timezone: 'UTC'
   });
 
   t.is(res.status, 200);
 
-  query = await Datas.find({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  query = await Datas.find({ target: target.id });
   t.is(query.length, 2);
-  t.deepEqual(query[0].date, data.date);
+  t.is(
+    dayjs(query[0].date).format('YYYY-MM-DDThh:mm'),
+    dayjs(data.date).format('YYYY-MM-DDThh:mm')
+  );
   t.is(query[0].value, data.value);
-  t.deepEqual(query[1].date, data.date);
+  t.is(
+    dayjs(query[1].date).format('YYYY-MM-DDThh:mm'),
+    dayjs(data.date).format('YYYY-MM-DDThh:mm')
+  );
   t.is(query[1].value, Math.round(newData.value - data.value));
 });
 
@@ -138,23 +144,24 @@ test('POST data(JSON) > frequency > raw data', async (t) => {
     data_type: 'Frequency'
   });
 
-  let query = await Datas.findOne({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  let query = await Datas.findOne({ target: target.id });
   t.is(query.value, data.value);
 
   const res = await web.post(`${root}/${target.id}/data`).send({
     id: data.id,
-    data: newData.value
+    data: newData.value.toString(),
+    edit_raw_data: 'true',
+    timezone: 'America/Chicago'
   });
 
   t.is(res.status, 200);
 
-  query = await Datas.find({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  query = await Datas.find({ target: target.id });
   t.is(query.length, 1);
-  t.deepEqual(query[0].date, data.date);
+  t.is(
+    dayjs(query[0].date).format('YYYY-MM-DDThh:mm'),
+    dayjs(data.date).format('YYYY-MM-DDThh:mm')
+  );
   t.is(query[0].value, newData.value);
 });
 
@@ -171,22 +178,23 @@ async function putDuration(t, input, expected) {
     data_type: 'Duration'
   });
 
-  let query = await Datas.findOne({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  let query = await Datas.findOne({ target: target.id });
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
-    date: data.date.toString(),
-    data: input
+    date: dayjs(data.date).format('YYYY-MM-DDThh:mm'),
+    data: input,
+    add_data: 'true',
+    timezone: 'America/Chicago'
   });
 
   t.is(res.status, 200);
 
-  query = await Datas.findOne({
-    $and: [{ target: target.id, date: data.date }]
-  });
-  t.deepEqual(query.date, data.date);
+  query = await Datas.findOne({ target: target.id });
+  t.is(
+    dayjs(query.date).format('YYYY-MM-DDThh:mm'),
+    dayjs(data.date).format('YYYY-MM-DDThh:mm')
+  );
   t.is(prettyMs(query.value, { colonNotation: true }), expected);
 }
 
@@ -207,23 +215,24 @@ async function postDuration(t, input, expected) {
     data_type: 'Duration'
   });
 
-  let query = await Datas.findOne({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  let query = await Datas.findOne({ target: target.id });
   t.is(query.value, data.value);
 
   const res = await web.post(`${root}/${target.id}/data`).send({
     id: data.id,
-    data: input
+    data: input,
+    edit_raw_data: 'true',
+    timezone: 'America/Chicago'
   });
 
   t.is(res.status, 200);
 
-  query = await Datas.find({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  query = await Datas.find({ target: target.id });
   t.is(query.length, 1);
-  t.deepEqual(query[0].date, data.date);
+  t.is(
+    dayjs(query[0].date).format('YYYY-MM-DDThh:mm'),
+    dayjs(data.date).format('YYYY-MM-DDThh:mm')
+  );
   t.is(prettyMs(query[0].value, { colonNotation: true }), expected);
 }
 
@@ -256,24 +265,25 @@ test('PUT data(JSON) > rate', async (t) => {
 
   const date = new Date(Date.now());
 
-  let query = await Datas.findOne({
-    $and: [{ target: target.id, date }]
-  });
+  let query = await Datas.findOne({ target: target.id });
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
-    date: date.toString(),
-    correct: 3,
-    incorrect: 4,
-    counting_time: '1:00'
+    date: dayjs(date).format('YYYY-MM-DDThh:mm'),
+    correct: '3',
+    incorrect: '4',
+    counting_time: '1:00',
+    add_data: 'true',
+    timezone: 'America/Chicago'
   });
 
   t.is(res.status, 200);
 
-  query = await Datas.findOne({
-    $and: [{ target: target.id, date }]
-  });
-  t.deepEqual(query.date, date);
+  query = await Datas.findOne({ target: target.id });
+  t.is(
+    dayjs(query.date).format('YYYY-MM-DDThh:mm'),
+    dayjs(date).format('YYYY-MM-DDThh:mm')
+  );
   t.is(query.value.correct, 3);
   t.is(query.value.incorrect, 4);
   t.is(query.value.counting_time, ms('1m'));
@@ -298,32 +308,33 @@ test('POST data(JSON) > rate > raw data', async (t) => {
   });
 
   const value = {
-    correct: 4,
-    incorrect: 3,
+    correct: '4',
+    incorrect: '3',
     counting_time: '1:00'
   };
 
-  let query = await Datas.findOne({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  let query = await Datas.findOne({ target: target.id });
   t.is(query.value.correct, data.value.correct);
   t.is(query.value.incorrect, data.value.incorrect);
   t.is(query.value.counting_time, data.value.counting_time);
 
   const res = await web.post(`${root}/${target.id}/data`).send({
     id: data.id,
-    ...value
+    ...value,
+    edit_raw_data: 'true',
+    timezone: 'America/Chicago'
   });
 
   t.is(res.status, 200);
 
-  query = await Datas.find({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  query = await Datas.find({ target: target.id });
   t.is(query.length, 1);
-  t.deepEqual(query[0].date, data.date);
-  t.is(query[0].value.correct, value.correct);
-  t.is(query[0].value.incorrect, value.incorrect);
+  t.is(
+    dayjs(query[0].date).format('YYYY-MM-DDThh:mm'),
+    dayjs(data.date).format('YYYY-MM-DDThh:mm')
+  );
+  t.is(query[0].value.correct, Number.parseInt(value.correct, 10));
+  t.is(query[0].value.incorrect, Number.parseInt(value.incorrect, 10));
   t.is(query[0].value.counting_time, ms('1m'));
 });
 
@@ -341,22 +352,23 @@ test('PUT data(JSON) > percent correct', async (t) => {
     data_type: 'Percent Correct'
   });
 
-  let query = await Datas.findOne({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  let query = await Datas.findOne({ target: target.id });
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
-    date: data.date.toString(),
-    data: data.value
+    date: dayjs(data.date).format('YYYY-MM-DDThh:mm'),
+    data: data.value.toString(),
+    add_data: 'true',
+    timezone: 'America/Chicago'
   });
 
   t.is(res.status, 200);
 
-  query = await Datas.findOne({
-    $and: [{ target: target.id, date: data.date }]
-  });
-  t.deepEqual(query.date, data.date);
+  query = await Datas.findOne({ target: target.id });
+  t.is(
+    dayjs(query.date).format('YYYY-MM-DDThh:mm'),
+    dayjs(data.date).format('YYYY-MM-DDThh:mm')
+  );
   t.is(query.value, data.value);
 });
 
@@ -380,22 +392,23 @@ test('POST data(JSON) > percent correct > raw data', async (t) => {
     data_type: 'Percent Correct'
   });
 
-  let query = await Datas.findOne({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  let query = await Datas.findOne({ target: target.id });
   t.is(query.value, data.value);
 
   const res = await web.post(`${root}/${target.id}/data`).send({
     id: data.id,
-    data: newData.value
+    data: newData.value.toString(),
+    edit_raw_data: 'true',
+    timezone: 'America/Chicago'
   });
 
   t.is(res.status, 200);
 
-  query = await Datas.find({
-    $and: [{ target: target.id, date: data.date }]
-  });
+  query = await Datas.find({ target: target.id });
   t.is(query.length, 1);
-  t.deepEqual(query[0].date, data.date);
+  t.is(
+    dayjs(query[0].date).format('YYYY-MM-DDThh:mm'),
+    dayjs(data.date).format('YYYY-MM-DDThh:mm')
+  );
   t.is(query[0].value, newData.value);
 });
