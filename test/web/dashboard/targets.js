@@ -295,7 +295,7 @@ test('GET data(JSON) > frequency > default', async (t) => {
   await Promise.all(datas);
 
   const res = await web
-    .get(`${root}/targets/${target.id}`)
+    .get(`${root}/targets/${target.id}/graph`)
     .set('Accept', 'application/json')
     .send();
 
@@ -325,7 +325,7 @@ test('GET data(JSON) > frequency > monthly', async (t) => {
       factory.create('data', {
         value: 1,
         target,
-        date: dayjs().subtract(i, 'day').toDate(),
+        date: dayjs('5/15/2020').subtract(i, 'day').toDate(),
         data_type: 'Frequency'
       })
     );
@@ -335,7 +335,7 @@ test('GET data(JSON) > frequency > monthly', async (t) => {
     factory.create('data', {
       value: 1,
       target,
-      date: dayjs().subtract(1, 'day').toDate(),
+      date: dayjs('5/15/2020').subtract(1, 'day').toDate(),
       data_type: 'Frequency'
     })
   );
@@ -343,7 +343,7 @@ test('GET data(JSON) > frequency > monthly', async (t) => {
   await Promise.all(datas);
 
   const res = await web
-    .get(`${root}/targets/${target.id}?interval=M`)
+    .get(`${root}/targets/${target.id}/graph?interval=M`)
     .set('Accept', 'application/json')
     .send();
 
@@ -388,7 +388,7 @@ test('GET data(JSON) > percent correct > default', async (t) => {
   await Promise.all(datas);
 
   const res = await web
-    .get(`${root}/targets/${target.id}`)
+    .get(`${root}/targets/${target.id}/graph`)
     .set('Accept', 'application/json')
     .send();
 
@@ -437,7 +437,7 @@ test('GET data(JSON) > duration > default', async (t) => {
   await Promise.all(datas);
 
   const res = await web
-    .get(`${root}/targets/${target.id}`)
+    .get(`${root}/targets/${target.id}/graph`)
     .set('Accept', 'application/json')
     .send();
 
@@ -485,7 +485,7 @@ test('GET data(JSON) > rate > default', async (t) => {
   await Promise.all(datas);
 
   const res = await web
-    .get(`${root}/targets/${target.id}`)
+    .get(`${root}/targets/${target.id}/graph`)
     .set('Accept', 'application/json')
     .send();
 
