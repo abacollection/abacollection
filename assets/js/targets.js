@@ -2,6 +2,7 @@ const $ = require('jquery');
 const superagent = require('superagent');
 const Apex = require('apexcharts');
 const dayjs = require('dayjs');
+const Sortable = require('sortablejs');
 
 dayjs.extend(require('dayjs/plugin/utc'));
 dayjs.extend(require('dayjs/plugin/timezone'));
@@ -9,13 +10,18 @@ dayjs.extend(require('dayjs/plugin/timezone'));
 const logger = require('./logger.js');
 
 let graph;
+let ta;
 
 $(document).on('click', '#addBtn', function () {
   $('#addForm').prop('hidden', false);
+
+  if ($('#ta-form').length >= 1) $('#ta-form').prop('hidden', false);
 });
 
 $(document).on('click', '#cancelAddBtn', function () {
   $('#addForm').prop('hidden', true);
+
+  if ($('#ta-form').length >= 1) $('#ta-form').prop('hidden', true);
 });
 
 $(document).on('click', '.edit-btn', function () {
@@ -185,13 +191,71 @@ $('#modal-graph-target').on('hidden.bs.modal', function () {
   }
 });
 
-$('#modal-edit-target').on('hidden.bs.modal', function () {
-  $(this).find('form').trigger('reset');
-});
-
 $('#modal-data-target').on('hidden.bs.modal', function () {
   $('#data').empty();
 
   $(this).find('.interval').removeClass('active');
   $('#modal-data-target .interval').first().addClass('active');
+});
+
+//
+// task analysis sorting setup
+//
+$(document).on('change', '#input-data_type', function (e) {
+  if (e.target.value === 'Task Analysis') {
+    const $parent = $(this).parents('tr#addForm');
+
+    if (ta) $parent.after(ta);
+    else
+      $parent.after(`
+        <tr id="ta-form">
+          <td colspan="4">
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" id="ta-steps" name="ta-steps" placeholder="Steps for Task Analysis"/>
+              <div class="input-group-append">
+                <button class="btn btn-secondary" type="button" id="ta-add">
+                  <i class="fa fa-fw fa-check"></i>
+                </button>
+              </div>
+            </div>
+            <ul id="sortable" class="list-group">
+            </ul>
+          </td>
+        </tr>
+      `);
+
+    Sortable.create(document.querySelector('#sortable'));
+  } else if ($('#ta-form').length >= 1) ta = $('#ta-form').detach();
+});
+
+function addTAStep() {
+  $('#sortable').append(`
+      <li class="list-group-item">
+        <input type="hidden" name="ta" value="${$(
+          '#ta-steps'
+        ).val()}" form="add"/>
+        <i class="fa fa-fw fa-grip-lines-vertical mt-1 mr-1"></i>
+        ${$('#ta-steps').val()}
+        <a href="#" class="float-right close-btn btn py-0">
+          <i class="fa fa-fw fa-times"></i>
+        </a>
+      </li>
+    `);
+  $('#ta-steps').val('');
+}
+
+$(document).on('keydown', '#ta-steps', function (e) {
+  if (e.keyCode === 13) {
+    e.preventDefault();
+
+    addTAStep();
+
+    return false;
+  }
+});
+
+$(document).on('click', '#ta-add', addTAStep);
+
+$(document).on('click', '.close-btn', function () {
+  $(this).parent().remove();
 });
