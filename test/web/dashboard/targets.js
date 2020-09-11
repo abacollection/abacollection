@@ -144,9 +144,9 @@ test('GET targets > successfully with targets', async (t) => {
   t.true(res.text.includes(target.name));
 });
 
-test('PUT targets > successfully', async (t) => {
+async function putTargets(t, input) {
   const { web, root } = t.context;
-  const target = await factory.build('target');
+  const target = await factory.build('target', { data_type: input });
 
   let query = await Targets.findOne({ name: target.name });
   t.is(query, null);
@@ -161,10 +161,42 @@ test('PUT targets > successfully', async (t) => {
   t.is(res.header.location, `${root}/targets`);
 
   query = await Targets.findOne({ name: target.name });
-  t.is(query.data_type, target.data_type);
   t.is(query.name, target.name);
   t.is(query.description, target.description);
   t.is(query.data_type, target.data_type);
+}
+
+putTargets.title = (providedTitle = '') =>
+  `PUT targets > ${providedTitle} > successfully`.trim();
+
+test('frequency', putTargets, 'Frequency');
+test('duration', putTargets, 'Duration');
+test('rate', putTargets, 'Rate');
+
+test('PUT targets > task analysis > successfully', async (t) => {
+  const { web, root } = t.context;
+  const target = await factory.build('target');
+
+  let query = await Targets.findOne({ name: target.name });
+  t.is(query, null);
+
+  const res = await web.put(`${root}/targets`).send({
+    name: target.name,
+    description: target.description,
+    data_type: 'Task Analysis',
+    ta: ['1', '2', '3']
+  });
+
+  t.is(res.status, 302);
+  t.is(res.header.location, `${root}/targets`);
+
+  query = await Targets.findOne({ name: target.name });
+  t.is(query.name, target.name);
+  t.is(query.description, target.description);
+  t.is(query.data_type, 'Task Analysis');
+  t.is(query.ta[0], '1');
+  t.is(query.ta[1], '2');
+  t.is(query.ta[2], '3');
 });
 
 test('PUT targets > fails with invalid name', async (t) => {

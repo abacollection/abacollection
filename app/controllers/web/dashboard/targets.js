@@ -105,13 +105,17 @@ async function addTarget(ctx) {
       Boom.badRequest(ctx.translateError('INVALID_TARGET_NAME'))
     );
   try {
-    ctx.state.target = await Targets.create({
+    const doc = {
       name: ctx.request.body.name,
       data_type: ctx.request.body.data_type,
       description: ctx.request.body.description,
       created_by: ctx.state.user,
       program: ctx.state.program
-    });
+    };
+
+    if (doc.data_type === 'Task Analysis') doc.ta = ctx.request.body.ta;
+
+    ctx.state.target = await Targets.create(doc);
 
     const redirectTo = ctx.state.l(
       `/dashboard/clients/${ctx.state.client.id}/programs/${ctx.state.program.id}/targets`
