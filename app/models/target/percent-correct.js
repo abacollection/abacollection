@@ -7,9 +7,9 @@ const { format } = require('../../../helpers/format');
 // <https://github.com/Automattic/mongoose/issues/5534>
 mongoose.Error.messages = require('@ladjs/mongoose-error-messages');
 
-const frequencySchema = new mongoose.Schema();
+const pcSchema = new mongoose.Schema();
 
-frequencySchema.method('getGraph', async function (query) {
+pcSchema.method('getGraph', async function (query) {
   let form = format.D;
   if (query && query.interval) form = format[query.interval];
 
@@ -23,18 +23,25 @@ frequencySchema.method('getGraph', async function (query) {
   datas.forEach((data) => {
     const date = dayjs(data.date).format(form);
 
-    if (ret[date]) ret[date] += data.value;
-    else ret[date] = data.value;
+    if (ret[date]) ret[date].push(data.value);
+    else ret[date] = [data.value];
   });
 
   ret = Object.entries(ret).map((r) => {
-    return { x: r[0], y: Number.parseInt(r[1].toFixed(0), 10) };
+    const [key, value] = r;
+
+    const total = value.length;
+    const correct = value.filter((d) => d === 'correct').length;
+
+    const percent = ((correct / total) * 100).toFixed(0);
+
+    return { x: key, y: Number.parseInt(percent, 10) };
   });
 
   return ret;
 });
 
-frequencySchema.method('getData', async function (query) {
+pcSchema.method('getData', async function (query) {
   let form = format.D;
   if (query && query.interval) form = format[query.interval];
 
@@ -52,8 +59,8 @@ frequencySchema.method('getData', async function (query) {
   datas.forEach((data) => {
     const date = dayjs(data.date).format(form);
 
-    if (ret[date]) ret[date] += data.value;
-    else ret[date] = data.value;
+    if (ret[date]) ret[date].push(data.value);
+    else ret[date] = [data.value];
 
     if (rawData) {
       if (rawData[date]) rawData[date].push(data);
@@ -62,7 +69,14 @@ frequencySchema.method('getData', async function (query) {
   });
 
   ret = Object.entries(ret).map((r) => {
-    return { date: r[0], value: Number.parseInt(r[1].toFixed(0), 10) };
+    const [key, value] = r;
+
+    const total = value.length;
+    const correct = value.filter((d) => d === 'correct').length;
+
+    const percent = ((correct / total) * 100).toFixed(0);
+
+    return { date: key, value: Number.parseInt(percent, 10) };
   });
 
   if (rawData) return { data: ret, rawData };
@@ -70,10 +84,10 @@ frequencySchema.method('getData', async function (query) {
   return ret;
 });
 
-frequencySchema.method('getPreviousData', async function () {
+pcSchema.method('getPreviousData', async function () {
   let ret;
 
-  const datas = await Datas.find({
+  ret = await Datas.find({
     $and: [
       {
         target: this._id
@@ -87,19 +101,20 @@ frequencySchema.method('getPreviousData', async function () {
     ]
   }).exec();
 
-  ret = 0;
+  const total = ret.length;
+  const correct = ret.filter((data) => data.value === 'correct').length;
 
-  datas.forEach((data) => {
-    ret += data.value;
-  });
+  const percent = ((correct / total) * 100).toFixed(0);
+
+  ret = `${percent === 'NaN' ? 'NA' : percent}%`;
 
   return ret;
 });
 
-frequencySchema.method('getCurrentData', async function () {
+pcSchema.method('getCurrentData', async function () {
   let ret = 'NA';
 
-  const datas = await Datas.find({
+  ret = await Datas.find({
     $and: [
       {
         target: this._id
@@ -112,13 +127,14 @@ frequencySchema.method('getCurrentData', async function () {
     ]
   }).exec();
 
-  ret = 0;
+  const total = ret.length;
+  const correct = ret.filter((data) => data.value === 'correct').length;
 
-  datas.forEach((data) => {
-    ret += data.value;
-  });
+  const percent = ((correct / total) * 100).toFixed(0);
+
+  ret = `${percent === 'NaN' ? 'NA' : percent}%`;
 
   return ret;
 });
 
-module.exports = frequencySchema;
+module.exports = pcSchema;

@@ -1,24 +1,16 @@
 const mongoose = require('mongoose');
 const mongooseCommonPlugin = require('mongoose-common-plugin');
-const dayjs = require('dayjs');
-const ms = require('ms');
-const prettyMs = require('pretty-ms');
 
 const Datas = require('../data');
 
 const frequencySchema = require('./frequency');
 const durationSchema = require('./duration');
+const pcSchema = require('./percent-correct');
 const rateSchema = require('./rate');
 const taSchema = require('./task-analysis');
 
 // <https://github.com/Automattic/mongoose/issues/5534>
 mongoose.Error.messages = require('@ladjs/mongoose-error-messages');
-
-const format = {
-  D: 'MM/DD/YYYY',
-  M: 'MM/YYYY',
-  Y: 'YYYY'
-};
 
 const targetSchema = new mongoose.Schema(
   {
@@ -69,331 +61,14 @@ targetSchema.post('findOneAndRemove', async function () {
   });
 });
 
-targetSchema.method('getGraph', async function (query) {
-  let form = format.D;
-  if (query && query.interval) form = format[query.interval];
-
-  let ret = {};
-
-  const datas = await Datas.find({ target: this._id })
-    .sort('date')
-    .lean()
-    .exec();
-
-  if (this.data_type === 'Frequency') {
-    datas.forEach((data) => {
-      const date = dayjs(data.date).format(form);
-
-      if (ret[date]) ret[date] += data.value;
-      else ret[date] = data.value;
-    });
-
-    ret = Object.entries(ret).map((r) => {
-      return { x: r[0], y: Number.parseInt(r[1].toFixed(0), 10) };
-    });
-  } else if (this.data_type === 'Percent Correct') {
-    datas.forEach((data) => {
-      const date = dayjs(data.date).format(form);
-
-      if (ret[date]) ret[date].push(data.value);
-      else ret[date] = [data.value];
-    });
-
-    ret = Object.entries(ret).map((r) => {
-      const [key, value] = r;
-
-      const total = value.length;
-      const correct = value.filter((d) => d === 'correct').length;
-
-      const percent = ((correct / total) * 100).toFixed(0);
-
-      return { x: key, y: Number.parseInt(percent, 10) };
-    });
-  } else if (this.data_type === 'Duration') {
-    datas.forEach((data) => {
-      const date = dayjs(data.date).format(form);
-
-      if (ret[date]) ret[date] += data.value;
-      else ret[date] = data.value;
-    });
-
-    ret = Object.entries(ret).map((r) => {
-      return {
-        x: r[0],
-        y: Number.parseInt((r[1] / ms('1 min')).toFixed(0), 10)
-      };
-    });
-  } else if (this.data_type === 'Rate') {
-    datas.forEach((data) => {
-      const date = dayjs(data.date).format(form);
-
-      if (!ret[date]) {
-        const { value } = data;
-        const counting_time = value.counting_time / ms('1m');
-        const correct = Number.parseInt(
-          (value.correct / counting_time).toFixed(3),
-          10
-        );
-        const incorrect = Number.parseInt(
-          (value.incorrect / counting_time).toFixed(3),
-          10
-        );
-
-        ret[date] = { correct, incorrect };
-      }
-    });
-
-    ret = Object.entries(ret).map((r) => {
-      return {
-        x: r[0],
-        correct: r[1].correct,
-        incorrect: r[1].incorrect
-      };
-    });
-  }
-
-  return ret;
-});
-
-targetSchema.method('getData', async function (query) {
-  let form = format.D;
-  if (query && query.interval) form = format[query.interval];
-
-  let rawData;
-
-  if (query && query.rawData) rawData = {};
-
-  let ret = {};
-
-  const datas = await Datas.find({ target: this._id })
-    .sort('date')
-    .lean()
-    .exec();
-
-  if (this.data_type === 'Frequency') {
-    datas.forEach((data) => {
-      const date = dayjs(data.date).format(form);
-
-      if (ret[date]) ret[date] += data.value;
-      else ret[date] = data.value;
-
-      if (rawData) {
-        if (rawData[date]) rawData[date].push(data);
-        else rawData[date] = [data];
-      }
-    });
-
-    ret = Object.entries(ret).map((r) => {
-      return { date: r[0], value: Number.parseInt(r[1].toFixed(0), 10) };
-    });
-  } else if (this.data_type === 'Percent Correct') {
-    datas.forEach((data) => {
-      const date = dayjs(data.date).format(form);
-
-      if (ret[date]) ret[date].push(data.value);
-      else ret[date] = [data.value];
-
-      if (rawData) {
-        if (rawData[date]) rawData[date].push(data);
-        else rawData[date] = [data];
-      }
-    });
-
-    ret = Object.entries(ret).map((r) => {
-      const [key, value] = r;
-
-      const total = value.length;
-      const correct = value.filter((d) => d === 'correct').length;
-
-      const percent = ((correct / total) * 100).toFixed(0);
-
-      return { date: key, value: Number.parseInt(percent, 10) };
-    });
-  } else if (this.data_type === 'Duration') {
-    datas.forEach((data) => {
-      const date = dayjs(data.date).format(form);
-
-      if (ret[date]) ret[date] += data.value;
-      else ret[date] = data.value;
-
-      if (rawData) {
-        data.value = prettyMs(data.value, { colonNotation: true });
-
-        if (rawData[date]) rawData[date].push(data);
-        else rawData[date] = [data];
-      }
-    });
-
-    ret = Object.entries(ret).map((r) => {
-      return {
-        date: r[0],
-        value: prettyMs(r[1], { colonNotation: true })
-      };
-    });
-  } else if (this.data_type === 'Rate') {
-    datas.forEach((data) => {
-      const date = dayjs(data.date).format(form);
-
-      if (!ret[date]) {
-        const { value } = data;
-        const counting_time = value.counting_time / ms('1m');
-        const correct = Number.parseInt(
-          (value.correct / counting_time).toFixed(3),
-          10
-        );
-        const incorrect = Number.parseInt(
-          (value.incorrect / counting_time).toFixed(3),
-          10
-        );
-
-        ret[date] = {
-          correct,
-          incorrect,
-          counting_time: prettyMs(value.counting_time, { colonNotation: true })
-        };
-      }
-
-      if (rawData) {
-        data.value.counting_time = prettyMs(data.value.counting_time, {
-          colonNotation: true
-        });
-
-        if (rawData[date]) rawData[date].push(data);
-        else rawData[date] = [data];
-      }
-    });
-
-    ret = Object.entries(ret).map((r) => {
-      return {
-        date: r[0],
-        correct: r[1].correct,
-        incorrect: r[1].incorrect,
-        counting_time: r[1].counting_time
-      };
-    });
-  }
-
-  if (rawData) return { data: ret, rawData };
-
-  return ret;
-});
-
 targetSchema.method('getPreviousData', async function () {
-  let ret = 'WIP';
-
-  if (this.data_type === 'Frequency') {
-    const datas = await Datas.find({
-      $and: [
-        {
-          target: this._id
-        },
-        {
-          date: {
-            $lt: dayjs().startOf('day').toDate(),
-            $gte: dayjs().startOf('day').subtract(1, 'day').toDate()
-          }
-        }
-      ]
-    }).exec();
-
-    ret = 0;
-
-    datas.forEach((data) => {
-      ret += data.value;
-    });
-  } else if (this.data_type === 'Duration') {
-    ret = await Datas.find({ target: this._id }).sort('-date').limit(1).exec();
-
-    ret = ret[0] ? ms(ret[0].value, { long: true }) : 'NA';
-  } else if (this.data_type === 'Percent Correct') {
-    ret = await Datas.find({
-      $and: [
-        {
-          target: this._id
-        },
-        {
-          date: {
-            $lt: dayjs().startOf('day').toDate(),
-            $gte: dayjs().startOf('day').subtract(1, 'day').toDate()
-          }
-        }
-      ]
-    }).exec();
-
-    const total = ret.length;
-    const correct = ret.filter((data) => data.value === 'correct').length;
-
-    const percent = ((correct / total) * 100).toFixed(0);
-
-    ret = `${percent === 'NaN' ? 'NA' : percent}%`;
-  } else if (this.data_type === 'Rate') {
-    ret = await Datas.find({ target: this._id }).sort('-date').limit(1).exec();
-
-    if (ret[0]) {
-      const counting_time = ret[0].value.counting_time / ms('1m');
-      const correct = Number.parseInt(
-        (ret[0].value.correct / counting_time).toFixed(3),
-        10
-      );
-      const incorrect = Number.parseInt(
-        (ret[0].value.incorrect / counting_time).toFixed(3),
-        10
-      );
-
-      ret = `${correct} correct, ${incorrect} incorrect(/min)`;
-    } else ret = 'NA';
-  }
+  const ret = 'WIP';
 
   return ret;
 });
 
 targetSchema.method('getCurrentData', async function () {
-  let ret = 'WIP';
-
-  if (this.data_type === 'Frequency') {
-    const datas = await Datas.find({
-      $and: [
-        {
-          target: this._id
-        },
-        {
-          date: {
-            $gte: dayjs().startOf('day').toDate()
-          }
-        }
-      ]
-    }).exec();
-
-    ret = 0;
-
-    datas.forEach((data) => {
-      ret += data.value;
-    });
-  } else if (this.data_type === 'Duration') {
-    ret = 'NA';
-  } else if (this.data_type === 'Percent Correct') {
-    ret = await Datas.find({
-      $and: [
-        {
-          target: this._id
-        },
-        {
-          date: {
-            $gte: dayjs().startOf('day').toDate()
-          }
-        }
-      ]
-    }).exec();
-
-    const total = ret.length;
-    const correct = ret.filter((data) => data.value === 'correct').length;
-
-    const percent = ((correct / total) * 100).toFixed(0);
-
-    ret = `${percent === 'NaN' ? 'NA' : percent}%`;
-  } else if (this.data_type === 'Rate') {
-    ret = 'NA';
-  }
+  const ret = 'WIP';
 
   return ret;
 });
@@ -405,6 +80,7 @@ const Target = mongoose.model('Target', targetSchema);
 //
 Target.discriminator('FrequencyTarget', frequencySchema, 'Frequency');
 Target.discriminator('DurationTarget', durationSchema, 'Duration');
+Target.discriminator('PercentCorrectTarget', pcSchema, 'Percent Correct');
 Target.discriminator('RateTarget', rateSchema, 'Rate');
 Target.discriminator('TaskAnalysisTarget', taSchema, 'Task Analysis');
 
