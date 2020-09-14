@@ -11,6 +11,7 @@ const logger = require('./logger.js');
 
 let graph;
 let ta;
+const sortables = {};
 
 $(document).on('click', '#addBtn', function () {
   $('#addForm').prop('hidden', false);
@@ -28,8 +29,14 @@ $(document).on('click', '.edit-btn', function () {
   const $parent = $(this).parents('tr:first');
   const id = $parent.prop('id');
 
+  sortables[id] = {
+    original: $(`#${id}-sortable`).html()
+  };
+  sortables[id].sortable = Sortable.create($(`#${id}-sortable`)[0]);
+
   $parent.prop('hidden', true);
   $(`.edit-form#${id}-form`).prop('hidden', false);
+  $(`.edit-form#${id}-form-ta`).prop('hidden', false);
 });
 
 $(document).on('click', '.edit-cancel-btn', function () {
@@ -37,7 +44,12 @@ $(document).on('click', '.edit-cancel-btn', function () {
   const id = $parent.prop('id').replace('-form', '');
 
   $parent.prop('hidden', true);
+  $(`.edit-form#${id}-form-ta`).prop('hidden', true);
   $(`tr#${id}`).prop('hidden', false);
+
+  sortables[id].sortable.destroy();
+  $(`#${id}-sortable`).html(sortables[id].original);
+  delete sortables[id];
 });
 
 $(document).on('click', '#dataAddBtn', function () {
