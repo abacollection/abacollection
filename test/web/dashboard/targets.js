@@ -294,6 +294,44 @@ test('POST targets > modifies name and description', async (t) => {
   t.is(query.description, newTarget.description);
 });
 
+test('POST targets > task analysis > modifies order of steps', async (t) => {
+  const { web, root, program } = t.context;
+
+  const target = await factory.build('target', {
+    program,
+    data_type: 'Task Analysis',
+    ta: ['1', '2', '3']
+  });
+
+  await web.put(`${root}/targets`).send({
+    name: target.name,
+    description: target.description,
+    data_type: target.data_type,
+    ta: target.ta
+  });
+
+  let query = await Targets.findOne({ name: target.name });
+  t.is(query.name, target.name);
+  t.is(query.ta[0], '1');
+  t.is(query.ta[1], '2');
+  t.is(query.ta[2], '3');
+
+  const res = await web.post(`${root}/targets/${query.id}`).send({
+    name: target.name,
+    description: target.description,
+    ta: ['3', '1', '2']
+  });
+
+  t.is(res.status, 302);
+  t.is(res.header.location, `${root}/targets`);
+
+  query = await Targets.findOne({ name: target.name });
+  t.is(query.name, target.name);
+  t.is(query.ta[0], '3');
+  t.is(query.ta[1], '1');
+  t.is(query.ta[2], '2');
+});
+
 test('GET data(JSON) > frequency > default', async (t) => {
   t.plan(14);
 

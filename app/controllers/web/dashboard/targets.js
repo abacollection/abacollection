@@ -172,6 +172,11 @@ async function editTarget(ctx) {
     { new: true, runValidators: true, context: 'query' }
   );
 
+  if (ctx.state.target.data_type === 'Task Analysis' && ctx.request.body) {
+    ctx.state.target.ta = ctx.request.body.ta;
+    ctx.state.target = ctx.state.target.save();
+  }
+
   ctx.flash('custom', {
     title: ctx.request.t('Success'),
     text: ctx.translate('REQUEST_OK'),
