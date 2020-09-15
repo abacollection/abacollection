@@ -309,6 +309,105 @@ $('.rate .timer-save').click(function () {
 });
 
 //
+// handle task analysis
+//
+// next button
+$('.ta-next').click(function () {
+  const $parent = $(this).parents('.ta');
+  const $next = $(this);
+  const $previous = $parent.find('.ta-previous');
+  const $steps = $previous.parent().next();
+  const $currentStep = $steps
+    .find('.row')
+    .filter((_, elem) => $(elem).prop('hidden') === false);
+
+  $currentStep.prop('hidden', true);
+  $currentStep.next().prop('hidden', false);
+
+  if ($currentStep.next().next().length === 0) $next.prop('disabled', true);
+
+  $previous.prop('disabled', false);
+});
+
+// previous button
+$('.ta-previous').click(function () {
+  const $parent = $(this).parents('.ta');
+  const $next = $parent.find('.ta-next');
+  const $previous = $(this);
+  const $steps = $previous.parent().next();
+  const $currentStep = $steps
+    .find('.row')
+    .filter((_, elem) => $(elem).prop('hidden') === false);
+
+  $currentStep.prop('hidden', true);
+  $currentStep.prev().prop('hidden', false);
+
+  $next.prop('disabled', false);
+
+  if ($currentStep.prev().prev().length === 0) $previous.prop('disabled', true);
+});
+
+// data buttons
+$('button.ta').click(function () {
+  const $parent = $(this).parents('.ta');
+  const $next = $parent.find('.ta-next');
+  const $previous = $parent.find('.ta-previous');
+  const $steps = $previous.parent().next();
+  const $currentStep = $steps
+    .find('.row')
+    .filter((_, elem) => $(elem).prop('hidden') === false);
+
+  $currentStep.find('button.ta').removeClass('btn-primary');
+  $(this).addClass('btn-primary');
+
+  $currentStep.prop('hidden', true);
+  $currentStep.next().prop('hidden', false);
+
+  if ($currentStep.next().next().length === 0) $next.prop('disabled', true);
+  $previous.prop('disabled', false);
+});
+
+// save button
+$('button.ta-save').click(function () {
+  const value = [];
+  const $parent = $(this).parents('.ta');
+  const $next = $parent.find('.ta-next');
+  const $previous = $parent.find('.ta-previous');
+  const $steps = $previous.parent().next().find('.row');
+  const id = $(this).parents('.card').prop('id');
+
+  $steps.each(function (index) {
+    // hide all but first one
+    if (index === 0) $(this).prop('hidden', false);
+    else $(this).prop('hidden', true);
+    // return early if no buttons i.e. save button
+    if ($(this).find('button.ta-save').length === 1) return;
+
+    const btn = $(this).find('button.ta.btn-primary');
+
+    // remove btn-primary class
+    btn.removeClass('btn-primary');
+
+    if (btn.length === 1) {
+      if (btn.hasClass('ta-correct')) value.push('correct');
+      else if (btn.hasClass('ta-approximation')) value.push('approximation');
+      else if (btn.hasClass('ta-incorrect')) value.push('incorrect');
+      return;
+    }
+
+    value.push(null);
+  });
+
+  $next.prop('disabled', false);
+  $previous.prop('disabled', true);
+
+  if (value.length !== 0) {
+    if (targets[id]) targets[id].push(value);
+    else targets[id] = [value];
+  }
+});
+
+//
 // GET Data
 //
 async function getData(res) {

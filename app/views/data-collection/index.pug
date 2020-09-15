@@ -130,5 +130,39 @@ block body
                           .col
                             +clicker()
                     +timer()
+                when 'Task Analysis'
+                  .row.ta
+                    .col
+                      button.btn.ta-previous(disabled): i.fas.fa-chevron-left
+                    .col-6
+                      for step, index in target.ta
+                        if index === 0
+                          .row.text-center(data-index=index)
+                            .col
+                              = t(step)
+                            .w-100
+                            .col
+                              .btn-group
+                                button.btn.ta.ta-correct: i.fas.fa-plus
+                                button.btn.ta.ta-approximation: i.fas.fa-plus-circle
+                                button.btn.ta.ta-incorrect: i.fas.fa-minus
+                        else
+                          .row.text-center(data-index=index, hidden)
+                            .col
+                              = t(step)
+                            .w-100
+                            .col
+                              .btn-group
+                                button.btn.ta.ta-correct: i.fas.fa-plus
+                                button.btn.ta.ta-approximation: i.fas.fa-plus-circle
+                                button.btn.ta.ta-incorrect: i.fas.fa-minus
+                      .row.text-center(hidden)
+                        .col
+                          = t('Save')
+                        .w-100
+                        .col
+                          button.btn.ta-save: i.fas.fa-save
+                    .col
+                      button.btn.ta-next: i.fas.fa-chevron-right
                 default
                   = t(`${target.data_type} not implemented yet.`)
