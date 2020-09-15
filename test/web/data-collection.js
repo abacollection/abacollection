@@ -264,6 +264,40 @@ test('GET(HTML) collection page > rate', async (t) => {
   t.true(res.text.includes('Current: NA'));
 });
 
+test('GET(HTML) collection page > task analysis', async (t) => {
+  const { web, root, programs } = t.context;
+  const program = programs[0];
+
+  // setup frequency target with data from yesterday
+  let ta = await factory.create('target', {
+    program,
+    data_type: 'Task Analysis'
+  });
+  ta = await Targets.findOne({ id: ta.id });
+  ta.ta = ['1', '2', '3', '4'];
+  ta = await ta.save();
+  await factory.createMany('data', [
+    {
+      value: ['correct', 'incorrect', 'incorrect', 'incorrect'],
+      target: ta,
+      data_type: 'Task Analysis',
+      date: dayjs().subtract(1, 'day').toDate()
+    },
+    {
+      value: ['correct', 'incorrect', 'correct', 'incorrect'],
+      target: ta,
+      data_type: 'Task Analysis',
+      date: dayjs().toDate()
+    }
+  ]);
+
+  const res = await web.get(root);
+
+  t.is(res.status, 200);
+  t.true(res.text.includes('Previous: 50%'));
+  t.true(res.text.includes('Current: NA'));
+});
+
 test('POST collection page > frequency > adds data', async (t) => {
   const { web, root, programs } = t.context;
   const program = programs[0];
