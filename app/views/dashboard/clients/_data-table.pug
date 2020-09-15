@@ -69,7 +69,7 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                     td.align-middle= d.correct
                     td.align-middle= d.incorrect
                     td.align-middle= d.counting_time
-                  else if target.data_type === 'Percent Correct'
+                  else if ['Percent Correct', 'Task Analysis'].includes(target.data_type)
                     td.align-middle= `${d.value}%`
                   else
                     td.align-middle= d.value

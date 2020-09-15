@@ -101,6 +101,8 @@ pcSchema.method('getPreviousData', async function () {
     ]
   }).exec();
 
+  if (ret.length === 0) return 'NA';
+
   const total = ret.length;
   const correct = ret.filter((data) => data.value === 'correct').length;
 

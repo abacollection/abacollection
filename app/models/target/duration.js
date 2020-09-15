@@ -85,6 +85,8 @@ durationSchema.method('getPreviousData', async function () {
 
   ret = await Datas.find({ target: this._id }).sort('-date').limit(1).exec();
 
+  if (ret.length === 0) return 'NA';
+
   ret = ret[0] ? ms(ret[0].value, { long: true }) : 'NA';
 
   return ret;
