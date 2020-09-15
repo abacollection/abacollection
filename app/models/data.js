@@ -72,4 +72,13 @@ const rateSchema = new mongoose.Schema(
 
 Data.discriminator('Rate', rateSchema);
 
+const taSchema = new mongoose.Schema(
+  {
+    value: [{ type: String, required: true }]
+  },
+  options
+);
+
+Data.discriminator('Task Analysis', taSchema);
+
 module.exports = Data;

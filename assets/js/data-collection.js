@@ -402,8 +402,8 @@ $('button.ta-save').click(function () {
   $previous.prop('disabled', true);
 
   if (value.length !== 0) {
-    if (targets[id]) targets[id].push(value);
-    else targets[id] = [value];
+    if (targets[id]) targets[id].push({ value });
+    else targets[id] = [{ value }];
   }
 });
 

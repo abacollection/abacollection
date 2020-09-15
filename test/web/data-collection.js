@@ -450,3 +450,43 @@ test('POST collection page > Rate > adds data', async (t) => {
   t.is(query.data[0].value.incorrect, 2);
   t.is(query.data[0].value.counting_time, 1000);
 });
+
+test('POST collection page > task analysis > adds data', async (t) => {
+  const { web, root, programs } = t.context;
+  const program = programs[0];
+  let target = await factory.create('target', {
+    program,
+    data_type: 'Task Analysis'
+  });
+  target = await Targets.findOne({ id: target.id });
+  target.ta = ['1', '2', '3'];
+  target = await target.save();
+
+  const res = await web
+    .post(root)
+    .set('Accept', 'application/json')
+    .send({
+      targets: {
+        [target.id]: [
+          {
+            value: ['correct', 'incorrect', 'correct']
+          }
+        ]
+      }
+    });
+
+  t.is(res.status, 200);
+
+  const query = await Targets.findOne({ id: target.id })
+    .populate('data')
+    .exec();
+  t.is(query.data.length, 1);
+  t.not(typeof query.data[0].date, undefined);
+  t.is(
+    dayjs(query.data[0].date).format('MM/DD/YYYY'),
+    dayjs().format('MM/DD/YYYY')
+  );
+  t.is(query.data[0].value[0], 'correct');
+  t.is(query.data[0].value[1], 'incorrect');
+  t.is(query.data[0].value[2], 'correct');
+});
