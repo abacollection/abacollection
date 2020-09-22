@@ -9,6 +9,46 @@ mongoose.Error.messages = require('@ladjs/mongoose-error-messages');
 
 const taSchema = new mongoose.Schema({ ta: [{ type: String }] });
 
+taSchema.method('getGraph', async function (query) {
+  let form = format.D;
+  if (query && query.interval) form = format[query.interval];
+
+  let ret = {};
+
+  const datas = await Datas.find({ target: this._id })
+    .sort('date')
+    .lean()
+    .exec();
+
+  datas.forEach((data) => {
+    const date = dayjs(data.date).format(form);
+
+    const total = data.value.length;
+    const correct = data.value.filter((d) => d === 'correct').length;
+
+    const value = ((correct / total) * 100).toFixed(0);
+
+    if (ret[date]) ret[date].push(value);
+    else ret[date] = [value];
+  });
+
+  ret = Object.entries(ret).map((r) => {
+    const [key, value] = r;
+
+    const total = value.length;
+    let sum = 0;
+    value.forEach((item) => {
+      sum += Number.parseInt(item, 10);
+    });
+
+    const percent = (sum / total).toFixed(0);
+
+    return { x: key, y: Number.parseInt(percent, 10) };
+  });
+
+  return ret;
+});
+
 taSchema.method('getData', async function (query) {
   let form = format.D;
   if (query && query.interval) form = format[query.interval];

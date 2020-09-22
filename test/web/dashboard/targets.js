@@ -578,3 +578,63 @@ test('GET data(JSON) > rate > default', async (t) => {
     t.is(data.y, 1);
   }
 });
+
+test('GET data(JSON) > task analysis > default', async (t) => {
+  t.plan(15);
+
+  const { web, root, program } = t.context;
+
+  let target = await factory.build('target', {
+    ta: ['1', '2', '3', '4'],
+    program,
+    data_type: 'Task Analysis'
+  });
+
+  await web.put(`${root}/targets`).send({
+    name: target.name,
+    description: target.description,
+    data_type: target.data_type,
+    ta: target.ta
+  });
+
+  target = await Targets.findOne({ name: target.name });
+
+  const datas = [];
+  for (let i = 0; i < 10; i++) {
+    datas.push(
+      factory.create('data', {
+        value: ['correct', 'correct', 'correct', 'correct'],
+        target,
+        date: dayjs().subtract(i, 'day').toDate(),
+        data_type: 'Task Analysis'
+      })
+    );
+  }
+
+  datas.push(
+    factory.create('data', {
+      value: ['correct', 'correct', 'incorrect', 'incorrect'],
+      target,
+      date: dayjs().subtract(1, 'day').toDate(),
+      data_type: 'Task Analysis'
+    })
+  );
+
+  await Promise.all(datas);
+
+  const res = await web
+    .get(`${root}/targets/${target.id}/graph`)
+    .set('Accept', 'application/json')
+    .send();
+
+  t.is(res.status, 200);
+  t.is(res.body.series[0].data.length, 10);
+  t.is(res.body.xaxisTitle, 'Date');
+  t.is(res.body.yaxisTitle, 'Percent Correct per Day');
+  t.is(res.body.yaxisMax, 100);
+
+  for (let i = 0; i < 10; i++) {
+    const data = res.body.series[0].data[i];
+    t.is(data.y, i === 8 ? 75 : 100);
+  }
+});

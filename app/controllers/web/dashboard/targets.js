@@ -201,7 +201,8 @@ async function getData(ctx) {
     Frequency: ctx.state.t('Count per Day'),
     'Percent Correct': ctx.state.t('Percent Correct per Day'),
     Duration: ctx.state.t('Duration(mins) per Day'),
-    Rate: ctx.state.t('Count per Minute (first)')
+    Rate: ctx.state.t('Count per Minute (first)'),
+    'Task Analysis': ctx.state.t('Percent Correct per Day')
   };
 
   if (ctx.accepts('html')) return ctx.render('dashboard/clients/_data-table');
@@ -232,7 +233,9 @@ async function getData(ctx) {
     title: target.name,
     xaxisTitle: ctx.state.t('Date'),
     yaxisTitle: yaxisTitles[target.data_type],
-    yaxisMax: target.data_type === 'Percent Correct' ? 100 : false
+    yaxisMax: ['Percent Correct', 'Task Analysis'].includes(target.data_type)
+      ? 100
+      : false
   };
 }
 
