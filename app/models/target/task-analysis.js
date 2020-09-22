@@ -45,15 +45,12 @@ taSchema.method('getData', async function (query) {
 
   ret = Object.entries(ret).map((r) => {
     const [key, value] = r;
-    console.log('jungle first', key, value);
 
     const total = value.length;
     let sum = 0;
     value.forEach((item) => {
       sum += Number.parseInt(item, 10);
     });
-
-    console.log('jungle sum', sum);
 
     const percent = (sum / total).toFixed(0);
 

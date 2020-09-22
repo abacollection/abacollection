@@ -68,7 +68,7 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                             tr
                               td.align-middle= t(step)
                               td.align-middle
-                                select(name='value', required, form='dataAdd').form-control
+                                select(name='data', required, form='dataAdd').form-control
                                   each val in ['--- Select ---', 'correct', 'approximation', 'incorrect']
                                     option(value=val)= t(val)
               //- rows per aggregated data
@@ -209,7 +209,7 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                                             tr
                                               td.align-middle= t(step)
                                               td.align-middle
-                                                select(name='value', required, form=`${rawD.id}-dataEdit`).form-control
+                                                select(name='data', required, form=`${rawD.id}-dataEdit`).form-control
                                                   each val in ['--- Select ---', 'correct', 'approximation', 'incorrect']
                                                     if val === rawD.ta[index]
                                                       option(value=val, selected)= t(val)

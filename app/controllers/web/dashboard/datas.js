@@ -29,7 +29,6 @@ async function retrieveGraph(ctx, next) {
 async function addData(ctx, next) {
   try {
     const { body } = ctx.request;
-    let value;
 
     if (
       (!body.date || (body.date && !isISO8601(body.date))) &&
@@ -50,52 +49,13 @@ async function addData(ctx, next) {
         return ctx.throw(
           Boom.badRequest(ctx.translateError('INVALID_COUNTING_TIME'))
         );
+    } else if (ctx.state.target.data_type === 'Task Analysis') {
+      if (!Array.isArray(body.data))
+        return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DATA')));
     } else if (!isSANB(body.data))
       return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DATA')));
 
-    if (ctx.state.target.data_type === 'Duration') {
-      const vals = body.data.split(':');
-
-      switch (vals.length) {
-        case 3:
-          value = vals[0] * ms('1h') + vals[1] * ms('1m') + vals[2] * ms('1s');
-          break;
-        case 2:
-          value = vals[0] * ms('1m') + vals[1] * ms('1s');
-          break;
-        case 1:
-          value = vals[0] * ms('1s');
-          break;
-        default:
-          break;
-      }
-    } else if (ctx.state.target.data_type === 'Rate') {
-      let counting_time;
-      const vals = body.counting_time.split(':');
-
-      switch (vals.length) {
-        case 3:
-          counting_time =
-            vals[0] * ms('1h') + vals[1] * ms('1m') + vals[2] * ms('1s');
-          break;
-        case 2:
-          counting_time = vals[0] * ms('1m') + vals[1] * ms('1s');
-          break;
-        case 1:
-          counting_time = vals[0] * ms('1s');
-          break;
-        default:
-          break;
-      }
-
-      value = {
-        correct: body.correct,
-        incorrect: body.incorrect,
-        counting_time
-      };
-    } else {
-      value = body.data;
-    }
+    const value = getValue(ctx.state.target.data_type, body);
 
     await Datas.create({
       date: dayjs.tz(body.date, body.timezone).toDate(),
@@ -122,7 +82,6 @@ async function addData(ctx, next) {
 async function editData(ctx, next) {
   try {
     const { body } = ctx.request;
-    let value;
 
     if (
       (!body.date || (body.date && !isISO8601(body.date))) &&
@@ -143,52 +102,13 @@ async function editData(ctx, next) {
         return ctx.throw(
           Boom.badRequest(ctx.translateError('INVALID_COUNTING_TIME'))
         );
+    } else if (ctx.state.target.data_type === 'Task Analysis') {
+      if (!Array.isArray(body.data))
+        return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DATA')));
     } else if (!isSANB(body.data))
       return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DATA')));
 
-    if (ctx.state.target.data_type === 'Duration') {
-      const vals = body.data.split(':');
-
-      switch (vals.length) {
-        case 3:
-          value = vals[0] * ms('1h') + vals[1] * ms('1m') + vals[2] * ms('1s');
-          break;
-        case 2:
-          value = vals[0] * ms('1m') + vals[1] * ms('1s');
-          break;
-        case 1:
-          value = vals[0] * ms('1s');
-          break;
-        default:
-          break;
-      }
-    } else if (ctx.state.target.data_type === 'Rate') {
-      let counting_time;
-      const vals = body.counting_time.split(':');
-
-      switch (vals.length) {
-        case 3:
-          counting_time =
-            vals[0] * ms('1h') + vals[1] * ms('1m') + vals[2] * ms('1s');
-          break;
-        case 2:
-          counting_time = vals[0] * ms('1m') + vals[1] * ms('1s');
-          break;
-        case 1:
-          counting_time = vals[0] * ms('1s');
-          break;
-        default:
-          break;
-      }
-
-      value = {
-        correct: body.correct,
-        incorrect: body.incorrect,
-        counting_time
-      };
-    } else {
-      value = body.data;
-    }
+    const value = getValue(ctx.state.target.data_type, body);
 
     if (body.id) {
       const data = await Datas.findById(body.id);
@@ -229,6 +149,49 @@ async function deleteData(ctx, next) {
     message: ctx.body,
     resetModal: true
   };
+}
+
+function getValue(data_type, body) {
+  if (data_type === 'Duration') {
+    const vals = body.data.split(':');
+
+    switch (vals.length) {
+      case 3:
+        return vals[0] * ms('1h') + vals[1] * ms('1m') + vals[2] * ms('1s');
+      case 2:
+        return vals[0] * ms('1m') + vals[1] * ms('1s');
+      case 1:
+        return vals[0] * ms('1s');
+      default:
+        return;
+    }
+  } else if (data_type === 'Rate') {
+    let counting_time;
+    const vals = body.counting_time.split(':');
+
+    switch (vals.length) {
+      case 3:
+        counting_time =
+          vals[0] * ms('1h') + vals[1] * ms('1m') + vals[2] * ms('1s');
+        break;
+      case 2:
+        counting_time = vals[0] * ms('1m') + vals[1] * ms('1s');
+        break;
+      case 1:
+        counting_time = vals[0] * ms('1s');
+        break;
+      default:
+        break;
+    }
+
+    return {
+      correct: body.correct,
+      incorrect: body.incorrect,
+      counting_time
+    };
+  }
+
+  return body.data;
 }
 
 module.exports = {

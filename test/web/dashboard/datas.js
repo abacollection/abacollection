@@ -5,7 +5,7 @@ const ms = require('ms');
 const dayjs = require('dayjs');
 
 const config = require('../../../config');
-const { Users, Datas } = require('../../../app/models');
+const { Users, Datas, Targets } = require('../../../app/models');
 
 // const phrases = require('../../../config/phrases');
 
@@ -411,4 +411,105 @@ test('POST data(JSON) > percent correct > raw data', async (t) => {
     dayjs(data.date).format('YYYY-MM-DDThh:mm')
   );
   t.is(query[0].value, newData.value);
+});
+
+test('PUT data(JSON) > task analysis', async (t) => {
+  const { web, root, program } = t.context;
+
+  let target = await factory.build('target', {
+    program,
+    data_type: 'Task Analysis',
+    ta: ['1', '2', '3']
+  });
+
+  await web.put(`${root}`).send({
+    name: target.name,
+    description: target.description,
+    data_type: target.data_type,
+    ta: target.ta
+  });
+
+  target = await Targets.findOne({ name: target.name });
+
+  const data = await factory.build('data', {
+    value: ['incorrect', 'correct', 'incorrect'],
+    target,
+    data_type: 'Task Analysis'
+  });
+
+  let query = await Datas.findOne({ target: target.id });
+  t.is(query, null);
+
+  const res = await web.put(`${root}/${target.id}/data`).send({
+    date: dayjs(data.date).format('YYYY-MM-DDThh:mm'),
+    data: data.value,
+    add_data: 'true',
+    timezone: 'America/Chicago'
+  });
+
+  t.is(res.status, 200);
+
+  query = await Datas.findOne({ target: target.id });
+  t.is(
+    dayjs(query.date).format('YYYY-MM-DDThh:mm'),
+    dayjs(data.date).format('YYYY-MM-DDThh:mm')
+  );
+  t.is(query.value[0], data.value[0]);
+  t.is(query.value[1], data.value[1]);
+  t.is(query.value[2], data.value[2]);
+});
+
+test('POST data(JSON) > task analysis > raw data', async (t) => {
+  const { web, root, program } = t.context;
+
+  let target = await factory.build('target', {
+    program,
+    data_type: 'Task Analysis',
+    ta: ['1', '2', '3']
+  });
+
+  await web.put(`${root}`).send({
+    name: target.name,
+    description: target.description,
+    data_type: target.data_type,
+    ta: target.ta
+  });
+
+  target = await Targets.findOne({ name: target.name });
+
+  const data = await factory.create('data', {
+    value: ['correct', 'correct', 'correct'],
+    target,
+    data_type: 'Task Analysis'
+  });
+
+  const newData = await factory.build('data', {
+    value: ['incorrect', 'correct', 'correct'],
+    target,
+    data_type: 'Task Analysis'
+  });
+
+  let query = await Datas.findOne({ target: target.id });
+  t.is(query.value[0], data.value[0]);
+  t.is(query.value[1], data.value[1]);
+  t.is(query.value[2], data.value[2]);
+
+  const res = await web.post(`${root}/${target.id}/data`).send({
+    id: data.id,
+    data: newData.value,
+    edit_raw_data: 'true',
+    timezone: 'America/Chicago'
+  });
+
+  t.is(res.status, 200);
+
+  query = await Datas.find({ target: target.id });
+  t.is(query.length, 1);
+  t.is(
+    dayjs(query[0].date).format('YYYY-MM-DDThh:mm'),
+    dayjs(data.date).format('YYYY-MM-DDThh:mm')
+  );
+  t.is(query[0].value[0], newData.value[0]);
+  t.is(query[0].value[1], newData.value[1]);
+  t.is(query[0].value[2], newData.value[2]);
 });
