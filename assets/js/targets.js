@@ -53,27 +53,40 @@ $(document).on('click', '.edit-cancel-btn', function () {
 });
 
 $(document).on('click', '#dataAddBtn', function () {
-  $('#dataAddForm').prop('hidden', false);
+  $('.dataAddForm').prop('hidden', false);
 });
 
 $(document).on('click', '#dataCancelAddBtn', function () {
-  $('#dataAddForm').prop('hidden', true);
+  $('.dataAddForm').prop('hidden', true);
 });
 
 $(document).on('click', '.data-edit-btn', function () {
+  const type = $(this).data('type');
   const $parent = $(this).parents('tr:first');
   const id = $parent.prop('id');
 
-  $parent.prop('hidden', true);
+  if (type === 'Task Analysis') {
+    $(`#${id}-actions`).prop('hidden', true);
+    $(`#${id}-edit-actions`).prop('hidden', false);
+    $(`#${id}-steps`).hide();
+  } else $parent.prop('hidden', true);
   $(`.data-edit-form#${id}-form`).prop('hidden', false);
 });
 
 $(document).on('click', '.data-edit-cancel-btn', function () {
+  const type = $(this).data('type');
   const $parent = $(this).parents('tr:first');
-  const id = $parent.prop('id').replace('-form', '');
 
-  $parent.prop('hidden', true);
-  $(`tr#${id}`).prop('hidden', false);
+  if (type === 'Task Analysis') {
+    const id = $parent.prop('id');
+    $(`#${id}-edit-actions`).prop('hidden', true);
+    $(`#${id}-actions`).prop('hidden', false);
+    $(`.data-edit-form#${id}-form`).prop('hidden', true);
+  } else {
+    const id = $parent.prop('id').replace('-form', '');
+    $parent.prop('hidden', true);
+    $(`tr#${id}`).prop('hidden', false);
+  }
 });
 
 $(document).on('click', '#graphTargetBtn', async function (event) {

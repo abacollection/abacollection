@@ -36,6 +36,7 @@ taSchema.method('getData', async function (query) {
     else ret[date] = [value];
 
     if (rawData) {
+      data.ta = data.value;
       data.value = value;
       if (rawData[date]) rawData[date].push(data);
       else rawData[date] = [data];
