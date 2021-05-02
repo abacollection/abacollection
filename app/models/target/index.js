@@ -26,10 +26,10 @@ const targetSchema = new mongoose.Schema(
         'Rate',
         'Duration',
         'Percent Correct',
-        'Task Analysis',
-        'Momentary Time Sampling',
-        'Whole Interval',
-        'Partial Interval'
+        'Task Analysis'
+        // 'Momentary Time Sampling',
+        // 'Whole Interval',
+        // 'Partial Interval'
       ],
       required: true
     },
@@ -61,16 +61,16 @@ targetSchema.post('findOneAndRemove', async function () {
   });
 });
 
-targetSchema.method('getPreviousData', async function () {
-  const ret = 'WIP';
+targetSchema.method('getPreviousData', async () => {
+  const returnValue = 'WIP';
 
-  return ret;
+  return returnValue;
 });
 
-targetSchema.method('getCurrentData', async function () {
-  const ret = 'WIP';
+targetSchema.method('getCurrentData', async () => {
+  const returnValue = 'WIP';
 
-  return ret;
+  return returnValue;
 });
 
 const Target = mongoose.model('Target', targetSchema);
