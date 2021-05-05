@@ -12,11 +12,11 @@ block body
     .row.mt-1
       .col
         include ../../_breadcrumbs
-        if targets.length === 0
+        if clients.length === 0
           .alert.alert-info= t('No clients exist yet.')
         .table-responsive
-          table.table.table-hover.table-bordered
-            thead.thead-dark
+          table.table.table-hover
+            thead
               tr
                 th(scope='col')
                   +sort_header('first_name')

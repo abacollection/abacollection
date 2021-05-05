@@ -36,11 +36,13 @@ async function add_client(ctx) {
   if (
     !isSANB(ctx.request.body.first_name) ||
     !isSANB(ctx.request.body.last_name)
-  )
+  ) {
     return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_NAME')));
+  }
 
-  if (ctx.request.body.dob && !isISO8601(ctx.request.body.dob))
+  if (ctx.request.body.dob && !isISO8601(ctx.request.body.dob)) {
     return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DOB')));
+  }
 
   try {
     ctx.state.client = await Clients.create({
@@ -65,18 +67,23 @@ async function add_client(ctx) {
       position: 'top'
     });
 
-    if (ctx.accepts('html')) ctx.redirect(redirectTo);
-    else ctx.body = { redirectTo };
-  } catch (err) {
-    ctx.logger.error(err);
-    ctx.throw(Boom.badRequest(err.message));
+    if (ctx.accepts('html')) {
+      ctx.redirect(redirectTo);
+    } else {
+      ctx.body = { redirectTo };
+    }
+  } catch (error) {
+    ctx.logger.error(error);
+    ctx.throw(Boom.badRequest(error.message));
   }
 }
 
 async function retrieveClients(ctx, next) {
   ctx.state.clients = [];
 
-  if (!ctx.isAuthenticated()) return next();
+  if (!ctx.isAuthenticated()) {
+    return next();
+  }
 
   const query = {
     $or: [{ 'members.user': ctx.state.user._id }]
@@ -89,7 +96,7 @@ async function retrieveClients(ctx, next) {
     .exec();
 
   ctx.state.clients = ctx.state.clients.map((client) => {
-    // populate a `group` on the client based off the user's association
+    // Populate a `group` on the client based off the user's association
     const member = client.members.find(
       (member) => member.user.id === ctx.state.user.id
     );
@@ -102,14 +109,32 @@ async function retrieveClients(ctx, next) {
     };
   });
 
+  //
+  // set breadcrumb
+  //
+  if (ctx.state.breadcrumbs) {
+    ctx.state.breadcrumbs = ctx.state.breadcrumbs.map((breadcrumb) => {
+      if (!_.isObject(breadcrumb) && breadcrumb === 'clients') {
+        return {
+          name: 'Clients',
+          header: 'Clients',
+          href: ctx.state.l('/dashboard/clients')
+        };
+      }
+
+      return breadcrumb;
+    });
+  }
+
   return next();
 }
 
 async function retrieveClient(ctx, next) {
-  if (!isSANB(ctx.params.client_id) && !isSANB(ctx.request.body.client))
+  if (!isSANB(ctx.params.client_id) && !isSANB(ctx.request.body.client)) {
     return ctx.throw(
       Boom.badRequest(ctx.translateError('CLIENT_DOES_NOT_EXIST'))
     );
+  }
 
   const id = isSANB(ctx.params.client_id)
     ? ctx.params.client_id
@@ -119,31 +144,37 @@ async function retrieveClient(ctx, next) {
     [client.id, client.name].includes(id)
   );
 
-  if (!ctx.state.client)
+  if (!ctx.state.client) {
     return ctx.throw(
       Boom.badRequest(ctx.translateError('CLIENT_DOES_NOT_EXIST'))
     );
+  }
 
   //
   // set breadcrumb
   //
-  if (ctx.state.breadcrumbs)
+  if (ctx.state.breadcrumbs) {
     ctx.state.breadcrumbs = ctx.state.breadcrumbs.map((breadcrumb) => {
-      if (!_.isObject(breadcrumb) && breadcrumb === id)
+      if (!_.isObject(breadcrumb) && breadcrumb === id) {
         return {
           name: ctx.state.client.name,
           header: ctx.state.client.name,
           href: ctx.state.l(`/dashboard/clients/${id}`)
         };
+      }
 
       return breadcrumb;
     });
+  }
 
   return next();
 }
 
 async function ensureAdmin(ctx, next) {
-  if (ctx.state.client.group === 'admin') return next();
+  if (ctx.state.client.group === 'admin') {
+    return next();
+  }
+
   ctx.throw(Boom.badRequest(ctx.translateError('IS_NOT_ADMIN')));
 }
 
@@ -160,19 +191,24 @@ async function delete_client(ctx) {
   });
 
   const redirectTo = ctx.state.l('/dashboard/clients');
-  if (ctx.accepts('html')) ctx.redirect(redirectTo);
-  else ctx.body = { redirectTo };
+  if (ctx.accepts('html')) {
+    ctx.redirect(redirectTo);
+  } else {
+    ctx.body = { redirectTo };
+  }
 }
 
 async function settings(ctx) {
   if (
     !isSANB(ctx.request.body.first_name) ||
     !isSANB(ctx.request.body.last_name)
-  )
+  ) {
     return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_NAME')));
+  }
 
-  if (ctx.request.body.dob && !isISO8601(ctx.request.body.dob))
+  if (ctx.request.body.dob && !isISO8601(ctx.request.body.dob)) {
     return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_DOB')));
+  }
 
   const { first_name, last_name, dob, gender } = ctx.request.body;
 
@@ -192,9 +228,12 @@ async function settings(ctx) {
     position: 'top'
   });
 
-  const redirectTo = ctx.state.l(`/dashboard/clients`);
-  if (ctx.accepts('html')) ctx.redirect(redirectTo);
-  else ctx.body = { redirectTo };
+  const redirectTo = ctx.state.l('/dashboard/clients');
+  if (ctx.accepts('html')) {
+    ctx.redirect(redirectTo);
+  } else {
+    ctx.body = { redirectTo };
+  }
 }
 
 module.exports = {

@@ -1,16 +1,26 @@
-nav(aria-label='breadcrumb')
-  ol.breadcrumb.justify-content-center.justify-content-md-start
-    each breadcrumb, i in breadcrumbs
-      if i === breadcrumbs.length - 1
-        li.breadcrumb-item.active(aria-current='page')
-          = _.isObject(breadcrumb) ? breadcrumb.name : t(titleize(humanize(breadcrumb)))
-      else
-        li.breadcrumb-item
-          a(href=_.isObject(breadcrumb) ? breadcrumb.href : l(`/${breadcrumbs.slice(0, i + 1).join('/')}/`)).text-dark
+if !ctx.pathWithoutLocale.includes('dashboard')
+  nav(aria-label='breadcrumb')
+    ol.breadcrumb.justify-content-center.justify-content-md-start
+      each breadcrumb, i in breadcrumbs
+        if i === breadcrumbs.length - 1
+          li.breadcrumb-item.active(aria-current='page')
             = _.isObject(breadcrumb) ? breadcrumb.name : t(titleize(humanize(breadcrumb)))
+        else
+          li.breadcrumb-item
+            a(href=_.isObject(breadcrumb) ? breadcrumb.href : l(`/${breadcrumbs.slice(0, i + 1).join('/')}/`)).text-dark
+              = _.isObject(breadcrumb) ? breadcrumb.name : t(titleize(humanize(breadcrumb)))
 .text-center.text-md-left.d-md-flex.mb-3
-  h1.text-muted.flex-grow-1.text-left
-    if breadcrumbs.length > 0
-      = _.isObject(breadcrumbs[breadcrumbs.length - 1]) ? breadcrumbs[breadcrumbs.length - 1].header || breadcrumbs[breadcrumbs.length - 1].name : t(titleize(humanize(breadcrumbs[breadcrumbs.length - 1])))
-    else
-      = _.isObject(breadcrumbs[0]) ? breadcrumbs[0].header || breadcrumbs[0].name : t(titleize(humanize(breadcrumbs[0])))
+  .text-muted.text-left.flex-grow-1
+    span.h1.pr-2
+      if breadcrumbs.length > 0
+        = _.isObject(breadcrumbs[breadcrumbs.length - 1]) ? breadcrumbs[breadcrumbs.length - 1].header || breadcrumbs[breadcrumbs.length - 1].name : t(titleize(humanize(breadcrumbs[breadcrumbs.length - 1])))
+      else
+        = _.isObject(breadcrumbs[0]) ? breadcrumbs[0].header || breadcrumbs[0].name : t(titleize(humanize(breadcrumbs[0])))
+    if ctx.pathWithoutLocale.includes('programs') || ctx.pathWithoutLocale.includes('targets')
+      span
+        = _.isObject(breadcrumbs[breadcrumbs.length - 2]) ? breadcrumbs[breadcrumbs.length - 2].header || breadcrumbs[breadcrumbs.length - 2].name : t(titleize(humanize(breadcrumbs[breadcrumbs.length - 2])))
+  if [ 'programs', 'targets' ].includes(breadcrumbs[breadcrumbs.length-1])
+    a(href=_.isObject(breadcrumbs[breadcrumbs.length-3]) ? breadcrumbs[breadcrumbs.length-3].href : '').btn.btn-outline-secondary.text-center
+      span
+        i.fas.fa-angle-left.pr-2
+        = t(`Back to ${breadcrumbs[breadcrumbs.length-3].name}`)

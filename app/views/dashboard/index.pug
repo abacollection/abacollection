@@ -13,3 +13,7 @@ block body
             = t('Good evening')
           else
             = t('Good morning')
+          = t('! Go to ')
+          a(href=l(`${ctx.pathWithoutLocale}/clients`))
+            = t('Dashboard > Clients')
+          = t(' to get started!')

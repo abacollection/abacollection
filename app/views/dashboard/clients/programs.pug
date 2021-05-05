@@ -15,8 +15,8 @@ block body
         if programs.length === 0
           .alert.alert-info= t('No programs for this client yet.')
         .table-responsive
-          table.table.table-hover.table-bordered
-            thead.thead-dark
+          table.table.table-hover
+            thead
               tr
                 th(scope='col')
                   +sort_header('name')
