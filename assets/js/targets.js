@@ -13,26 +13,34 @@ let graph;
 let ta;
 const sortables = {};
 
-$(document).on('click', '#addBtn', function () {
+$(document).on('click', '#addBtn', () => {
   $('#addForm').prop('hidden', false);
 
-  if ($('#ta-form').length >= 1) $('#ta-form').prop('hidden', false);
+  if ($('#ta-form').length > 0) {
+    $('#ta-form').prop('hidden', false);
+  }
 });
 
-$(document).on('click', '#cancelAddBtn', function () {
+$(document).on('click', '#cancelAddBtn', () => {
   $('#addForm').prop('hidden', true);
 
-  if ($('#ta-form').length >= 1) $('#ta-form').prop('hidden', true);
+  if ($('#ta-form').length > 0) {
+    $('#ta-form').prop('hidden', true);
+  }
 });
 
 $(document).on('click', '.edit-btn', function () {
   const $parent = $(this).parents('tr:first');
   const id = $parent.prop('id');
+  const sortable = $(`#${id}-sortable`);
 
   sortables[id] = {
-    original: $(`#${id}-sortable`).html()
+    original: sortable.html()
   };
-  sortables[id].sortable = Sortable.create($(`#${id}-sortable`)[0]);
+
+  if (sortable === undefined) {
+    sortables[id].sortable = Sortable.create(sortable[0]);
+  }
 
   $parent.prop('hidden', true);
   $(`.edit-form#${id}-form`).prop('hidden', false);
@@ -47,16 +55,19 @@ $(document).on('click', '.edit-cancel-btn', function () {
   $(`.edit-form#${id}-form-ta`).prop('hidden', true);
   $(`tr#${id}`).prop('hidden', false);
 
-  sortables[id].sortable.destroy();
+  if (sortables[id].sortable !== undefined) {
+    sortables[id].sortable.destroy();
+  }
+
   $(`#${id}-sortable`).html(sortables[id].original);
   delete sortables[id];
 });
 
-$(document).on('click', '#dataAddBtn', function () {
+$(document).on('click', '#dataAddBtn', () => {
   $('.dataAddForm').prop('hidden', false);
 });
 
-$(document).on('click', '#dataCancelAddBtn', function () {
+$(document).on('click', '#dataCancelAddBtn', () => {
   $('.dataAddForm').prop('hidden', true);
 });
 
@@ -69,7 +80,10 @@ $(document).on('click', '.data-edit-btn', function () {
     $(`#${id}-actions`).prop('hidden', true);
     $(`#${id}-edit-actions`).prop('hidden', false);
     $(`#${id}-steps`).hide();
-  } else $parent.prop('hidden', true);
+  } else {
+    $parent.prop('hidden', true);
+  }
+
   $(`.data-edit-form#${id}-form`).prop('hidden', false);
 });
 
@@ -95,7 +109,7 @@ $(document).on('click', '#graphTargetBtn', async function (event) {
 
     const $modal = $('#modal-graph-target');
 
-    // show spinner
+    // Show spinner
     $('#spinner').addClass('show d-block');
 
     const id = $(this).data('id');
@@ -136,14 +150,16 @@ $(document).on('click', '#graphTargetBtn', async function (event) {
       }
     };
 
-    if (body.yaxisMax) options.yaxis.max = body.yaxisMax;
+    if (body.yaxisMax) {
+      options.yaxis.max = body.yaxisMax;
+    }
 
     graph = new Apex(document.querySelector('#graph'), options);
-    // hide spinner
+    // Hide spinner
     $('#spinner').removeClass('show d-block');
     graph.render();
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(error);
   }
 });
 
@@ -168,14 +184,14 @@ $(document).on('click', '#dataTargetBtn', async function (event) {
       .retry(3)
       .send();
 
-    // hide spinner
+    // Hide spinner
     $('#spinner').removeClass('show d-block');
     $('#data').html(res.text);
 
-    // add timezone
+    // Add timezone
     $('input[name="timezone"]').prop('value', dayjs.tz.guess());
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(error);
   }
 });
 
@@ -202,12 +218,12 @@ $('.interval').click(async function () {
 
     $parent.find('.interval').removeClass('active');
     $(this).addClass('active');
-  } catch (err) {
-    logger.error(err);
+  } catch (error) {
+    logger.error(error);
   }
 });
 
-$('#modal-graph-target').on('hidden.bs.modal', function () {
+$('#modal-graph-target').on('hidden.bs.modal', () => {
   if (graph) {
     graph.destroy();
     graph = false;
@@ -230,8 +246,9 @@ $(document).on('change', '#input-data_type', function (e) {
   if (e.target.value === 'Task Analysis') {
     const $parent = $(this).parents('tr#addForm');
 
-    if (ta) $parent.after(ta);
-    else
+    if (ta) {
+      $parent.after(ta);
+    } else {
       $parent.after(`
         <tr id="ta-form">
           <td colspan="4">
@@ -248,9 +265,12 @@ $(document).on('change', '#input-data_type', function (e) {
           </td>
         </tr>
       `);
+    }
 
     Sortable.create(document.querySelector('#sortable'));
-  } else if ($('#ta-form').length >= 1) ta = $('#ta-form').detach();
+  } else if ($('#ta-form').length > 0) {
+    ta = $('#ta-form').detach();
+  }
 });
 
 function addTAStep() {
@@ -269,7 +289,7 @@ function addTAStep() {
   $('#ta-steps').val('');
 }
 
-$(document).on('keydown', '#ta-steps', function (e) {
+$(document).on('keydown', '#ta-steps', (e) => {
   if (e.keyCode === 13) {
     e.preventDefault();
 
