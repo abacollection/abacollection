@@ -4,249 +4,248 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
   .col
     if data.length === 0
       .alert.alert-info= t('No data exists yet.')
-    else
-      .table-responsive
-        table.table.table-hover.table-bordered
-          thead.thead-dark
-            tr
-              th(scope='col')= t('Date')
+    .table-responsive
+      table.table.table-hover.table-bordered
+        thead.thead-dark
+          tr
+            th(scope='col')= t('Date')
+            if target.data_type === 'Rate'
+              th(scope='col')= t('Correct')
+              th(scope='col')= t('Incorrect')
+              th(scope='col')= t('Counting Time')
+            else
+              th(scope='col')= t('Data')
+            th(scope='col')= t('Actions')
+              a#dataAddBtn(type='button', data-toggle='tooltip', data-title=t('Add'), aria-label=t('Add')).btn.btn-success.btn-sm.float-right: i.fas.fa-plus
+          tbody
+            //- Add Data Form
+            tr.dataAddForm(hidden)
+              input(type='hidden', name='_method', value='PUT', form='dataAdd')
+              input(type='hidden', name='_csrf', value=ctx.csrf, form='dataAdd')
+              input(type='hidden', name='add_data', value='true', form='dataAdd')
+              input(type='hidden', name='timezone', form='dataAdd')
+              //- Date input
+              td.align-middle
+                input(type='datetime-local', name='date', required, form='dataAdd').form-control
+              //- Data inputs
               if target.data_type === 'Rate'
-                th(scope='col')= t('Correct')
-                th(scope='col')= t('Incorrect')
-                th(scope='col')= t('Counting Time')
+                td.align-middle
+                  input(type='text', name='correct', required, form='dataAdd', placeholder=t('Correct')).form-control
+                td.align-middle
+                  input(type='text', name='incorrect', required, form='dataAdd', placeholder=t('Incorrect')).form-control
+                td.align-middle
+                  input(type='text', name='counting_time', required, form='dataAdd', placeholder=t('HH:mm:ss')).form-control
+              else if target.data_type === 'Duration'
+                td.align-middle
+                  input(type='text', name='data', required, form='dataAdd', placeholder=t('HH:mm:ss')).form-control
+              else if target.data_type === 'Percent Correct'
+                td.align-middle
+                  select(name='data', required, form='dataAdd').form-control
+                    each val in ['--- Select ---', 'correct', 'approximation', 'incorrect']
+                      option(value=val)= t(val)
+              else if target.data_type === 'Task Analysis'
+                td.align-middle
               else
-                th(scope='col')= t('Data')
-              th(scope='col')= t('Actions')
-                a#dataAddBtn(type='button', data-toggle='tooltip', data-title=t('Add'), aria-label=t('Add')).btn.btn-success.btn-sm.float-right: i.fas.fa-plus
-            tbody
-              //- Add Data Form
+                td.align-middle
+                  input(type='text', name='data', required, form='dataAdd', placeholder=t('Data')).form-control
+              //- Action buttons
+              td.align-middle
+                .btn-group(role='group', aria-label=t('Actions'))
+                  button(type='submit', form='dataAdd').btn.btn-success: i.fa.fa-fw.fa-check
+                  button#dataCancelAddBtn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
+            if target.data_type === 'Task Analysis'
               tr.dataAddForm(hidden)
-                input(type='hidden', name='_method', value='PUT', form='dataAdd')
-                input(type='hidden', name='_csrf', value=ctx.csrf, form='dataAdd')
-                input(type='hidden', name='add_data', value='true', form='dataAdd')
-                input(type='hidden', name='timezone', form='dataAdd')
-                //- Date input
-                td.align-middle
-                  input(type='datetime-local', name='date', required, form='dataAdd').form-control
-                //- Data inputs
-                if target.data_type === 'Rate'
+                td.align-middle(colspan='3')
+                  .table-responsive
+                    table.table.table-hover.table-sm
+                      thead
+                        tr
+                          th(scope='col')= t('Step Name')
+                          th(scope='col')= t('Data')
+                      tbody
+                        each step, index in target.ta
+                          tr
+                            td.align-middle= t(step)
+                            td.align-middle
+                              select(name='data', required, form='dataAdd').form-control
+                                each val in ['--- Select ---', 'correct', 'approximation', 'incorrect']
+                                  option(value=val)= t(val)
+            //- rows per aggregated data
+            each d in data
+              tr(id=d.date.replace(/\//g, ''))
+                //- Date column
+                if rawData
                   td.align-middle
-                    input(type='text', name='correct', required, form='dataAdd', placeholder=t('Correct')).form-control
-                  td.align-middle
-                    input(type='text', name='incorrect', required, form='dataAdd', placeholder=t('Incorrect')).form-control
-                  td.align-middle
-                    input(type='text', name='counting_time', required, form='dataAdd', placeholder=t('HH:mm:ss')).form-control
-                else if target.data_type === 'Duration'
-                  td.align-middle
-                    input(type='text', name='data', required, form='dataAdd', placeholder=t('HH:mm:ss')).form-control
-                else if target.data_type === 'Percent Correct'
-                  td.align-middle
-                    select(name='data', required, form='dataAdd').form-control
-                      each val in ['--- Select ---', 'correct', 'approximation', 'incorrect']
-                        option(value=val)= t(val)
-                else if target.data_type === 'Task Analysis'
-                  td.align-middle
+                    a(href='#', data-target=`#${d.date.replace(/\//g, '')}-raw`, data-toggle='toggle', role='button', aria-expanded='false', aria-controls=`${d.date.replace(/\//g, '')}-raw`).btn
+                      i.fas.fa-caret-right
+                      = ' '
+                      = d.date
                 else
-                  td.align-middle
-                    input(type='text', name='data', required, form='dataAdd', placeholder=t('Data')).form-control
-                //- Action buttons
+                  td.align-middle= d.date
+                //- Data columns
+                if target.data_type === 'Rate'
+                  td.align-middle= d.correct
+                  td.align-middle= d.incorrect
+                  td.align-middle= d.counting_time
+                else if ['Percent Correct', 'Task Analysis'].includes(target.data_type)
+                  td.align-middle= `${d.value}%`
+                else
+                  td.align-middle= d.value
+                //- Actions column
                 td.align-middle
-                  .btn-group(role='group', aria-label=t('Actions'))
-                    button(type='submit', form='dataAdd').btn.btn-success: i.fa.fa-fw.fa-check
-                    button#dataCancelAddBtn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
-              if target.data_type === 'Task Analysis'
-                tr.dataAddForm(hidden)
-                  td.align-middle(colspan='3')
+                  //- edit button
+                  if !['Duration', 'Rate', 'Percent Correct', 'Task Analysis'].includes(target.data_type)
+                    a.data-edit-btn(href='#', data-toggle='tooltip', data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
+              //- Data edit form
+              if !['Duration', 'Rate'].includes(target.data_type)
+                tr.data-edit-form(id=`${d.date.replace(/\//g, '')}-form`, hidden)
+                  form(id=`${d.date.replace(/\//g, '')}-dataEdit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`)).ajax-form.confirm-prompt
+                  input(type='hidden', name='_method', value='POST', form=`${d.date.replace(/\//g, '')}-dataEdit`)
+                  input(type='hidden', name='_csrf', value=ctx.csrf, form=`${d.date.replace(/\//g, '')}-dataEdit`)
+                  input(type='hidden', name='edit_data', value='true', form=`${d.date.replace(/\//g, '')}-dataEdit`)
+                  input(type='hidden', name='origData', value=d.value, form=`${d.date.replace(/\//g, '')}-dataEdit`)
+                  input(type='hidden', name='date', value=d.date, form=`${d.date.replace(/\//g, '')}-dataEdit`)
+                  input(type='hidden', name='timezone', form=`${d.date.replace(/\//g, '')}-dataEdit`)
+                  //- Date
+                  td.align-middle= d.date
+                  //- Data inputs
+                  if target.data_type === 'Rate'
+                    td.align-middle
+                      input(type='text', name='correct', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('Correct'), value=d.correct).form-control
+                    td.align-middle
+                      input(type='text', name='incorrect', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('Incorrect'), value=d.incorrect).form-control
+                    td.align-middle
+                      input(type='text', name='counting_time', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('HH:mm:ss'), value=d.counting_time).form-control
+                  else if target.data_type === 'Duration'
+                    input(type='text', name='data', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('HH:mm:ss'), value=d.value).form-control
+                  else
+                    td.align-middle
+                      input(type='text', name='data', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('Data'), value=d.value).form-control
+                  //- Action buttons
+                  td.align-middle
+                    .btn-group(role='group', aria-label=t('Actions'))
+                      button(type='submit', form=`${d.date.replace(/\//g, '')}-dataEdit`).btn.btn-success: i.fa.fa-fw.fa-check
+                      button.data-edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
+              //- Raw Data
+              if rawData
+                tr(id=`${d.date.replace(/\//g, '')}-raw`, style='display: none')
+                  td.align-middle(colspan=target.data_type === 'Rate' ? '5' : '3')
                     .table-responsive
                       table.table.table-hover.table-sm
                         thead
                           tr
-                            th(scope='col')= t('Step Name')
-                            th(scope='col')= t('Data')
+                            th(scope='col')= t('Date')
+                            if (target.data_type === 'Rate')
+                              th(scope='col')= t('Correct')
+                              th(scope='col')= t('Incorrect')
+                              th(scope='col')= t('Counting Time')
+                            else
+                              th(scope='col')= t('Data')
+                            th(scope='col')= t('Actions')
                         tbody
-                          each step, index in target.ta
-                            tr
-                              td.align-middle= t(step)
+                          each rawD in rawData[d.date]
+                            tr(id=rawD.id)
+                              //- Date column
                               td.align-middle
-                                select(name='data', required, form='dataAdd').form-control
-                                  each val in ['--- Select ---', 'correct', 'approximation', 'incorrect']
-                                    option(value=val)= t(val)
-              //- rows per aggregated data
-              each d in data
-                tr(id=d.date.replace(/\//g, ''))
-                  //- Date column
-                  if rawData
-                    td.align-middle
-                      a(href='#', data-target=`#${d.date.replace(/\//g, '')}-raw`, data-toggle='toggle', role='button', aria-expanded='false', aria-controls=`${d.date.replace(/\//g, '')}-raw`).btn
-                        i.fas.fa-caret-right
-                        = ' '
-                        = d.date
-                  else
-                    td.align-middle= d.date
-                  //- Data columns
-                  if target.data_type === 'Rate'
-                    td.align-middle= d.correct
-                    td.align-middle= d.incorrect
-                    td.align-middle= d.counting_time
-                  else if ['Percent Correct', 'Task Analysis'].includes(target.data_type)
-                    td.align-middle= `${d.value}%`
-                  else
-                    td.align-middle= d.value
-                  //- Actions column
-                  td.align-middle
-                    //- edit button
-                    if !['Duration', 'Rate', 'Percent Correct', 'Task Analysis'].includes(target.data_type)
-                      a.data-edit-btn(href='#', data-toggle='tooltip', data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
-                //- Data edit form
-                if !['Duration', 'Rate'].includes(target.data_type)
-                  tr.data-edit-form(id=`${d.date.replace(/\//g, '')}-form`, hidden)
-                    form(id=`${d.date.replace(/\//g, '')}-dataEdit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`)).ajax-form.confirm-prompt
-                    input(type='hidden', name='_method', value='POST', form=`${d.date.replace(/\//g, '')}-dataEdit`)
-                    input(type='hidden', name='_csrf', value=ctx.csrf, form=`${d.date.replace(/\//g, '')}-dataEdit`)
-                    input(type='hidden', name='edit_data', value='true', form=`${d.date.replace(/\//g, '')}-dataEdit`)
-                    input(type='hidden', name='origData', value=d.value, form=`${d.date.replace(/\//g, '')}-dataEdit`)
-                    input(type='hidden', name='date', value=d.date, form=`${d.date.replace(/\//g, '')}-dataEdit`)
-                    input(type='hidden', name='timezone', form=`${d.date.replace(/\//g, '')}-dataEdit`)
-                    //- Date
-                    td.align-middle= d.date
-                    //- Data inputs
-                    if target.data_type === 'Rate'
-                      td.align-middle
-                        input(type='text', name='correct', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('Correct'), value=d.correct).form-control
-                      td.align-middle
-                        input(type='text', name='incorrect', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('Incorrect'), value=d.incorrect).form-control
-                      td.align-middle
-                        input(type='text', name='counting_time', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('HH:mm:ss'), value=d.counting_time).form-control
-                    else if target.data_type === 'Duration'
-                      input(type='text', name='data', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('HH:mm:ss'), value=d.value).form-control
-                    else
-                      td.align-middle
-                        input(type='text', name='data', required, form=`${d.date.replace(/\//g, '')}-dataEdit`, placeholder=t('Data'), value=d.value).form-control
-                    //- Action buttons
-                    td.align-middle
-                      .btn-group(role='group', aria-label=t('Actions'))
-                        button(type='submit', form=`${d.date.replace(/\//g, '')}-dataEdit`).btn.btn-success: i.fa.fa-fw.fa-check
-                        button.data-edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
-                //- Raw Data
-                if rawData
-                  tr(id=`${d.date.replace(/\//g, '')}-raw`, style='display: none')
-                    td.align-middle(colspan=target.data_type === 'Rate' ? '5' : '3')
-                      .table-responsive
-                        table.table.table-hover.table-sm
-                          thead
-                            tr
-                              th(scope='col')= t('Date')
-                              if (target.data_type === 'Rate')
-                                th(scope='col')= t('Correct')
-                                th(scope='col')= t('Incorrect')
-                                th(scope='col')= t('Counting Time')
-                              else
-                                th(scope='col')= t('Data')
-                              th(scope='col')= t('Actions')
-                          tbody
-                            each rawD in rawData[d.date]
-                              tr(id=rawD.id)
-                                //- Date column
-                                td.align-middle
-                                  if target.data_type === 'Task Analysis'
-                                    a(id=`#${rawD.id}-toggle`, href='#', data-target=`#${rawD.id}-steps`, data-toggle='toggle', role='button', aria-expanded='false', aria-controls=`${rawD.id}-steps`).btn
-                                      i.fas.fa-caret-right
-                                      = ' '
-                                      = dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
-                                  else
+                                if target.data_type === 'Task Analysis'
+                                  a(id=`#${rawD.id}-toggle`, href='#', data-target=`#${rawD.id}-steps`, data-toggle='toggle', role='button', aria-expanded='false', aria-controls=`${rawD.id}-steps`).btn
+                                    i.fas.fa-caret-right
+                                    = ' '
                                     = dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
+                                else
+                                  = dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
+                              //- Data columns
+                              if target.data_type === 'Rate'
+                                td.align-middle= rawD.value.correct
+                                td.align-middle= rawD.value.incorrect
+                                td.align-middle= rawD.value.counting_time
+                              if target.data_type === 'Task Analysis'
+                                td.align-middle= `${rawD.value}%`
+                              else
+                                td.align-middle= rawD.value
+                              //- Action columns
+                              td.align-middle(id=`${rawD.id}-actions`)
+                                .btn-group(role='group', aria-label=t('Actions'))
+                                  a.data-edit-btn(href='#', type='button', data-toggle='tooltip', data-label=t('Edit'), data-type=target.data_type, aria-label=t('Edit')).btn.btn-sm.btn-secondary: i.fa.fa-fw.fa-edit
+                                  form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`), method="POST", autocomplete="off")
+                                    input(type='hidden', name='_csrf', value=ctx.csrf)
+                                    input(type='hidden', name='_method', value='DELETE')
+                                    input(type='hidden', name='id', value=rawD.id)
+                                    button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary.btn-sm: i.fa.fa-fw.fa-remove
+                              td.align-middle(id=`${rawD.id}-edit-actions`, hidden)
+                                .btn-group(role='group', aria-label=t('Actions'))
+                                  button(type='submit', form=`${rawD.id}-dataEdit`).btn.btn-success.btn-sm: i.fa.fa-fw.fa-check
+                                  button.data-edit-cancel-btn(type='button', data-type=target.data_type, aria-label=t('Cancel')).btn.btn-danger.btn-sm: i.fa.fa-fw.fa-times
+                            if target.data_type === 'Task Analysis'
+                              tr(id=`${rawD.id}-steps`, style='display: none')
+                                td.align-middle(colspan='3')
+                                  .table-responsive
+                                    table.table.table-hover.table-sm
+                                      thead
+                                        tr
+                                          th(scope='col')= t('Step Name')
+                                          th(scope='col')= t('Data')
+                                      tbody
+                                        each step, index in target.ta
+                                          tr
+                                            td.align-middle= t(step)
+                                            td.align-middle= t(rawD.ta[index])
+                              tr.data-edit-form(id=`${rawD.id}-form`, hidden)
+                                form(id=`${rawD.id}-dataEdit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`)).ajax-form.confirm-prompt
+                                input(type='hidden', name='_method', value='POST', form=`${rawD.id}-dataEdit`)
+                                input(type='hidden', name='_csrf', value=ctx.csrf, form=`${rawD.id}-dataEdit`)
+                                input(type='hidden', name='edit_raw_data', value='true', form=`${rawD.id}-dataEdit`)
+                                input(type='hidden', name='id', value=rawD.id, form=`${rawD.id}-dataEdit`)
+                                td.align-middle(colspan='3')
+                                  .table-responsive
+                                    table.table.table-hover.table-sm
+                                      thead
+                                        tr
+                                          th(scope='col')= t('Step Name')
+                                          th(scope='col')= t('Data')
+                                      tbody
+                                        each step, index in target.ta
+                                          tr
+                                            td.align-middle= t(step)
+                                            td.align-middle
+                                              select(name='data', required, form=`${rawD.id}-dataEdit`).form-control
+                                                each val in ['--- Select ---', 'correct', 'approximation', 'incorrect']
+                                                  if val === rawD.ta[index]
+                                                    option(value=val, selected)= t(val)
+                                                  else
+                                                    option(value=val)= t(val)
+                            else
+                              tr.data-edit-form(id=`${rawD.id}-form`, hidden)
+                                form(id=`${rawD.id}-dataEdit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`)).ajax-form.confirm-prompt
+                                input(type='hidden', name='_method', value='POST', form=`${rawD.id}-dataEdit`)
+                                input(type='hidden', name='_csrf', value=ctx.csrf, form=`${rawD.id}-dataEdit`)
+                                input(type='hidden', name='edit_raw_data', value='true', form=`${rawD.id}-dataEdit`)
+                                input(type='hidden', name='id', value=rawD.id, form=`${rawD.id}-dataEdit`)
+                                //- Date column
+                                td.align-middle= dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
                                 //- Data columns
                                 if target.data_type === 'Rate'
-                                  td.align-middle= rawD.value.correct
-                                  td.align-middle= rawD.value.incorrect
-                                  td.align-middle= rawD.value.counting_time
-                                if target.data_type === 'Task Analysis'
-                                  td.align-middle= `${rawD.value}%`
+                                  td.align-middle
+                                    input(type='text', name='correct', required, form=`${rawD.id}-dataEdit`, placeholder=t('Correct'), value=rawD.value.correct).form-control
+                                  td.align-middle
+                                    input(type='text', name='incorrect', required, form=`${rawD.id}-dataEdit`, placeholder=t('Incorrect'), value=rawD.value.incorrect).form-control
+                                  td.align-middle
+                                    input(type='text', name='counting_time', required, form=`${rawD.id}-dataEdit`, placeholder=t('HH:mm:ss'), value=rawD.value.counting_time).form-control
+                                else if target.data_type === 'Duration'
+                                  td.align-middle
+                                    input(type='text', name='data', required, form=`${rawD.id}-dataEdit`, placeholder=t('HH:mm:ss'), value=rawD.value).form-control
+                                else if target.data_type === 'Percent Correct'
+                                  td.align-middle
+                                    select(name='data', required, form=`${rawD.id}-dataEdit`).form-control
+                                      each val in ['--- Select ---', 'correct', 'approximation', 'incorrect']
+                                        if val === rawD.value
+                                          option(value=val, selected)= t(val)
+                                        else
+                                          option(value=val)= t(val)
                                 else
-                                  td.align-middle= rawD.value
-                                //- Action columns
-                                td.align-middle(id=`${rawD.id}-actions`)
-                                  .btn-group(role='group', aria-label=t('Actions'))
-                                    a.data-edit-btn(href='#', type='button', data-toggle='tooltip', data-label=t('Edit'), data-type=target.data_type, aria-label=t('Edit')).btn.btn-sm.btn-secondary: i.fa.fa-fw.fa-edit
-                                    form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`), method="POST", autocomplete="off")
-                                      input(type='hidden', name='_csrf', value=ctx.csrf)
-                                      input(type='hidden', name='_method', value='DELETE')
-                                      input(type='hidden', name='id', value=rawD.id)
-                                      button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary.btn-sm: i.fa.fa-fw.fa-remove
-                                td.align-middle(id=`${rawD.id}-edit-actions`, hidden)
+                                  td.align-middle
+                                    input(type='text', name='data', required, form=`${rawD.id}-dataEdit`, placeholder=t('Data'), value=rawD.value).form-control
+                                td.align-middle
                                   .btn-group(role='group', aria-label=t('Actions'))
                                     button(type='submit', form=`${rawD.id}-dataEdit`).btn.btn-success.btn-sm: i.fa.fa-fw.fa-check
-                                    button.data-edit-cancel-btn(type='button', data-type=target.data_type, aria-label=t('Cancel')).btn.btn-danger.btn-sm: i.fa.fa-fw.fa-times
-                              if target.data_type === 'Task Analysis'
-                                tr(id=`${rawD.id}-steps`, style='display: none')
-                                  td.align-middle(colspan='3')
-                                    .table-responsive
-                                      table.table.table-hover.table-sm
-                                        thead
-                                          tr
-                                            th(scope='col')= t('Step Name')
-                                            th(scope='col')= t('Data')
-                                        tbody
-                                          each step, index in target.ta
-                                            tr
-                                              td.align-middle= t(step)
-                                              td.align-middle= t(rawD.ta[index])
-                                tr.data-edit-form(id=`${rawD.id}-form`, hidden)
-                                  form(id=`${rawD.id}-dataEdit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`)).ajax-form.confirm-prompt
-                                  input(type='hidden', name='_method', value='POST', form=`${rawD.id}-dataEdit`)
-                                  input(type='hidden', name='_csrf', value=ctx.csrf, form=`${rawD.id}-dataEdit`)
-                                  input(type='hidden', name='edit_raw_data', value='true', form=`${rawD.id}-dataEdit`)
-                                  input(type='hidden', name='id', value=rawD.id, form=`${rawD.id}-dataEdit`)
-                                  td.align-middle(colspan='3')
-                                    .table-responsive
-                                      table.table.table-hover.table-sm
-                                        thead
-                                          tr
-                                            th(scope='col')= t('Step Name')
-                                            th(scope='col')= t('Data')
-                                        tbody
-                                          each step, index in target.ta
-                                            tr
-                                              td.align-middle= t(step)
-                                              td.align-middle
-                                                select(name='data', required, form=`${rawD.id}-dataEdit`).form-control
-                                                  each val in ['--- Select ---', 'correct', 'approximation', 'incorrect']
-                                                    if val === rawD.ta[index]
-                                                      option(value=val, selected)= t(val)
-                                                    else
-                                                      option(value=val)= t(val)
-                              else
-                                tr.data-edit-form(id=`${rawD.id}-form`, hidden)
-                                  form(id=`${rawD.id}-dataEdit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`)).ajax-form.confirm-prompt
-                                  input(type='hidden', name='_method', value='POST', form=`${rawD.id}-dataEdit`)
-                                  input(type='hidden', name='_csrf', value=ctx.csrf, form=`${rawD.id}-dataEdit`)
-                                  input(type='hidden', name='edit_raw_data', value='true', form=`${rawD.id}-dataEdit`)
-                                  input(type='hidden', name='id', value=rawD.id, form=`${rawD.id}-dataEdit`)
-                                  //- Date column
-                                  td.align-middle= dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
-                                  //- Data columns
-                                  if target.data_type === 'Rate'
-                                    td.align-middle
-                                      input(type='text', name='correct', required, form=`${rawD.id}-dataEdit`, placeholder=t('Correct'), value=rawD.value.correct).form-control
-                                    td.align-middle
-                                      input(type='text', name='incorrect', required, form=`${rawD.id}-dataEdit`, placeholder=t('Incorrect'), value=rawD.value.incorrect).form-control
-                                    td.align-middle
-                                      input(type='text', name='counting_time', required, form=`${rawD.id}-dataEdit`, placeholder=t('HH:mm:ss'), value=rawD.value.counting_time).form-control
-                                  else if target.data_type === 'Duration'
-                                    td.align-middle
-                                      input(type='text', name='data', required, form=`${rawD.id}-dataEdit`, placeholder=t('HH:mm:ss'), value=rawD.value).form-control
-                                  else if target.data_type === 'Percent Correct'
-                                    td.align-middle
-                                      select(name='data', required, form=`${rawD.id}-dataEdit`).form-control
-                                        each val in ['--- Select ---', 'correct', 'approximation', 'incorrect']
-                                          if val === rawD.value
-                                            option(value=val, selected)= t(val)
-                                          else
-                                            option(value=val)= t(val)
-                                  else
-                                    td.align-middle
-                                      input(type='text', name='data', required, form=`${rawD.id}-dataEdit`, placeholder=t('Data'), value=rawD.value).form-control
-                                  td.align-middle
-                                    .btn-group(role='group', aria-label=t('Actions'))
-                                      button(type='submit', form=`${rawD.id}-dataEdit`).btn.btn-success.btn-sm: i.fa.fa-fw.fa-check
-                                      button.data-edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger.btn-sm: i.fa.fa-fw.fa-times
+                                    button.data-edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger.btn-sm: i.fa.fa-fw.fa-times
