@@ -147,6 +147,9 @@ $(document).on('click', '#graphTargetBtn', async function (event) {
       },
       stroke: {
         width: 1
+      },
+      noData: {
+        text: 'No Data'
       }
     };
 
