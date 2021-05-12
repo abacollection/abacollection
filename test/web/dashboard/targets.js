@@ -24,13 +24,13 @@ test.before(utils.defineDataFactory);
 test.after.always(utils.teardownMongoose);
 
 test.beforeEach(async (t) => {
-  // set password
+  // Set password
   t.context.password = '!@K#NLK!#N';
-  // create user
+  // Create user
   let user = await factory.build('user');
-  // must register in order for authentication to work
+  // Must register in order for authentication to work
   user = await Users.register(user, t.context.password);
-  // setup user for otp
+  // Setup user for otp
   user[config.userFields.hasSetPassword] = true;
   t.context.user = await user.save();
 
@@ -98,9 +98,9 @@ test('retrieveTarget > errors if no params', async (t) => {
       body: { target: '' }
     },
     state: { targets },
-    translateError: (err) => err,
-    throw: (err) => {
-      throw err;
+    translateError: (error) => error,
+    throw: (error) => {
+      throw error;
     }
   };
 
@@ -113,9 +113,9 @@ test('retrieveTarget > errors if target does not exist', async (t) => {
   const ctx = {
     params: { target_id: '1' },
     state: { targets: [] },
-    translateError: (err) => err,
-    throw: (err) => {
-      throw err;
+    translateError: (error) => error,
+    throw: (error) => {
+      throw error;
     }
   };
 
@@ -197,6 +197,27 @@ test('PUT targets > task analysis > successfully', async (t) => {
   t.is(query.ta[0], '1');
   t.is(query.ta[1], '2');
   t.is(query.ta[2], '3');
+});
+
+test('PUT targets > task analysis > fails with no steps', async (t) => {
+  const { web, root } = t.context;
+  const target = await factory.build('target');
+
+  let query = await Targets.findOne({ name: target.name });
+  t.is(query, null);
+
+  const res = await web.put(`${root}/targets`).send({
+    name: target.name,
+    description: target.description,
+    data_type: 'Task Analysis',
+    ta: []
+  });
+
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.INVALID_TA_STEPS);
+
+  query = await Targets.findOne({ name: target.name });
+  t.is(query, null);
 });
 
 test('PUT targets > fails with invalid name', async (t) => {
@@ -566,7 +587,7 @@ test('GET data(JSON) > rate > default', async (t) => {
   t.is(res.body.xaxisTitle, 'Date');
   t.is(res.body.yaxisTitle, 'Count per Minute (first)');
 
-  // check that series was named
+  // Check that series was named
   t.is(res.body.series[0].name, 'Correct');
   t.is(res.body.series[1].name, 'Incorrect');
 

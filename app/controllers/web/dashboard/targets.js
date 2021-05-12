@@ -17,9 +17,9 @@ async function retrieveTargets(ctx, next) {
   //
   // set breadcrumb
   //
-  if (ctx.state.breadcrumbs)
+  if (ctx.state.breadcrumbs) {
     ctx.state.breadcrumbs = ctx.state.breadcrumbs.map((breadcrumb) => {
-      if (!_.isObject(breadcrumb) && breadcrumb === 'targets')
+      if (!_.isObject(breadcrumb) && breadcrumb === 'targets') {
         return {
           name: 'Targets',
           header: ctx.state.program.name,
@@ -27,18 +27,21 @@ async function retrieveTargets(ctx, next) {
             `/dashboard/clients/${ctx.state.client.id}/programs/${ctx.state.program.id}/targets`
           )
         };
+      }
 
       return breadcrumb;
     });
+  }
 
   return next();
 }
 
 async function retrieveTarget(ctx, next) {
-  if (!isSANB(ctx.params.target_id) && !isSANB(ctx.request.body.target))
+  if (!isSANB(ctx.params.target_id) && !isSANB(ctx.request.body.target)) {
     return ctx.throw(
       Boom.badRequest(ctx.translateError('TARGET_DOES_NOT_EXIST'))
     );
+  }
 
   const id = isSANB(ctx.params.target_id)
     ? ctx.params.target_id
@@ -48,17 +51,18 @@ async function retrieveTarget(ctx, next) {
     [target.id, target.name].includes(id)
   );
 
-  if (!ctx.state.target)
+  if (!ctx.state.target) {
     return ctx.throw(
       Boom.badRequest(ctx.translateError('TARGET_DOES_NOT_EXIST'))
     );
+  }
 
   //
   // set breadcrumb
   //
-  if (ctx.state.breadcrumbs)
+  if (ctx.state.breadcrumbs) {
     ctx.state.breadcrumbs = ctx.state.breadcrumbs.map((breadcrumb) => {
-      if (!_.isObject(breadcrumb) && breadcrumb === id)
+      if (!_.isObject(breadcrumb) && breadcrumb === id) {
         return {
           name: ctx.state.target.name,
           header: `${ctx.state.program.name}: ${ctx.state.target.name}`,
@@ -66,9 +70,11 @@ async function retrieveTarget(ctx, next) {
             `/dashboard/clients/${ctx.state.client.id}/programs/${ctx.state.program.id}/targets/${id}`
           )
         };
+      }
 
       return breadcrumb;
     });
+  }
 
   return next();
 }
@@ -100,10 +106,12 @@ async function list(ctx) {
 }
 
 async function addTarget(ctx) {
-  if (!isSANB(ctx.request.body.name))
+  if (!isSANB(ctx.request.body.name)) {
     return ctx.throw(
       Boom.badRequest(ctx.translateError('INVALID_TARGET_NAME'))
     );
+  }
+
   try {
     const doc = {
       name: ctx.request.body.name,
@@ -113,7 +121,15 @@ async function addTarget(ctx) {
       program: ctx.state.program
     };
 
-    if (doc.data_type === 'Task Analysis') doc.ta = ctx.request.body.ta;
+    if (doc.data_type === 'Task Analysis') {
+      if (_.isEmpty(ctx.request.body.ta)) {
+        return ctx.throw(
+          Boom.badRequest(ctx.translateError('INVALID_TA_STEPS'))
+        );
+      }
+
+      doc.ta = ctx.request.body.ta;
+    }
 
     ctx.state.target = await Targets.create(doc);
 
@@ -131,11 +147,14 @@ async function addTarget(ctx) {
       position: 'top'
     });
 
-    if (ctx.accepts('html')) ctx.redirect(redirectTo);
-    else ctx.body = { redirectTo };
-  } catch (err) {
-    ctx.logger.error(err);
-    ctx.throw(Boom.badRequest(err.message));
+    if (ctx.accepts('html')) {
+      ctx.redirect(redirectTo);
+    } else {
+      ctx.body = { redirectTo };
+    }
+  } catch (error) {
+    ctx.logger.error(error);
+    ctx.throw(Boom.badRequest(error.message));
   }
 }
 
@@ -154,15 +173,19 @@ async function deleteTarget(ctx) {
   const redirectTo = ctx.state.l(
     `/dashboard/clients/${ctx.state.client.id}/programs/${ctx.state.program.id}/targets`
   );
-  if (ctx.accepts('html')) ctx.redirect(redirectTo);
-  else ctx.body = { redirectTo };
+  if (ctx.accepts('html')) {
+    ctx.redirect(redirectTo);
+  } else {
+    ctx.body = { redirectTo };
+  }
 }
 
 async function editTarget(ctx) {
-  if (!isSANB(ctx.request.body.name))
+  if (!isSANB(ctx.request.body.name)) {
     return ctx.throw(
       Boom.badRequest(ctx.translateError('INVALID_TARGET_NAME'))
     );
+  }
 
   const { name, description } = ctx.request.body;
 
@@ -190,8 +213,11 @@ async function editTarget(ctx) {
   const redirectTo = ctx.state.l(
     `/dashboard/clients/${ctx.state.client._id}/programs/${ctx.state.program._id}/targets`
   );
-  if (ctx.accepts('html')) ctx.redirect(redirectTo);
-  else ctx.body = { redirectTo };
+  if (ctx.accepts('html')) {
+    ctx.redirect(redirectTo);
+  } else {
+    ctx.body = { redirectTo };
+  }
 }
 
 async function getData(ctx) {
@@ -205,7 +231,9 @@ async function getData(ctx) {
     'Task Analysis': ctx.state.t('Percent Correct per Day')
   };
 
-  if (ctx.accepts('html')) return ctx.render('dashboard/clients/_data-table');
+  if (ctx.accepts('html')) {
+    return ctx.render('dashboard/clients/_data-table');
+  }
 
   let series = [];
 

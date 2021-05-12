@@ -1,6 +1,6 @@
 const env = require('./env');
 
-// turn off max length eslint rule since this is a config file with long strs
+// Turn off max length eslint rule since this is a config file with long strs
 /* eslint max-len: 0 */
 
 module.exports = {
@@ -106,6 +106,8 @@ module.exports = {
   // Targets
   //
   INVALID_TARGET_NAME: 'Target name is invalid.',
+  INVALID_TA_STEPS:
+    'When creating a Task Anlysis target, you must add the steps upon creation.',
   TARGET_DOES_NOT_EXIST: 'Target does not exist.',
   INVALID_DATE: 'Date is not a valid date.',
   INVALID_CORRECT: 'Correct is invalid.',
