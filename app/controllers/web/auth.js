@@ -25,8 +25,14 @@ const sanitize = (string) =>
   });
 
 function logout(ctx) {
-  if (!ctx.isAuthenticated()) return ctx.redirect(ctx.state.l());
-  if (ctx.session.otp && !ctx.session.otp_remember_me) delete ctx.session.otp;
+  if (!ctx.isAuthenticated()) {
+    return ctx.redirect(ctx.state.l());
+  }
+
+  if (ctx.session.otp && !ctx.session.otp_remember_me) {
+    delete ctx.session.otp;
+  }
+
   ctx.logout();
   ctx.flash('custom', {
     title: ctx.request.t('Success'),
@@ -41,16 +47,16 @@ function logout(ctx) {
 }
 
 function parseReturnOrRedirectTo(ctx, next) {
-  // if the user passed `?return_to` and it is not blank
+  // If the user passed `?return_to` and it is not blank
   // then set it as the returnTo value for when we log in
   if (isSANB(ctx.query.return_to)) {
     ctx.session.returnTo = ctx.query.return_to;
   } else if (isSANB(ctx.query.redirect_to)) {
-    // in case people had a typo, we should support redirect_to as well
+    // In case people had a typo, we should support redirect_to as well
     ctx.session.returnTo = ctx.query.redirect_to;
   }
 
-  // prevents lad being used as a open redirect
+  // Prevents lad being used as a open redirect
   if (
     ctx.session.returnTo &&
     ctx.session.returnTo.includes('://') &&
@@ -78,8 +84,12 @@ async function registerOrLogin(ctx) {
 
     ctx.flash('success', ctx.translate('ALREADY_SIGNED_IN'));
 
-    if (ctx.accepts('html')) ctx.redirect(redirectTo);
-    else ctx.body = { redirectTo };
+    if (ctx.accepts('html')) {
+      ctx.redirect(redirectTo);
+    } else {
+      ctx.body = { redirectTo };
+    }
+
     return;
   }
 
@@ -91,10 +101,12 @@ async function registerOrLogin(ctx) {
 
 async function homeOrDashboard(ctx) {
   // If the user is logged in then take them to their dashboard
-  if (ctx.isAuthenticated())
+  if (ctx.isAuthenticated()) {
     return ctx.redirect(
       ctx.state.l(config.passportCallbackOptions.successReturnToOrRedirect)
     );
+  }
+
   // Manually set page title since we don't define Home route in config/meta
   ctx.state.meta = {
     title: sanitize(
@@ -120,20 +132,29 @@ async function login(ctx, next) {
 
     ctx.flash('success', ctx.translate('ALREADY_SIGNED_IN'));
 
-    if (ctx.accepts('html')) ctx.redirect(redirectTo);
-    else ctx.body = { redirectTo };
+    if (ctx.accepts('html')) {
+      ctx.redirect(redirectTo);
+    } else {
+      ctx.body = { redirectTo };
+    }
+
     return;
   }
 
-  await passport.authenticate('local', async (err, user, info) => {
-    if (err) throw err;
+  await passport.authenticate('local', async (error, user, info) => {
+    if (error) {
+      throw error;
+    }
 
     if (!user) {
-      if (info) throw info;
+      if (info) {
+        throw info;
+      }
+
       throw ctx.translateError('UNKNOWN_ERROR');
     }
 
-    // redirect user to their last locale they were using
+    // Redirect user to their last locale they were using
     if (
       user &&
       isSANB(user[config.lastLocaleField]) &&
@@ -154,9 +175,11 @@ async function login(ctx, next) {
     }
 
     let greeting = 'Good morning';
-    if (dayjs().format('HH') >= 12 && dayjs().format('HH') <= 17)
+    if (dayjs().format('HH') >= 12 && dayjs().format('HH') <= 17) {
       greeting = 'Good afternoon';
-    else if (dayjs().format('HH') >= 17) greeting = 'Good evening';
+    } else if (dayjs().format('HH') >= 17) {
+      greeting = 'Good evening';
+    }
 
     if (user) {
       await ctx.login(user);
@@ -175,15 +198,16 @@ async function login(ctx, next) {
 
       const uri = authenticator.keyuri(
         user.email,
-        'lad.sh',
+        'abacollection',
         user[config.passport.fields.otpToken]
       );
 
       ctx.state.user.qrcode = await qrcode.toDataURL(uri);
       ctx.state.user = await ctx.state.user.save();
 
-      if (user[config.passport.fields.otpEnabled] && !ctx.session.otp)
+      if (user[config.passport.fields.otpEnabled] && !ctx.session.otp) {
         redirectTo = ctx.state.l(config.loginOtpRoute);
+      }
 
       if (ctx.accepts('html')) {
         ctx.redirect(redirectTo);
@@ -204,16 +228,23 @@ async function login(ctx, next) {
       position: 'top'
     });
 
-    if (ctx.accepts('html')) ctx.redirect(redirectTo);
-    else ctx.body = { redirectTo };
+    if (ctx.accepts('html')) {
+      ctx.redirect(redirectTo);
+    } else {
+      ctx.body = { redirectTo };
+    }
   })(ctx, next);
 }
 
 async function loginOtp(ctx, next) {
-  await passport.authenticate('otp', (err, user) => {
-    if (err) throw err;
-    if (!user)
+  await passport.authenticate('otp', (error, user) => {
+    if (error) {
+      throw error;
+    }
+
+    if (!user) {
       throw Boom.unauthorized(ctx.translateError('INVALID_OTP_PASSCODE'));
+    }
 
     ctx.session.otp_remember_me = boolean(ctx.request.body.otp_remember_me);
 
@@ -242,18 +273,19 @@ async function recoveryKey(ctx) {
 
   let recoveryKeys = ctx.state.user[config.userFields.otpRecoveryKeys];
 
-  // ensure recovery matches user list of keys
+  // Ensure recovery matches user list of keys
   if (
     !isSANB(ctx.request.body.recovery_key) ||
     !Array.isArray(recoveryKeys) ||
     recoveryKeys.length === 0 ||
     !recoveryKeys.includes(ctx.request.body.recovery_key)
-  )
+  ) {
     return ctx.throw(
       Boom.badRequest(ctx.translateError('INVALID_RECOVERY_KEY'))
     );
+  }
 
-  // remove used key from recovery key list
+  // Remove used key from recovery key list
   recoveryKeys = recoveryKeys.filter(
     (key) => key !== ctx.request.body.recovery_key
   );
@@ -264,10 +296,12 @@ async function recoveryKey(ctx) {
     ? ctx.state.l('/my-account/security')
     : redirectTo;
 
-  // handle case if the user runs out of keys
+  // Handle case if the user runs out of keys
   if (emptyRecoveryKeys) {
     recoveryKeys = await Promise.all(
-      new Array(10).fill().map(() => cryptoRandomString.async(options))
+      Array.from({ length: 10 })
+        .fill()
+        .map(() => cryptoRandomString.async(options))
     );
   }
 
@@ -301,13 +335,15 @@ async function recoveryKey(ctx) {
 async function register(ctx) {
   const { body } = ctx.request;
 
-  if (!_.isString(body.email) || !validator.isEmail(body.email))
+  if (!_.isString(body.email) || !validator.isEmail(body.email)) {
     throw Boom.badRequest(ctx.translateError('INVALID_EMAIL'));
+  }
 
-  if (!isSANB(body.password))
+  if (!isSANB(body.password)) {
     throw Boom.badRequest(ctx.translateError('INVALID_PASSWORD'));
+  }
 
-  // register the user
+  // Register the user
   const count = await Users.countDocuments({ group: 'admin' });
   const query = {
     email: body.email,
@@ -340,20 +376,24 @@ async function register(ctx) {
     position: 'top'
   });
 
-  if (ctx.accepts('html')) ctx.redirect(redirectTo);
-  else ctx.body = { redirectTo };
+  if (ctx.accepts('html')) {
+    ctx.redirect(redirectTo);
+  } else {
+    ctx.body = { redirectTo };
+  }
 }
 
 async function forgotPassword(ctx) {
   const { body } = ctx.request;
 
-  if (!_.isString(body.email) || !validator.isEmail(body.email))
+  if (!_.isString(body.email) || !validator.isEmail(body.email)) {
     throw Boom.badRequest(ctx.translateError('INVALID_EMAIL'));
+  }
 
-  // lookup the user
+  // Lookup the user
   let user = await Users.findOne({ email: body.email });
 
-  // to prevent people from being able to find out valid email accounts
+  // To prevent people from being able to find out valid email accounts
   // we always say "a password reset request has been sent to your email"
   // and if the email didn't exist in our system then we simply don't send it
   if (!user) {
@@ -369,22 +409,23 @@ async function forgotPassword(ctx) {
     return;
   }
 
-  // if we've already sent a reset password request in the past half hour
+  // If we've already sent a reset password request in the past half hour
   if (
     user[config.userFields.resetTokenExpiresAt] &&
     user[config.userFields.resetToken] &&
     dayjs(user[config.userFields.resetTokenExpiresAt]).isAfter(
       dayjs().subtract(30, 'minutes')
     )
-  )
+  ) {
     throw Boom.badRequest(
       ctx.translateError(
         'PASSWORD_RESET_LIMIT',
         dayjs(user[config.userFields.resetTokenExpiresAt]).fromNow()
       )
     );
+  }
 
-  // set the reset token and expiry
+  // Set the reset token and expiry
   user[config.userFields.resetTokenExpiresAt] = dayjs()
     .add(30, 'minutes')
     .toDate();
@@ -394,7 +435,7 @@ async function forgotPassword(ctx) {
 
   user = await user.save();
 
-  // queue password reset email
+  // Queue password reset email
   try {
     await email({
       template: 'reset-password',
@@ -420,15 +461,15 @@ async function forgotPassword(ctx) {
         message: ctx.translate('PASSWORD_RESET_SENT')
       };
     }
-  } catch (err) {
-    ctx.logger.error(err);
-    // reset if there was an error
+  } catch (error) {
+    ctx.logger.error(error);
+    // Reset if there was an error
     try {
       user[config.userFields.resetToken] = null;
       user[config.userFields.resetTokenExpiresAt] = null;
       user = await user.save();
-    } catch (err) {
-      ctx.logger.error(err);
+    } catch (error) {
+      ctx.logger.error(error);
     }
 
     throw Boom.badRequest(ctx.translateError('EMAIL_FAILED_TO_SEND'));
@@ -438,24 +479,28 @@ async function forgotPassword(ctx) {
 async function resetPassword(ctx) {
   const { body } = ctx.request;
 
-  if (!_.isString(body.email) || !validator.isEmail(body.email))
+  if (!_.isString(body.email) || !validator.isEmail(body.email)) {
     throw Boom.badRequest(ctx.translateError('INVALID_EMAIL'));
+  }
 
-  if (!isSANB(body.password))
+  if (!isSANB(body.password)) {
     throw Boom.badRequest(ctx.translateError('INVALID_PASSWORD'));
+  }
 
-  if (!isSANB(ctx.params.token))
+  if (!isSANB(ctx.params.token)) {
     throw Boom.badRequest(ctx.translateError('INVALID_RESET_TOKEN'));
+  }
 
-  // lookup the user that has this token and if it matches the email passed
+  // Lookup the user that has this token and if it matches the email passed
   const query = { email: body.email };
   query[config.userFields.resetToken] = ctx.params.token;
-  // ensure that the reset token expires at value is in the future (hasn't expired)
+  // Ensure that the reset token expires at value is in the future (hasn't expired)
   query[config.userFields.resetTokenExpiresAt] = { $gte: new Date() };
   let user = await Users.findOne(query);
 
-  if (!user)
+  if (!user) {
     throw Boom.badRequest(ctx.translateError('INVALID_RESET_PASSWORD'));
+  }
 
   user[config.userFields.resetToken] = null;
   user[config.userFields.resetTokenExpiresAt] = null;
@@ -479,37 +524,42 @@ async function resetPassword(ctx) {
 async function changeEmail(ctx) {
   const { body } = ctx.request;
 
-  if (!isSANB(body.password))
+  if (!isSANB(body.password)) {
     throw Boom.badRequest(ctx.translateError('INVALID_PASSWORD'));
+  }
 
-  if (!isSANB(ctx.params.token))
+  if (!isSANB(ctx.params.token)) {
     throw Boom.badRequest(ctx.translateError('INVALID_RESET_TOKEN'));
+  }
 
-  // lookup the user that has this token and if it matches the email passed
+  // Lookup the user that has this token and if it matches the email passed
   const query = { email: body.email };
   query[config.userFields.changeEmailToken] = ctx.params.token;
-  // ensure that the reset token expires at value is in the future (hasn't expired)
+  // Ensure that the reset token expires at value is in the future (hasn't expired)
   query[config.userFields.changeEmailTokenExpiresAt] = { $gte: new Date() };
   const user = await Users.findOne(query);
 
   try {
-    if (!user) throw Boom.badRequest(ctx.translateError('INVALID_SET_EMAIL'));
+    if (!user) {
+      throw Boom.badRequest(ctx.translateError('INVALID_SET_EMAIL'));
+    }
 
     const auth = await user.authenticate(body.password);
-    if (!auth.user)
+    if (!auth.user) {
       throw Boom.badRequest(ctx.translateError('INVALID_PASSWORD'));
+    }
 
     const newEmail = user[config.userFields.changeEmailNewAddress];
     user[config.passportLocalMongoose.usernameField] = newEmail;
     await user.save();
 
-    // reset change email info
+    // Reset change email info
     user[config.userFields.changeEmailToken] = null;
     user[config.userFields.changeEmailTokenExpiresAt] = null;
     user[config.userFields.changeEmailNewAddress] = null;
     await user.save();
-  } catch (err) {
-    ctx.throw(err);
+  } catch (error) {
+    ctx.throw(error);
   }
 
   const message = ctx.translate('CHANGE_EMAIL');
@@ -528,11 +578,16 @@ async function changeEmail(ctx) {
 async function catchError(ctx, next) {
   try {
     await next();
-  } catch (err) {
-    ctx.logger.error(err);
-    if (ctx.params.provider === 'google' && err.message === 'Consent required')
+  } catch (error) {
+    ctx.logger.error(error);
+    if (
+      ctx.params.provider === 'google' &&
+      error.message === 'Consent required'
+    ) {
       return ctx.redirect('/auth/google/consent');
-    ctx.flash('error', err.message);
+    }
+
+    ctx.flash('error', error.message);
     ctx.redirect('/login');
   }
 }
@@ -565,7 +620,7 @@ async function verify(ctx) {
     return;
   }
 
-  // allow user to click a button to request a new email after 60 seconds
+  // Allow user to click a button to request a new email after 60 seconds
   // after their last attempt to get a verification email
   const resend = ctx.method === 'GET' && boolean(ctx.query.resend);
 
@@ -577,16 +632,19 @@ async function verify(ctx) {
   ) {
     try {
       ctx.state.user = await sendVerificationEmail(ctx);
-    } catch (err) {
-      // wrap with try/catch to prevent redirect looping
+    } catch (error) {
+      // Wrap with try/catch to prevent redirect looping
       // (even though the koa redirect loop package will help here)
-      if (!err.isBoom) return ctx.throw(err);
-      ctx.logger.error(err);
+      if (!error.isBoom) {
+        return ctx.throw(error);
+      }
+
+      ctx.logger.error(error);
       if (ctx.accepts('html')) {
-        ctx.flash('warning', err.message);
+        ctx.flash('warning', error.message);
         ctx.redirect(redirectTo);
       } else {
-        ctx.body = { message: err.message };
+        ctx.body = { message: error.message };
       }
 
       return;
@@ -606,29 +664,34 @@ async function verify(ctx) {
     ctx.flash('success', message);
   }
 
-  // if it's a GET request then render the page
-  if (ctx.method === 'GET' && !isSANB(ctx.query.pin))
+  // If it's a GET request then render the page
+  if (ctx.method === 'GET' && !isSANB(ctx.query.pin)) {
     return ctx.render('verify');
+  }
 
-  // if it's a POST request then ensure the user entered the 6 digit pin
+  // If it's a POST request then ensure the user entered the 6 digit pin
   // otherwise if it's a GET request then use the ctx.query.pin
   let pin = '';
-  if (ctx.method === 'GET') pin = ctx.query.pin;
-  else pin = isSANB(ctx.request.body.pin) ? ctx.request.body.pin : '';
+  if (ctx.method === 'GET') {
+    pin = ctx.query.pin;
+  } else {
+    pin = isSANB(ctx.request.body.pin) ? ctx.request.body.pin : '';
+  }
 
-  // convert to digits only
+  // Convert to digits only
   pin = pin.replace(/\D/g, '');
 
-  // ensure pin matches up
+  // Ensure pin matches up
   if (
     !ctx.state.user[config.userFields.verificationPin] ||
     pin !== ctx.state.user[config.userFields.verificationPin]
-  )
+  ) {
     return ctx.throw(
       Boom.badRequest(ctx.translateError('INVALID_VERIFICATION_PIN'))
     );
+  }
 
-  // set has verified to true
+  // Set has verified to true
   ctx.state.user[config.userFields.hasVerifiedEmail] = true;
   ctx.state.user = await ctx.state.user.save();
 
@@ -657,8 +720,8 @@ async function verify(ctx) {
           inquiry
         }
       });
-    } catch (err) {
-      ctx.logger.error(err);
+    } catch (error) {
+      ctx.logger.error(error);
       throw Boom.badRequest(ctx.translateError('EMAIL_FAILED_TO_SEND'));
     }
   }

@@ -25,14 +25,17 @@ if (!module.parent) {
   (async () => {
     try {
       await api.listen(api.config.port);
-      if (process.send) process.send('ready');
+      if (process.send) {
+        process.send('ready');
+      }
+
       const { port } = api.server.address();
       logger.info(
-        `Lad API server listening on ${port} (LAN: ${ip.address()}:${port})`
+        `ABA Coleection API server listening on ${port} (LAN: ${ip.address()}:${port})`
       );
       await mongoose.connect();
-    } catch (err) {
-      logger.error(err);
+    } catch (error) {
+      logger.error(error);
       // eslint-disable-next-line unicorn/no-process-exit
       process.exit(1);
     }

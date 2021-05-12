@@ -17,7 +17,7 @@ if (!module.parent) {
 
   bree.start();
 
-  logger.info('Lad bree started');
+  logger.info('ABA Collection bree started');
 }
 
 module.exports = bree;

@@ -21,7 +21,7 @@ if (!module.parent) {
       if (process.send) process.send('ready');
       const { port } = proxy.server.address();
       logger.info(
-        `Lad proxy server listening on ${port} (LAN: ${ip.address()}:${port})`
+        `ABA Collection proxy server listening on ${port} (LAN: ${ip.address()}:${port})`
       );
     } catch (err) {
       logger.error(err);
