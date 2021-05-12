@@ -21,17 +21,17 @@ const phrases = require('./phrases');
 const utilities = require('./utilities');
 
 const config = {
-  // package.json
+  // Package.json
   pkg,
 
-  // server
+  // Server
   env: env.NODE_ENV,
   urls: {
     web: env.WEB_URL,
     api: env.API_URL
   },
 
-  // app
+  // App
   supportRequestMaxLength: env.SUPPORT_REQUEST_MAX_LENGTH,
   email: {
     message: {
@@ -65,12 +65,12 @@ const config = {
   // <https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property>
   aws: {},
 
-  // build directory
+  // Build directory
   buildBase: 'build',
 
-  // templating
+  // Templating
   views: {
-    // root is required by `koa-views`
+    // Root is required by `koa-views`
     root: path.join(__dirname, '..', 'app', 'views'),
     // These are options passed to `koa-views`
     // <https://github.com/queckezz/koa-views>
@@ -88,14 +88,14 @@ const config = {
       // <https://github.com/queckezz/koa-views/pull/111>
       pretty: env.NODE_ENV === 'development',
       cache: env.NODE_ENV !== 'development',
-      // debug: env.NODE_ENV === 'development',
+      // Debug: env.NODE_ENV === 'development',
       // compileDebug: env.NODE_ENV === 'development',
       ...utilities,
       filters
     }
   },
 
-  // user fields whose account updates create an action (e.g. email)
+  // User fields whose account updates create an action (e.g. email)
   accountUpdateFields: [
     'passport.fields.otpEnabled',
     'passport.fields.givenName',
@@ -104,7 +104,7 @@ const config = {
     'userFields.apiToken'
   ],
 
-  // user fields (change these if you want camel case or whatever)
+  // User fields (change these if you want camel case or whatever)
   userFields: {
     accountUpdates: 'account_updates',
     fullEmail: 'full_email',
@@ -126,26 +126,26 @@ const config = {
     twoFactorReminderSentAt: 'two_factor_reminder_sent_at'
   },
 
-  // dynamic otp routes
+  // Dynamic otp routes
   otpRoutePrefix: '/otp',
   otpRouteLoginPath: '/login',
 
-  // dynamic otp routes
+  // Dynamic otp routes
   loginOtpRoute: '/otp/login',
 
-  // login route
+  // Login route
   loginRoute: '/login',
 
-  // verification
+  // Verification
   verifyRoute: '/verify',
   verificationPinTimeoutMs: ms(env.VERIFICATION_PIN_TIMEOUT_MS),
   verificationPinEmailIntervalMs: ms(env.VERIFICATION_PIN_EMAIL_INTERVAL_MS),
   verificationPin: { length: 6, type: 'numeric' },
 
-  // reset token
+  // Reset token
   resetTokenTimeoutMs: ms(env.RESET_TOKEN_TIMEOUT_MS),
 
-  // change email token
+  // Change email token
   changeEmailTokenTimeoutMs: ms(env.CHANGE_EMAIL_TOKEN_TIMEOUT_MS),
   changeEmailLimitMs: ms(env.CHANGE_EMAIL_LIMIT_MS),
 
@@ -153,11 +153,11 @@ const config = {
   // <https://github.com/ladjs/passport>
   passport: {
     fields: {
-      // you may want to make this "full_name" instead
+      // You may want to make this "full_name" instead
       displayName: 'display_name',
-      // you could make this "first_name"
+      // You could make this "first_name"
       givenName: 'given_name',
-      // you could make this "last_name"
+      // You could make this "last_name"
       familyName: 'family_name',
       avatarURL: 'avatar_url',
       googleProfileID: 'google_profile_id',
@@ -182,7 +182,7 @@ const config = {
     }
   },
 
-  // passport-local-mongoose options
+  // Passport-local-mongoose options
   // <https://github.com/saintedlama/passport-local-mongoose>
   passportLocalMongoose: {
     usernameField: 'email',
@@ -191,14 +191,17 @@ const config = {
     lastLoginField: 'last_login_at',
     usernameLowerCase: true,
     limitAttempts: true,
-    maxAttempts: env.NODE_ENV === 'development' ? Infinity : 5,
+    maxAttempts: env.NODE_ENV === 'development' ? Number.POSITIVE_INFINITY : 5,
     digestAlgorithm: 'sha256',
     encoding: 'hex',
     saltlen: 32,
     iterations: 25000,
     keylen: 512,
     passwordValidator: (password, fn) => {
-      if (env.NODE_ENV === 'development') return fn();
+      if (env.NODE_ENV === 'development') {
+        return fn();
+      }
+
       const { score } = zxcvbn(password);
       fn(score < 3 ? Boom.badRequest(phrases.INVALID_PASSWORD_STRENGTH) : null);
     },
@@ -214,39 +217,39 @@ const config = {
     }
   },
 
-  // passport callback options
+  // Passport callback options
   passportCallbackOptions: {
-    successReturnToOrRedirect: '/my-account',
+    successReturnToOrRedirect: '/dashboard',
     failureRedirect: '/register',
     successFlash: true,
     failureFlash: true
   },
 
-  // store IP address
+  // Store IP address
   // <https://github.com/ladjs/store-ip-address>
   storeIPAddress: {
     ip: 'ip',
     lastIps: 'last_ips'
   },
 
-  // field name for a user's last locale
+  // Field name for a user's last locale
   // (this gets re-used by email-templates and @ladjs/i18n; see below)
   lastLocaleField: 'last_locale'
 };
 
-// set dynamic login otp route
+// Set dynamic login otp route
 config.loginOtpRoute = `${config.otpRoutePrefix}${config.otpRouteLoginPath}`;
 
-// set build dir based off build base dir name
+// Set build dir based off build base dir name
 config.buildDir = path.join(__dirname, '..', config.buildBase);
 
-// meta support for SEO
+// Meta support for SEO
 config.meta = meta(config);
 
-// add i18n api to views
+// Add i18n api to views
 const logger = new Axe(config.logger);
 
-// add manifest helper for rev-manifest.json support
+// Add manifest helper for rev-manifest.json support
 config.manifest = path.join(config.buildDir, 'rev-manifest.json');
 config.srimanifest = path.join(config.buildDir, 'sri-manifest.json');
 config.views.locals.manifest = manifestRev({
@@ -254,12 +257,12 @@ config.views.locals.manifest = manifestRev({
   manifest: config.srimanifest
 });
 
-// add global `config` object to be used by views
+// Add global `config` object to be used by views
 config.views.locals.config = config;
 
-// add `views` to `config.email`
+// Add `views` to `config.email`
 config.email.transport = nodemailer.createTransport({
-  // you can use any transport here
+  // You can use any transport here
   // but we use postmarkapp.com by default
   // <https://nodemailer.com/transports/>
   service: 'postmark',
@@ -296,10 +299,11 @@ config.email.transport.use(
 if (
   !config.email.juiceResources.webResources.images ||
   env.NODE_ENV !== 'production'
-)
+) {
   config.email.views.locals.manifest = manifestRev({
     prepend: `${config.urls.web}/`,
     manifest: config.manifest
   });
+}
 
 module.exports = config;
