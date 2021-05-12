@@ -143,7 +143,6 @@
     "@commitlint/config-conventional": "^12.1.1",
     "@ladjs/browserslist-config": "^0.0.1",
     "@ladjs/gulp-envify": "^2.0.1",
-    "@release-it/conventional-changelog": "^2.0.0",
     "ava": "^3.12.1",
     "babel-eslint": "^10.1.0",
     "babelify": "^10.0.0",
@@ -201,7 +200,6 @@
     "postcss-scss": "^3.0.5",
     "pug-lint": "^2.6.0",
     "rc": "^1.2.8",
-    "release-it": "^14.6.1",
     "remark-cli": "^9.0.0",
     "remark-preset-github": "^4.0.1",
     "sinon": "^10.0.0",
@@ -244,22 +242,6 @@
     "trailingComma": "none"
   },
   "private": true,
-  "release-it": {
-    "npm": {
-      "publish": false
-    },
-    "git": {
-      "commitMessage": "v${version}"
-    },
-    "github": {
-      "release": true
-    },
-    "plugins": {
-      "@release-it/conventional-changelog": {
-        "preset": "angular"
-      }
-    }
-  },
   "remarkConfig": {
     "plugins": [
       "preset-github"
