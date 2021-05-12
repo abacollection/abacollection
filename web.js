@@ -4,7 +4,7 @@ require('./config/env');
 const Graceful = require('@ladjs/graceful');
 const Mongoose = require('@ladjs/mongoose');
 const Redis = require('@ladjs/redis');
-const Web = require('@ladjs/web');
+const Web = require('@abacollection/web');
 const ip = require('ip');
 const sharedConfig = require('@ladjs/shared-config');
 
