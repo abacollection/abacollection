@@ -45,7 +45,7 @@ nav(class=['/register', '/login', config.verifyRoute].includes(ctx.pathWithoutLo
             = t('My Account')
           .dropdown-menu(aria-labelledby='navbar-dropdown-my-account')
             a.dropdown-item(class=ctx.pathWithoutLocale === '/my-account' ? 'active' : '', href=l('/my-account'))= t('Profile')
-            a.dropdown-item(class=ctx.pathWithoutLocale === '/my-account/security' ? 'active' : '', href=l('/my-account/security'))= t('Security')
+            //- a.dropdown-item(class=ctx.pathWithoutLocale === '/my-account/security' ? 'active' : '', href=l('/my-account/security'))= t('Security')
         //- links that show if you're an admin
         if user.group === 'admin'
           li.nav-item.dropdown.ml-md-1.mt-1.mt-md-0
