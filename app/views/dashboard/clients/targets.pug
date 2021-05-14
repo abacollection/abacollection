@@ -47,6 +47,8 @@ block body
                 th(scope='col')
                   +sort_header('data_type')
                 th(scope='col')
+                  +sort_header('phase')
+                th(scope='col')
                   = t('Actions')
                   a#addBtn(type='button', data-toggle='tooltip', data-title=t('Add'), aria-label=t('Add')).btn.btn-success.btn-sm.float-right: i.fas.fa-plus
               tbody
@@ -70,6 +72,13 @@ block body
                       //- option(value='Whole Interval')= t('Whole Interval')
                       //- option(value='Partial Interval')= t('Partial Interval')
                   td.align-middle
+                    select#input-phase(name='phase', form='add').form-control
+                      option(value='Not Started' selected)= t('Not Started')
+                      option(value='Baseline')= t('Baseline')
+                      option(value='Intervention')= t('Intervention')
+                      option(value='Maintenance')= t('Maintenance')
+                      option(value='Mastered')= t('Mastered')
+                  td.align-middle
                     .btn-group(role='group', aria-label=t('Actions'))
                       button(type='submit', form='add').btn.btn-success: i.fa.fa-fw.fa-check
                       button#cancelAddBtn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
@@ -78,6 +87,7 @@ block body
                     td.align-middle= t(target.name)
                     td.align-middle= t(target.description)
                     td.align-middle= t(target.data_type)
+                    td.align-middle= t(target.phase)
                     td.align-middle
                       .btn-group(role='group', aria-label=t('Actions'))
                         a.edit-btn(data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
@@ -99,6 +109,13 @@ block body
                     td.align-middle
                       input(type='text', name='description', placeholder=t('Description'), value=t(target.description), form=`${target.id}-edit`).form-control
                     td.align-middle= t(target.data_type)
+                    td.align-middle
+                      select(name='phase', form=`${target.id}-edit`).form-control
+                        each item in ['Not Started', 'Baseline', 'Intervention', 'Maintenance', 'Mastered']
+                          if target.phase === item
+                            option(value=item, selected)= t(item)
+                          else
+                            option(value=item)= t(item)
                     td.align-middle
                       .btn-group
                         button(type='submit', form=`${target.id}-edit`).btn.btn-success: i.fa.fa-fw.fa-check

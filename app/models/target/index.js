@@ -36,6 +36,9 @@ const targetSchema = new mongoose.Schema(
     description: {
       type: String
     },
+    phase: {
+      type: String
+    },
     start_date: {
       type: Date
     },

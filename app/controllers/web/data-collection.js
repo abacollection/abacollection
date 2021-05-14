@@ -9,6 +9,8 @@ async function retrieveTargets(ctx, next) {
 
   ctx.state.targets = await Targets.where('program')
     .in(ctx.state.programs)
+    .where('phase')
+    .in(['Baseline', 'Intervention', 'Maintenance'])
     .populate('program', 'name')
     .exec();
 
@@ -18,7 +20,7 @@ async function retrieveTargets(ctx, next) {
 async function getUpdates(ctx) {
   const body = {};
 
-  // get previous data
+  // Get previous data
   ctx.state.previous = {};
   ctx.state.current = {};
   await Promise.all(
@@ -31,7 +33,7 @@ async function getUpdates(ctx) {
       body[target._id].previous = ctx.state.previous[target._id];
       body[target._id].current = ctx.state.current[target._id];
 
-      // get percent correct
+      // Get percent correct
       const percentCorrect = await Datas.find({
         $and: [
           {
@@ -49,7 +51,9 @@ async function getUpdates(ctx) {
     })
   );
 
-  if (ctx.accepts('html')) return ctx.render('data-collection');
+  if (ctx.accepts('html')) {
+    return ctx.render('data-collection');
+  }
 
   body.hash = revHash(safeStringify(body));
 
@@ -59,7 +63,9 @@ async function getUpdates(ctx) {
 async function update(ctx) {
   const { targets } = ctx.request.body;
   ctx.state.targets = ctx.state.targets.map(async (target) => {
-    if (!targets[target._id]) return target;
+    if (!targets[target._id]) {
+      return target;
+    }
 
     if (Array.isArray(targets[target._id])) {
       await target.populate('data').execPopulate();

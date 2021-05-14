@@ -118,7 +118,8 @@ async function addTarget(ctx) {
       data_type: ctx.request.body.data_type,
       description: ctx.request.body.description,
       created_by: ctx.state.user,
-      program: ctx.state.program
+      program: ctx.state.program,
+      phase: ctx.request.body.phase
     };
 
     if (doc.data_type === 'Task Analysis') {
@@ -187,11 +188,11 @@ async function editTarget(ctx) {
     );
   }
 
-  const { name, description } = ctx.request.body;
+  const { name, description, phase } = ctx.request.body;
 
   ctx.state.target = await Targets.findOneAndUpdate(
     { id: ctx.state.target._id },
-    { name, description },
+    { name, description, phase },
     { new: true, runValidators: true, context: 'query' }
   );
 
