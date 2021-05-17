@@ -256,11 +256,11 @@
     "coverage": "nps coverage",
     "lint": "nps lint",
     "pretest": "nps pretest",
-    "release": "dotenv release-it",
     "start": "nps",
     "test": "nps test",
     "test-coverage": "nps test-coverage",
-    "watch": "nps watch"
+    "watch": "nps watch",
+    "deploy": "pm2 deploy ecosystem.json production update"
   },
   "xo": {
     "prettier": true,
