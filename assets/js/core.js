@@ -2,14 +2,15 @@ const $ = require('jquery');
 const Popper = require('popper.js');
 const Clipboard = require('clipboard');
 const { randomstring } = require('@sidoshi/random-string');
+const Swal = require('sweetalert2');
 
-// load jQuery and Bootstrap
+// Load jQuery and Bootstrap
 // <https://stackoverflow.com/a/34340392>
 // <https://github.com/FezVrasta/popper.js/issues/287#issuecomment-321887784>
 window.$ = $;
 window.jQuery = $;
 
-// required for bootstrap (we could use the bundle but this is cleaner)
+// Required for bootstrap (we could use the bundle but this is cleaner)
 window.Popper = Popper;
 
 // eslint-disable-next-line import/no-unassigned-import
@@ -34,7 +35,7 @@ const {
 // Resize navbar padding on load, window resize, and navbar collapse/show
 resizeNavbarPadding($);
 
-// import waypoints (see below example for how to use + `yarn add waypoints`)
+// Import waypoints (see below example for how to use + `yarn add waypoints`)
 // require('waypoints/lib/jquery.waypoints.js');
 
 // highlight.js
@@ -44,7 +45,7 @@ resizeNavbarPadding($);
 // Allow ?return_to=/some/path
 returnTo();
 
-// flash and toast messaging with sweetalert2
+// Flash and toast messaging with sweetalert2
 flash();
 
 // Handle hashes when page loads
@@ -88,6 +89,45 @@ $body.on(
 
 // Handle clipboard copy event
 clipboard();
+
+// Bind beta aggreement
+const betaPrompt = async (ev) => {
+  // Get the form or button
+  const $element = $(ev.currentTarget);
+
+  const title = 'Beta Aggreement';
+
+  const html = `<p class="text-left">This product is currently in beta and is subject to change. These changes maybe dramatic and often. All efforts to keep your data safe will be made, however some data loss may occur.</p>
+  <p></p>
+  <p class="text-left">If any pay structures change after you sign up, we will give you a 1 month notice before the change effects you.</p>
+  <p></p>
+  <p class="text-left">Please let us know of any bugs you find or ideas to improve the product!</p>
+  <p class="text-left">Thank you for your support and choosing to be a part of the beta!!</p>`;
+
+  const confirmed = $element.data('beta');
+  if (!confirmed) {
+    ev.preventDefault();
+    const result = await Swal.fire({
+      title,
+      html,
+      type: 'question',
+      showCancelButton: true
+    });
+    if (!result.value) {
+      return;
+    }
+
+    // Set beta state to true
+    $element.data('beta', true);
+    // Trigger click again
+    $element.trigger(ev.type);
+    // Reset beta after click
+    $element.data('beta', false);
+  }
+};
+
+$body.on('submit.betaPrompt', 'button[data-toggle="beta-prompt"]', betaPrompt);
+$body.on('click.betaPrompt', 'button[data-toggle="beta-prompt"]', betaPrompt);
 
 // Bind confirm prompt event for clicks and form submissions
 $body.on(
@@ -140,7 +180,10 @@ function errorHandler(ev) {
 function successHandler(ev) {
   ev.clearSelection();
   let $container = $(ev.trigger).parents('pre:first');
-  if ($container.length === 0) $container = $(ev.trigger);
+  if ($container.length === 0) {
+    $container = $(ev.trigger);
+  }
+
   $container
     .tooltip('dispose')
     .tooltip({
@@ -156,7 +199,10 @@ function successHandler(ev) {
 if (Clipboard.isSupported()) {
   $body.on('mouseenter', 'code', function () {
     let $container = $(this).parents('pre:first');
-    if ($container.length === 0) $container = $(this);
+    if ($container.length === 0) {
+      $container = $(this);
+    }
+
     $container
       .css('cursor', 'pointer')
       .tooltip({
@@ -168,7 +214,10 @@ if (Clipboard.isSupported()) {
   });
   $body.on('mouseleave', 'code', function () {
     let $container = $(this).parents('pre:first');
-    if ($container.length === 0) $container = $(this);
+    if ($container.length === 0) {
+      $container = $(this);
+    }
+
     $container.tooltip('dispose').css('cursor', 'initial');
   });
   const clipboard = new Clipboard('code', {
@@ -190,9 +239,15 @@ if (Clipboard.isSupported()) {
 //
 $body.on('click', '.generate-random-alias', function () {
   const target = $(this).data('target');
-  if (!target) return;
+  if (!target) {
+    return;
+  }
+
   const $target = $(target);
-  if ($target.lengh === 0) return;
+  if ($target.lengh === 0) {
+    return;
+  }
+
   const string = randomstring({
     characters: 'abcdefghijklmnopqrstuvwxyz0123456789',
     length: 10
