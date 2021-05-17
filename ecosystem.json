@@ -21,7 +21,7 @@
     {
       "name": "bree",
       "script": "bree.js",
-      "exec_mode": "cluster",
+      "exec_mode": "fork",
       "instances": "max",
       "env_production": {
         "NODE_ENV": "production"
