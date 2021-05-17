@@ -122,13 +122,14 @@ html(lang=locale).h-100
         script(defer, src=manifest('js/build.js'), integrity=manifest('js/build.js', 'integrity'), crossorigin='anonymous')
 
       //- google analytics
-      script(async, src="https://www.googletagmanager.com/gtag/js?id=G-H1L6P98C9R")
-      script.
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+      if config.env === 'production'
+        script(async, src="https://www.googletagmanager.com/gtag/js?id=G-H1L6P98C9R")
+        script.
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
 
-        gtag('config', 'G-H1L6P98C9R');
+          gtag('config', 'G-H1L6P98C9R');
 
   body(role='document').d-flex.flex-column.min-h-100
 
