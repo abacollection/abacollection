@@ -234,7 +234,10 @@ const config = {
 
   // Field name for a user's last locale
   // (this gets re-used by email-templates and @ladjs/i18n; see below)
-  lastLocaleField: 'last_locale'
+  lastLocaleField: 'last_locale',
+
+  // Google analytics measurement id
+  googleAnalyticsMeasurementId: env.GOOGLE_ANALYTICS_MEASUREMENT_ID
 };
 
 // Set dynamic login otp route
