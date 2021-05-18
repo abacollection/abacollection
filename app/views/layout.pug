@@ -122,7 +122,7 @@ html(lang=locale).h-100
         script(defer, src=manifest('js/build.js'), integrity=manifest('js/build.js', 'integrity'), crossorigin='anonymous')
 
       //- google analytics
-      script(async, src=`https://www.googletagmanager.com/gtag/js?id=${config.googleAnalyticsMeasurementId`)
+      script(async, src=`https://www.googletagmanager.com/gtag/js?id=${config.googleAnalyticsMeasurementId}`)
       script.
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
