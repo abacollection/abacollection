@@ -263,7 +263,7 @@
     "test-coverage": "nps test-coverage",
     "watch": "nps watch",
     "deploy": "pm2 deploy ecosystem.json production update",
-    "release": "dotenv release-it"
+    "release": "dotenv release-it --ci"
   },
   "xo": {
     "prettier": true,
