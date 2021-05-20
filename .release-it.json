@@ -1,0 +1,19 @@
+{
+  "git": {
+    "commit": true,
+    "commitMessage": "Release ${version}",
+    "tag": true
+  },
+  "github": {
+    "release": true,
+    "tokenRef": "GITHUB_TOKEN"
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": "angular"
+    }
+  },
+  "npm": {
+    "publish": false
+  }
+}
