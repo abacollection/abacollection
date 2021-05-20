@@ -121,6 +121,10 @@ html(lang=locale).h-100
       if !isBot(ctx.get('User-Agent'))
         script(defer, src=manifest('js/build.js'), integrity=manifest('js/build.js', 'integrity'), crossorigin='anonymous')
 
+      //- set login timeout
+      script.
+        window._loginTimeout = "#{config.loginTimeout}";
+
       //- google analytics
       script(async, src=`https://www.googletagmanager.com/gtag/js?id=${config.googleAnalyticsMeasurementId}`)
       script.

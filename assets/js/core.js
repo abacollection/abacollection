@@ -32,6 +32,8 @@ const {
   handleHashChange
 } = require('@ladjs/assets');
 
+const timedLogout = require('./timed-logout');
+
 // Resize navbar padding on load, window resize, and navbar collapse/show
 resizeNavbarPadding($);
 
@@ -264,3 +266,6 @@ $body.on('click', '[data-toggle="toggle"]', function () {
 
   $(this).children('i').toggleClass('fa-caret-right fa-caret-down');
 });
+
+// Timed logout alert
+timedLogout();

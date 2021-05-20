@@ -1,5 +1,3 @@
-const ms = require('ms');
-
 const i18n = require('../helpers/i18n');
 const logger = require('../helpers/logger');
 const passport = require('../helpers/passport');
@@ -14,10 +12,6 @@ module.exports = (client) => ({
   logger,
   i18n,
   cookies: cookieOptions,
-  // Timed log out
-  session: {
-    ttl: config.env === 'development' ? null : ms('15m')
-  },
   meta: config.meta,
   views: config.views,
   passport,
