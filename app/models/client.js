@@ -43,7 +43,7 @@ const Client = new mongoose.Schema({
   },
   gender: {
     type: String,
-    enum: ['Male', 'Female']
+    enum: ['', 'Male', 'Female']
   },
   created_by: { type: mongoose.Schema.ObjectId, ref: 'User' },
   creation_date: {
@@ -60,7 +60,7 @@ Client.virtual('name').get(function () {
 Client.plugin(mongooseCommonPlugin, { object: 'client', uniqueID: true });
 Client.plugin(mongooseLeanVirtuals);
 
-// remove programs when client is removed
+// Remove programs when client is removed
 Client.post('findOneAndRemove', async function () {
   const programs = await Programs.find(
     {

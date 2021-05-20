@@ -42,7 +42,7 @@ block body
                     input#input-dob(type='date', name='dob', form='add').form-control
                   td.align-middle
                     select#input-gender(name='gender', form='add').form-control
-                      option(value='')= t('-- Select --')
+                      option(value='', selected)= t('-- Select --')
                       option(value='Male')= t('Male')
                       option(value='Female')= t('Female')
                   td.align-middle
