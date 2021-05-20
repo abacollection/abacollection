@@ -31,7 +31,7 @@ async function warning() {
 }
 
 module.exports = () => {
-  if (window._loginTimeout && window.USER.email) {
+  if (window._loginTimeout > ms('1m') && window.USER.email) {
     timeout = window._loginTimeout - ms('1m');
     // Set timeout to warn of logout timer
     timer = setTimeout(warning, timeout);
