@@ -52,7 +52,7 @@ block body
                   = t('Actions')
                   a#addBtn(type='button', data-toggle='tooltip', data-title=t('Add'), aria-label=t('Add')).btn.btn-success.btn-sm.float-right: i.fas.fa-plus
               tbody
-                tr#addForm(hidden)
+                tr#addForm(hidden=targets.length !== 0)
                   input(type='hidden', name='_method', value='PUT', form='add')
                   input(type='hidden', name='_csrf', value=ctx.csrf, form='add')
                   input(type='hidden', name='add_target', value='true', form='add')
@@ -81,7 +81,7 @@ block body
                   td.align-middle
                     .btn-group(role='group', aria-label=t('Actions'))
                       button(type='submit', form='add').btn.btn-success: i.fa.fa-fw.fa-check
-                      button#cancelAddBtn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
+                      button#cancelAddBtn(type='button', aria-label=t('Cancel') disabled=targets.length === 0).btn.btn-danger: i.fa.fa-fw.fa-times
                 each target in targets
                   tr(id=target.id)
                     td.align-middle= t(target.name)

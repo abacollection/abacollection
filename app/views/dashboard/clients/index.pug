@@ -30,7 +30,7 @@ block body
                   = t('Actions')
                   a#addClientBtn(type='button', data-toggle='tooltip', data-title=t('Add'), aria-label=t('Add Client')).btn.btn-success.btn-sm.float-right: i.fas.fa-plus
               tbody
-                tr#addForm(hidden)
+                tr#addForm(hidden=clients.length !== 0)
                   input(type='hidden', name='_method', value='PUT', form='add')
                   input(type='hidden', name='_csrf', value=ctx.csrf, form='add')
                   input(type='hidden', name='add_client', value='true', form='add')
@@ -48,7 +48,7 @@ block body
                   td.align-middle
                     .btn-group(role='group', aria-label=t('Actions'))
                       button(type='submit', form='add').btn.btn-success: i.fa.fa-fw.fa-check
-                      button#cancelAddBtn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
+                      button#cancelAddBtn(type='button', aria-label=t('Cancel') disabled=clients.length === 0).btn.btn-danger: i.fa.fa-fw.fa-times
                 each client in clients
                   tr(id=client.id)
                     td.align-middle= client.first_name
