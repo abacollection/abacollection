@@ -94,7 +94,7 @@ module.exports = {
   //
   // Clients
   //
-  INVALID_DOB: 'Date of Birth must be in the formate MM/DD/YYYY.',
+  INVALID_DOB: 'Date of birth must be in the format MM/DD/YYYY.',
   INVALID_NAME: 'Name is invalid.',
   CLIENT_DOES_NOT_EXIST: 'Client does not exist.',
   //
