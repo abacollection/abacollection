@@ -39,7 +39,7 @@ block body
                   td.align-middle
                     input#input-last-name(type='text', name='last_name', required, placeholder=t("Last Name"), form='add').form-control
                   td.align-middle
-                    input#input-dob(type='date', name='dob', form='add').form-control
+                    input#input-dob(type='date', name='dob', form='add', placeholder=t("YYYY-MM-DD")).form-control
                   td.align-middle
                     select#input-gender(name='gender', form='add').form-control
                       option(value='', selected)= t('-- Select --')
@@ -73,7 +73,7 @@ block body
                     td.align-middle
                       input(type='text', name='last_name', required, value=client.last_name, placeholder=t('Last Name'), form=`${client.id}-edit`).form-control
                     td.align-middle
-                      input(type='date', name='dob', value=client.dob ? client.dob.toISOString().split('T')[0] : '', form=`${client.id}-edit`).form-control
+                      input(type='date', name='dob', value=client.dob ? client.dob.toISOString().split('T')[0] : '', form=`${client.id}-edit`, placeholder=t('YYYY-MM-DD')).form-control
                     td.align-middle
                       select(name='gender', form=`${client.id}-edit`).form-control
                         if client.gender === 'Male'
