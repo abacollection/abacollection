@@ -1,10 +1,10 @@
 const $ = require('jquery');
 
-$(document).on('click', '#addBtn', function () {
+$(document).on('click', '#addBtn', () => {
   $('#addForm').prop('hidden', false);
 });
 
-$(document).on('click', '#cancelAddBtn', function () {
+$(document).on('click', '#cancelAddBtn', () => {
   $('#addForm').prop('hidden', true);
 });
 

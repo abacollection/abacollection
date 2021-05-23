@@ -161,8 +161,8 @@ $(document).on('click', '#graphTargetBtn', async function (event) {
     // Hide spinner
     $('#spinner').removeClass('show d-block');
     graph.render();
-  } catch (error) {
-    logger.error(error);
+  } catch (err) {
+    logger.error(err);
   }
 });
 
@@ -193,8 +193,8 @@ $(document).on('click', '#dataTargetBtn', async function (event) {
 
     // Add timezone
     $('input[name="timezone"]').prop('value', dayjs.tz.guess());
-  } catch (error) {
-    logger.error(error);
+  } catch (err) {
+    logger.error(err);
   }
 });
 
@@ -221,8 +221,8 @@ $('.interval').click(async function () {
 
     $parent.find('.interval').removeClass('active');
     $(this).addClass('active');
-  } catch (error) {
-    logger.error(error);
+  } catch (err) {
+    logger.error(err);
   }
 });
 

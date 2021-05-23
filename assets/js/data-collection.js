@@ -87,7 +87,7 @@ $('.timer-play').click(function () {
 
   const startTime = Date.now() - offset;
   // setup timer
-  timers[id] = setInterval(function () {
+  timers[id] = setInterval(() => {
     const duration = Date.now() - startTime;
     const seconds = (duration / ms('1s')).toFixed(0);
     const minutes = (duration / ms('1m')).toFixed(0);
@@ -401,7 +401,7 @@ $('button.ta-save').click(function () {
   $next.prop('disabled', false);
   $previous.prop('disabled', true);
 
-  if (value.length !== 0) {
+  if (value.length > 0) {
     if (targets[id]) targets[id].push({ value });
     else targets[id] = [{ value }];
   }
@@ -425,7 +425,7 @@ async function getData(res) {
 
     hash = body.hash;
 
-    Object.entries(_.omit(body, 'hash')).forEach((entry) => {
+    for (const entry of Object.entries(_.omit(body, 'hash'))) {
       const [id, data] = entry;
 
       $(`#${id} .previous-data`).text(
@@ -473,7 +473,7 @@ async function getData(res) {
         // if trial does not equal 1 enable previous button
         $(`#${id} .percent-correct-previous`).prop('disabled', trial === 1);
       }
-    });
+    }
   } catch (err) {
     logger.error(err);
   }
@@ -486,11 +486,11 @@ async function postData() {
   try {
     // add percent correct data to target
     if (updatePC) {
-      Object.entries(_.omit(percentCorrect, 'hash')).forEach((entry) => {
+      for (const entry of Object.entries(_.omit(percentCorrect, 'hash'))) {
         const [id, data] = entry;
 
-        if (data.length !== 0) targets[id] = data;
-      });
+        if (data.length > 0) targets[id] = data;
+      }
 
       updatePC = false;
     }

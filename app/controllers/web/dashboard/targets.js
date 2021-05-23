@@ -153,9 +153,9 @@ async function addTarget(ctx) {
     } else {
       ctx.body = { redirectTo };
     }
-  } catch (error) {
-    ctx.logger.error(error);
-    ctx.throw(Boom.badRequest(error.message));
+  } catch (err) {
+    ctx.logger.error(err);
+    ctx.throw(Boom.badRequest(err.message));
   }
 }
 
@@ -239,7 +239,8 @@ async function getData(ctx) {
   let series = [];
 
   if (target.data_type === 'Rate') {
-    series = series.concat([
+    series = [
+      ...series,
       {
         name: 'Correct',
         data: data.map((d) => {
@@ -252,7 +253,7 @@ async function getData(ctx) {
           return { x: d.x, y: d.incorrect };
         })
       }
-    ]);
+    ];
   } else {
     series.push({ name: target.name, data });
   }

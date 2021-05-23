@@ -20,12 +20,12 @@ frequencySchema.method('getGraph', async function (query) {
     .lean()
     .exec();
 
-  datas.forEach((data) => {
+  for (const data of datas) {
     const date = dayjs(data.date).format(form);
 
     if (ret[date]) ret[date] += data.value;
     else ret[date] = data.value;
-  });
+  }
 
   ret = Object.entries(ret).map((r) => {
     return { x: r[0], y: Number.parseInt(r[1].toFixed(0), 10) };
@@ -49,7 +49,7 @@ frequencySchema.method('getData', async function (query) {
     .lean()
     .exec();
 
-  datas.forEach((data) => {
+  for (const data of datas) {
     const date = dayjs(data.date).format(form);
 
     if (ret[date]) ret[date] += data.value;
@@ -59,7 +59,7 @@ frequencySchema.method('getData', async function (query) {
       if (rawData[date]) rawData[date].push(data);
       else rawData[date] = [data];
     }
-  });
+  }
 
   ret = Object.entries(ret).map((r) => {
     return { date: r[0], value: Number.parseInt(r[1].toFixed(0), 10) };
@@ -89,9 +89,9 @@ frequencySchema.method('getPreviousData', async function () {
 
   ret = 0;
 
-  datas.forEach((data) => {
+  for (const data of datas) {
     ret += data.value;
-  });
+  }
 
   return ret;
 });
@@ -114,9 +114,9 @@ frequencySchema.method('getCurrentData', async function () {
 
   ret = 0;
 
-  datas.forEach((data) => {
+  for (const data of datas) {
     ret += data.value;
-  });
+  }
 
   return ret;
 });

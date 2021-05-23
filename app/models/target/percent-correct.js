@@ -20,12 +20,12 @@ pcSchema.method('getGraph', async function (query) {
     .lean()
     .exec();
 
-  datas.forEach((data) => {
+  for (const data of datas) {
     const date = dayjs(data.date).format(form);
 
     if (ret[date]) ret[date].push(data.value);
     else ret[date] = [data.value];
-  });
+  }
 
   ret = Object.entries(ret).map((r) => {
     const [key, value] = r;
@@ -56,7 +56,7 @@ pcSchema.method('getData', async function (query) {
     .lean()
     .exec();
 
-  datas.forEach((data) => {
+  for (const data of datas) {
     const date = dayjs(data.date).format(form);
 
     if (ret[date]) ret[date].push(data.value);
@@ -66,7 +66,7 @@ pcSchema.method('getData', async function (query) {
       if (rawData[date]) rawData[date].push(data);
       else rawData[date] = [data];
     }
-  });
+  }
 
   ret = Object.entries(ret).map((r) => {
     const [key, value] = r;

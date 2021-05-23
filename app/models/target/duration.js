@@ -22,12 +22,12 @@ durationSchema.method('getGraph', async function (query) {
     .lean()
     .exec();
 
-  datas.forEach((data) => {
+  for (const data of datas) {
     const date = dayjs(data.date).format(form);
 
     if (ret[date]) ret[date] += data.value;
     else ret[date] = data.value;
-  });
+  }
 
   ret = Object.entries(ret).map((r) => {
     return {
@@ -54,7 +54,7 @@ durationSchema.method('getData', async function (query) {
     .lean()
     .exec();
 
-  datas.forEach((data) => {
+  for (const data of datas) {
     const date = dayjs(data.date).format(form);
 
     if (ret[date]) ret[date] += data.value;
@@ -66,7 +66,7 @@ durationSchema.method('getData', async function (query) {
       if (rawData[date]) rawData[date].push(data);
       else rawData[date] = [data];
     }
-  });
+  }
 
   ret = Object.entries(ret).map((r) => {
     return {
@@ -92,7 +92,7 @@ durationSchema.method('getPreviousData', async function () {
   return ret;
 });
 
-durationSchema.method('getCurrentData', async function () {
+durationSchema.method('getCurrentData', async () => {
   return 'NA';
 });
 

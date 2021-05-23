@@ -22,7 +22,7 @@ rateSchema.method('getGraph', async function (query) {
     .lean()
     .exec();
 
-  datas.forEach((data) => {
+  for (const data of datas) {
     const date = dayjs(data.date).format(form);
 
     if (!ret[date]) {
@@ -39,7 +39,7 @@ rateSchema.method('getGraph', async function (query) {
 
       ret[date] = { correct, incorrect };
     }
-  });
+  }
 
   ret = Object.entries(ret).map((r) => {
     return {
@@ -67,7 +67,7 @@ rateSchema.method('getData', async function (query) {
     .lean()
     .exec();
 
-  datas.forEach((data) => {
+  for (const data of datas) {
     const date = dayjs(data.date).format(form);
 
     if (!ret[date]) {
@@ -97,7 +97,7 @@ rateSchema.method('getData', async function (query) {
       if (rawData[date]) rawData[date].push(data);
       else rawData[date] = [data];
     }
-  });
+  }
 
   ret = Object.entries(ret).map((r) => {
     return {
@@ -135,7 +135,7 @@ rateSchema.method('getPreviousData', async function () {
   return ret;
 });
 
-rateSchema.method('getCurrentData', async function () {
+rateSchema.method('getCurrentData', async () => {
   return 'NA';
 });
 

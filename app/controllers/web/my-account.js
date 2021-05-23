@@ -22,12 +22,12 @@ async function update(ctx) {
   if (hasSetPassword) requiredFields.push('old_password');
 
   if (body.change_password === 'true') {
-    requiredFields.forEach((prop) => {
+    for (const prop of requiredFields) {
       if (!isSANB(body[prop]))
         throw Boom.badRequest(
           ctx.translateError('INVALID_STRING', ctx.request.t(humanize(prop)))
         );
-    });
+    }
 
     if (body.password !== body.confirm_password)
       throw Boom.badRequest(ctx.translateError('INVALID_PASSWORD_CONFIRM'));

@@ -242,7 +242,9 @@ User.pre('validate', async function (next) {
       this[config.userFields.otpRecoveryKeys].length === 0
     )
       this[config.userFields.otpRecoveryKeys] = await Promise.all(
-        new Array(10).fill().map(() => cryptoRandomString.async(options))
+        Array.from({ length: 10 })
+          .fill()
+          .map(() => cryptoRandomString.async(options))
       );
 
     if (!this[config.passport.fields.otpToken])

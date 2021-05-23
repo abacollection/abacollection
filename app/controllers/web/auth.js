@@ -461,15 +461,15 @@ async function forgotPassword(ctx) {
         message: ctx.translate('PASSWORD_RESET_SENT')
       };
     }
-  } catch (error) {
-    ctx.logger.error(error);
+  } catch (err) {
+    ctx.logger.error(err);
     // Reset if there was an error
     try {
       user[config.userFields.resetToken] = null;
       user[config.userFields.resetTokenExpiresAt] = null;
       user = await user.save();
-    } catch (error) {
-      ctx.logger.error(error);
+    } catch (err) {
+      ctx.logger.error(err);
     }
 
     throw Boom.badRequest(ctx.translateError('EMAIL_FAILED_TO_SEND'));
@@ -558,8 +558,8 @@ async function changeEmail(ctx) {
     user[config.userFields.changeEmailTokenExpiresAt] = null;
     user[config.userFields.changeEmailNewAddress] = null;
     await user.save();
-  } catch (error) {
-    ctx.throw(error);
+  } catch (err) {
+    ctx.throw(err);
   }
 
   const message = ctx.translate('CHANGE_EMAIL');
@@ -578,16 +578,16 @@ async function changeEmail(ctx) {
 async function catchError(ctx, next) {
   try {
     await next();
-  } catch (error) {
-    ctx.logger.error(error);
+  } catch (err) {
+    ctx.logger.error(err);
     if (
       ctx.params.provider === 'google' &&
-      error.message === 'Consent required'
+      err.message === 'Consent required'
     ) {
       return ctx.redirect('/auth/google/consent');
     }
 
-    ctx.flash('error', error.message);
+    ctx.flash('error', err.message);
     ctx.redirect('/login');
   }
 }
@@ -632,19 +632,19 @@ async function verify(ctx) {
   ) {
     try {
       ctx.state.user = await sendVerificationEmail(ctx);
-    } catch (error) {
+    } catch (err) {
       // Wrap with try/catch to prevent redirect looping
       // (even though the koa redirect loop package will help here)
-      if (!error.isBoom) {
-        return ctx.throw(error);
+      if (!err.isBoom) {
+        return ctx.throw(err);
       }
 
-      ctx.logger.error(error);
+      ctx.logger.error(err);
       if (ctx.accepts('html')) {
-        ctx.flash('warning', error.message);
+        ctx.flash('warning', err.message);
         ctx.redirect(redirectTo);
       } else {
-        ctx.body = { message: error.message };
+        ctx.body = { message: err.message };
       }
 
       return;
@@ -720,8 +720,8 @@ async function verify(ctx) {
           inquiry
         }
       });
-    } catch (error) {
-      ctx.logger.error(error);
+    } catch (err) {
+      ctx.logger.error(err);
       throw Boom.badRequest(ctx.translateError('EMAIL_FAILED_TO_SEND'));
     }
   }

@@ -72,9 +72,9 @@ async function add_client(ctx) {
     } else {
       ctx.body = { redirectTo };
     }
-  } catch (error) {
-    ctx.logger.error(error);
-    ctx.throw(Boom.badRequest(error.message));
+  } catch (err) {
+    ctx.logger.error(err);
+    ctx.throw(Boom.badRequest(err.message));
   }
 }
 

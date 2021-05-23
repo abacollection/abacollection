@@ -20,7 +20,7 @@ taSchema.method('getGraph', async function (query) {
     .lean()
     .exec();
 
-  datas.forEach((data) => {
+  for (const data of datas) {
     const date = dayjs(data.date).format(form);
 
     const total = data.value.length;
@@ -30,16 +30,16 @@ taSchema.method('getGraph', async function (query) {
 
     if (ret[date]) ret[date].push(value);
     else ret[date] = [value];
-  });
+  }
 
   ret = Object.entries(ret).map((r) => {
     const [key, value] = r;
 
     const total = value.length;
     let sum = 0;
-    value.forEach((item) => {
+    for (const item of value) {
       sum += Number.parseInt(item, 10);
-    });
+    }
 
     const percent = (sum / total).toFixed(0);
 
@@ -64,7 +64,7 @@ taSchema.method('getData', async function (query) {
     .lean()
     .exec();
 
-  datas.forEach((data) => {
+  for (const data of datas) {
     const date = dayjs(data.date).format(form);
 
     const total = data.value.length;
@@ -81,16 +81,16 @@ taSchema.method('getData', async function (query) {
       if (rawData[date]) rawData[date].push(data);
       else rawData[date] = [data];
     }
-  });
+  }
 
   ret = Object.entries(ret).map((r) => {
     const [key, value] = r;
 
     const total = value.length;
     let sum = 0;
-    value.forEach((item) => {
+    for (const item of value) {
       sum += Number.parseInt(item, 10);
-    });
+    }
 
     const percent = (sum / total).toFixed(0);
 
@@ -118,7 +118,7 @@ taSchema.method('getPreviousData', async function () {
   return ret;
 });
 
-taSchema.method('getCurrentData', async function () {
+taSchema.method('getCurrentData', async () => {
   const ret = 'NA';
 
   return ret;
