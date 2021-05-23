@@ -3,6 +3,8 @@ const { factory } = require('factory-girl');
 const prettyMs = require('pretty-ms');
 const ms = require('ms');
 const dayjs = require('dayjs');
+dayjs.extend(require('dayjs/plugin/utc'));
+dayjs.extend(require('dayjs/plugin/timezone'));
 
 const config = require('../../../config');
 const { Users, Datas, Targets } = require('../../../app/models');
@@ -65,8 +67,7 @@ test('PUT data(JSON) > frequency', async (t) => {
   const res = await web.put(`${root}/${target.id}/data`).send({
     date: dayjs(data.date).format('YYYY-MM-DDThh:mm'),
     data: data.value.toString(),
-    add_data: 'true',
-    timezone: 'America/Chicago'
+    add_data: 'true'
   });
 
   t.is(res.status, 200);
@@ -151,7 +152,7 @@ test('POST data(JSON) > frequency > raw data', async (t) => {
     id: data.id,
     data: newData.value.toString(),
     edit_raw_data: 'true',
-    timezone: 'America/Chicago'
+    timezone: 'America/New_York'
   });
 
   t.is(res.status, 200);
@@ -185,7 +186,7 @@ async function putDuration(t, input, expected) {
     date: dayjs(data.date).format('YYYY-MM-DDThh:mm'),
     data: input,
     add_data: 'true',
-    timezone: 'America/Chicago'
+    timezone: 'America/New_York'
   });
 
   t.is(res.status, 200);
@@ -222,7 +223,7 @@ async function postDuration(t, input, expected) {
     id: data.id,
     data: input,
     edit_raw_data: 'true',
-    timezone: 'America/Chicago'
+    timezone: 'America/New_York'
   });
 
   t.is(res.status, 200);
@@ -274,7 +275,7 @@ test('PUT data(JSON) > rate', async (t) => {
     incorrect: '4',
     counting_time: '1:00',
     add_data: 'true',
-    timezone: 'America/Chicago'
+    timezone: 'America/New_York'
   });
 
   t.is(res.status, 200);
@@ -322,7 +323,7 @@ test('POST data(JSON) > rate > raw data', async (t) => {
     id: data.id,
     ...value,
     edit_raw_data: 'true',
-    timezone: 'America/Chicago'
+    timezone: 'America/New_York'
   });
 
   t.is(res.status, 200);
@@ -359,7 +360,7 @@ test('PUT data(JSON) > percent correct', async (t) => {
     date: dayjs(data.date).format('YYYY-MM-DDThh:mm'),
     data: data.value.toString(),
     add_data: 'true',
-    timezone: 'America/Chicago'
+    timezone: 'America/New_York'
   });
 
   t.is(res.status, 200);
@@ -399,7 +400,7 @@ test('POST data(JSON) > percent correct > raw data', async (t) => {
     id: data.id,
     data: newData.value.toString(),
     edit_raw_data: 'true',
-    timezone: 'America/Chicago'
+    timezone: 'America/New_York'
   });
 
   t.is(res.status, 200);
@@ -444,7 +445,7 @@ test('PUT data(JSON) > task analysis', async (t) => {
     date: dayjs(data.date).format('YYYY-MM-DDThh:mm'),
     data: data.value,
     add_data: 'true',
-    timezone: 'America/Chicago'
+    timezone: 'America/New_York'
   });
 
   t.is(res.status, 200);
@@ -498,7 +499,7 @@ test('POST data(JSON) > task analysis > raw data', async (t) => {
     id: data.id,
     data: newData.value,
     edit_raw_data: 'true',
-    timezone: 'America/Chicago'
+    timezone: 'America/New_York'
   });
 
   t.is(res.status, 200);

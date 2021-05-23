@@ -154,7 +154,8 @@ async function putTargets(t, input) {
   const res = await web.put(`${root}/targets`).send({
     name: target.name,
     description: target.description,
-    data_type: target.data_type
+    data_type: target.data_type,
+    phase: target.phase
   });
 
   t.is(res.status, 302);
@@ -164,6 +165,7 @@ async function putTargets(t, input) {
   t.is(query.name, target.name);
   t.is(query.description, target.description);
   t.is(query.data_type, target.data_type);
+  t.is(query.phase, target.phase);
 }
 
 putTargets.title = (providedTitle = '') =>
@@ -184,7 +186,8 @@ test('PUT targets > task analysis > successfully', async (t) => {
     name: target.name,
     description: target.description,
     data_type: 'Task Analysis',
-    ta: ['1', '2', '3']
+    ta: ['1', '2', '3'],
+    phase: target.phase
   });
 
   t.is(res.status, 302);
@@ -194,6 +197,7 @@ test('PUT targets > task analysis > successfully', async (t) => {
   t.is(query.name, target.name);
   t.is(query.description, target.description);
   t.is(query.data_type, 'Task Analysis');
+  t.is(query.phase, target.phase);
   t.is(query.ta[0], '1');
   t.is(query.ta[1], '2');
   t.is(query.ta[2], '3');
@@ -210,7 +214,8 @@ test('PUT targets > task analysis > fails with no steps', async (t) => {
     name: target.name,
     description: target.description,
     data_type: 'Task Analysis',
-    ta: []
+    ta: [],
+    phase: target.phase
   });
 
   t.is(res.status, 400);
@@ -292,7 +297,7 @@ test('deletes target when program is deleted', async (t) => {
   t.is(query.length, 0);
 });
 
-test('POST targets > modifies name and description', async (t) => {
+test('POST targets > modifies name, description, and phase', async (t) => {
   const { web, root, program } = t.context;
 
   const target = await factory.create('target', { program });
@@ -304,7 +309,8 @@ test('POST targets > modifies name and description', async (t) => {
 
   const res = await web.post(`${root}/targets/${target.id}`).send({
     name: newTarget.name,
-    description: newTarget.description
+    description: newTarget.description,
+    phase: 'Mastered'
   });
 
   t.is(res.status, 302);
@@ -313,6 +319,7 @@ test('POST targets > modifies name and description', async (t) => {
   query = await Targets.findOne({ name: newTarget.name });
   t.is(query.name, newTarget.name);
   t.is(query.description, newTarget.description);
+  t.is(query.phase, 'Mastered');
 });
 
 test('POST targets > task analysis > modifies order of steps', async (t) => {

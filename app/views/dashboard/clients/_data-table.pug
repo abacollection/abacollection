@@ -23,7 +23,6 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
               input(type='hidden', name='_method', value='PUT', form='dataAdd')
               input(type='hidden', name='_csrf', value=ctx.csrf, form='dataAdd')
               input(type='hidden', name='add_data', value='true', form='dataAdd')
-              input(type='hidden', name='timezone', form='dataAdd')
               //- Date input
               td.align-middle
                 input(type='datetime-local', name='date', required, form='dataAdd').form-control
