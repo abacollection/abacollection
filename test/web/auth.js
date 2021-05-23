@@ -23,7 +23,7 @@ test('creates new user', async (t) => {
   });
 
   t.is(res.status, 302);
-  t.is(res.header.location, '/en/my-account');
+  t.is(res.header.location, '/en/dashboard');
 });
 
 test('fails registering with easy password', async (t) => {
@@ -48,7 +48,7 @@ test('successfully registers with strong password', async (t) => {
   });
 
   t.is(res.body.message, undefined);
-  t.is(res.header.location, '/en/my-account');
+  t.is(res.header.location, '/en/dashboard');
   t.is(res.status, 302);
 });
 
@@ -62,7 +62,7 @@ test('successfully registers with stronger password', async (t) => {
   });
 
   t.is(res.body.message, undefined);
-  t.is(res.header.location, '/en/my-account');
+  t.is(res.header.location, '/en/dashboard');
   t.is(res.status, 302);
 });
 
