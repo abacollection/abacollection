@@ -127,6 +127,7 @@ exports.defineTargetFactory = async () => {
       name: factory.chance('word'),
       data_type: 'Frequency',
       description: factory.chance('sentence'),
+      phase: 'Intervention',
       program: buildOptions.program
         ? buildOptions.program
         : factory.assoc('program', '_id')
