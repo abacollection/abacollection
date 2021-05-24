@@ -193,7 +193,7 @@
     "nps-utils": "^1.7.0",
     "nyc": "^15.1.0",
     "parse-git-config": "^3.0.0",
-    "postcss": "^8.2.13",
+    "postcss": "^8.3.0",
     "postcss-font-magician": "^3.0.0",
     "postcss-font-smoothing": "^0.1.0",
     "postcss-preset-env": "^6.7.0",
