@@ -1,7 +1,7 @@
 {
   "name": "abacollection",
   "description": "Data collection for ABA",
-  "version": "0.16.4",
+  "version": "0.16.5",
   "author": "shadowgate15 <taylorschley@me.com> ()",
   "ava": {
     "verbose": true,
@@ -201,7 +201,7 @@
     "postcss-scss": "^3.0.5",
     "pug-lint": "^2.6.0",
     "rc": "^1.2.8",
-    "release-it": "^14.6.2",
+    "release-it": "^14.7.0",
     "remark-cli": "^9.0.0",
     "remark-preset-github": "^4.0.1",
     "sinon": "^10.0.0",
