@@ -9185,7 +9185,7 @@ hide-powered-by@1.1.0:
   resolved "https://registry.yarnpkg.com/hide-powered-by/-/hide-powered-by-1.1.0.tgz#be3ea9cab4bdb16f8744be873755ca663383fa7a"
   integrity sha512-Io1zA2yOA1YJslkr+AJlWSf2yWFkKjvkcL9Ni1XSUqnGLr/qRQe2UI3Cn/J9MsJht7yEVCe0SscY1HgVMujbgg==
 
-highlight.js@^10.1.2, highlight.js@^10.2.0:
+highlight.js@^10.1.2, highlight.js@^10.7.2:
   version "10.7.2"
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-10.7.2.tgz#89319b861edc66c48854ed1e6da21ea89f847360"
   integrity sha512-oFLl873u4usRM9K63j4ME9u3etNF0PLiJhSQ8rdfuL51Wn3zkD6drf9ZW0dOzjnZI22YYG24z30JcmfCZjMgYg==
@@ -12129,12 +12129,12 @@ markdown-it-github-headings@^2.0.0:
     github-slugger "^1.1.1"
     innertext "^1.0.1"
 
-markdown-it-highlightjs@^3.2.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/markdown-it-highlightjs/-/markdown-it-highlightjs-3.4.0.tgz#1a75edd02f9e564f800052eac2b5aefa8230f8d4"
-  integrity sha512-JES5P8ll3Vpf6a4C0FlsaO1opOaH53Rbvphj2IAON29v33cHNUiwXBSaC+bThUiLp6m3UEZ4vv579CHSElWSdw==
+markdown-it-highlightjs@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/markdown-it-highlightjs/-/markdown-it-highlightjs-3.5.0.tgz#bcb76ef936c7137430fb0077e868d191d5db376b"
+  integrity sha512-ENlFiNFSKwnXD0umIzyhpFe5JtetdQnSYhwTdC72VU3C69uVpk1Mn3sPv1Ov8opVE2nv7SaS97QbY/aEH7PUzw==
   dependencies:
-    highlight.js "^10.2.0"
+    highlight.js "^10.7.2"
     lodash.flow "^3.5.0"
 
 markdown-it-task-checkbox@^1.0.6:
