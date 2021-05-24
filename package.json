@@ -1,7 +1,7 @@
 {
   "name": "abacollection",
   "description": "Data collection for ABA",
-  "version": "0.16.4",
+  "version": "0.16.5",
   "author": "shadowgate15 <taylorschley@me.com> ()",
   "ava": {
     "verbose": true,
@@ -152,7 +152,7 @@
     "codecov": "^3.7.2",
     "cssnano": "^5.0.2",
     "dotenv-cli": "^4.0.0",
-    "eslint": "^7.19.0",
+    "eslint": "^7.27.0",
     "eslint-config-xo-lass": "^1.0.5",
     "eslint-formatter-pretty": "^4.0.0",
     "eslint-plugin-compat": "^3.9.0",
