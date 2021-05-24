@@ -60,7 +60,7 @@
     "bson-objectid": "^2.0.1",
     "cabin": "^9.0.4",
     "captain-hook": "^0.0.3",
-    "cheerio": "^1.0.0-rc.3",
+    "cheerio": "^1.0.0-rc.9",
     "clipboard": "^2.0.6",
     "consolidate": "^0.16.0",
     "crypto-random-string": "^3.3.1",
