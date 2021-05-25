@@ -27,12 +27,12 @@
     "shadowgate15 <taylorschley@me.com> ()"
   ],
   "dependencies": {
+    "@abacollection/assets": "^1.2.0",
     "@abacollection/web": "^11.2.1",
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@hapi/boom": "^9.1.0",
     "@koa/router": "^10.0.0",
     "@ladjs/api": "^7.0.1",
-    "@ladjs/assets": "^1.1.1",
     "@ladjs/env": "^3.0.0",
     "@ladjs/graceful": "^1.0.4",
     "@ladjs/i18n": "^7.1.0",

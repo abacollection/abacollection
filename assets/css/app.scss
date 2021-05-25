@@ -33,21 +33,21 @@ $question: theme-color('light');
 @import 'node_modules/@fortawesome/fontawesome-free/scss/v4-shims';
 
 // spinkit loading spinner
-@import 'node_modules/@ladjs/assets/scss/spinner';
+@import 'node_modules/@abacollection/assets/scss/spinner';
 
 // support custom file inputs
-@import 'node_modules/@ladjs/assets/scss/custom-file-input';
+@import 'node_modules/@abacollection/assets/scss/custom-file-input';
 
 // used on the register-or-login view to provide a horizontal rule
 // with the text "or" in between the horizontal rule line
 // (e.g. "------ or ------" that stretches full width)
-@import 'node_modules/@ladjs/assets/scss/hr-text';
+@import 'node_modules/@abacollection/assets/scss/hr-text';
 
 // bootstrap fixes and add-ons
-@import 'node_modules/@ladjs/assets/scss/bootstrap';
+@import 'node_modules/@abacollection/assets/scss/bootstrap';
 
 // image helpers for emails, jquery-lazy, etc.
-@import 'node_modules/@ladjs/assets/scss/image-helpers';
+@import 'node_modules/@abacollection/assets/scss/image-helpers';
 
 // bootstrap floating labels
 @import 'node_modules/@tkrotoff/bootstrap-floating-label/src/bootstrap-floating-label';

@@ -2,6 +2,19 @@
 # yarn lockfile v1
 
 
+"@abacollection/assets@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@abacollection/assets/-/assets-1.2.0.tgz#0f5f0166960055068cd38d4298adb5c17fc2d016"
+  integrity sha512-pLnBpGdXr/PSNz5h4KSILrPYUtXzSyhK5YrvY1cEt1euGD1R9cQJhc0tpQVjwAzXLLxf+vS2WloneXVjZC0QPA==
+  dependencies:
+    clipboard "^2.0.6"
+    is-string-and-not-blank "^0.0.2"
+    qs "^6.9.6"
+    spinkit "1.x"
+    superagent "^6.1.0"
+    sweetalert2 "8.x"
+    url-parse "^1.4.7"
+
 "@abacollection/web@^11.2.1":
   version "11.2.1"
   resolved "https://registry.yarnpkg.com/@abacollection/web/-/web-11.2.1.tgz#4beb7b38ccb65445235418b9e90914d9d36bd895"
@@ -1339,19 +1352,6 @@
     multimatch "^5.0.0"
     request-received "^0.0.3"
     response-time "^2.3.2"
-
-"@ladjs/assets@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@ladjs/assets/-/assets-1.1.1.tgz#f8d8d268c5100c203915126fb4f316f41771dae9"
-  integrity sha512-uMe5yB4txflvAsknpbI4fiYCm1EYy1PDqfJa3frt4815UCE+R6bvGfCQgLLmI6DmheCAVcZ9aKBKWu6DQVLyXA==
-  dependencies:
-    clipboard "^2.0.6"
-    is-string-and-not-blank "^0.0.2"
-    qs "^6.9.6"
-    spinkit "1.x"
-    superagent "^6.1.0"
-    sweetalert2 "8.x"
-    url-parse "^1.4.7"
 
 "@ladjs/browserslist-config@^0.0.1":
   version "0.0.1"

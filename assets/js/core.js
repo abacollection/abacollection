@@ -30,7 +30,7 @@ const {
   modalAnchor,
   handleHashOnLoad,
   handleHashChange
-} = require('@ladjs/assets');
+} = require('@abacollection/assets');
 
 const timedLogout = require('./timed-logout');
 

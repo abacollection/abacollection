@@ -72,7 +72,7 @@ async function addData(ctx, next) {
 
     ctx.body = {
       message: ctx.body,
-      resetModal: true
+      renderModalBodyWithHTML: true
     };
   } catch (err) {
     ctx.logger.error(err);
@@ -131,7 +131,7 @@ async function editData(ctx, next) {
 
     ctx.body = {
       message: ctx.body,
-      resetModal: true
+      renderModalBodyWithHTML: true
     };
   } catch (err) {
     ctx.logger.error(err);
@@ -147,7 +147,7 @@ async function deleteData(ctx, next) {
 
   ctx.body = {
     message: ctx.body,
-    resetModal: true
+    renderModalBodyWithHTML: true
   };
 }
 
