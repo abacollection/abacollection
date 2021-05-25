@@ -163,11 +163,15 @@ test('PUT dashboard/clients > successfully with name', async (t) => {
   const query = await Clients.findOne({
     first_name: client.first_name,
     last_name: client.last_name
-  });
+  })
+    .populate('members')
+    .exec();
+
   t.is(query.first_name, client.first_name);
   t.is(query.last_name, client.last_name);
   t.is(query.gender, undefined);
   t.is(query.dob, undefined);
+  t.is(query.members[0].group, 'owner');
 });
 
 test('PUT dashboard/clients > successfully with name and gender', async (t) => {
