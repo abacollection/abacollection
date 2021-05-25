@@ -481,3 +481,16 @@ test('POST /dashboard/clients/:client_id > fails if name is invalid', async (t) 
   t.is(res.status, 400);
   t.is(JSON.parse(res.text).message, phrases.INVALID_NAME);
 });
+
+test('GET /dashboard/clients/:client_id/share > successfully', async (t) => {
+  const { web, user } = t.context;
+  const nonMemberUser = await factory.create('user');
+  const member = await factory.create('member', { user, group: 'admin' });
+  const client = await factory.create('client', { members: [member] });
+
+  const res = await web.get(`/en/dashboard/clients/${client.id}/share`).send();
+
+  t.is(res.status, 200);
+  t.true(res.text.includes(user.email));
+  t.false(res.text.includes(nonMemberUser.email));
+});
