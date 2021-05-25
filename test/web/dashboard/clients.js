@@ -270,7 +270,7 @@ test('DELETE dashboard/clients > successfully', async (t) => {
   const { web, user } = t.context;
   const member = await factory.create('member', {
     user,
-    group: 'admin'
+    group: 'owner'
   });
   const client = await factory.create('client', { members: member });
 
@@ -305,7 +305,7 @@ test('DELETE dashboard/clients > fails if client does not exist', async (t) => {
   t.is(JSON.parse(res.text).message, phrases.CLIENT_DOES_NOT_EXIST);
 });
 
-test('DELETE dashboard/clients > fails if user is not admin', async (t) => {
+test('DELETE dashboard/clients > fails if user is "user"', async (t) => {
   const { web, user } = t.context;
   const member = await factory.create('member', {
     user,
@@ -319,15 +319,35 @@ test('DELETE dashboard/clients > fails if user is not admin', async (t) => {
   const res = await web.delete(`/en/dashboard/clients/${client.id}`);
 
   t.is(res.status, 400);
-  t.is(JSON.parse(res.text).message, phrases.IS_NOT_ADMIN);
+  t.is(JSON.parse(res.text).message, phrases.NO_PERMISSION);
 
   query = await Clients.findOne({ id: client.id });
   t.is(query.id, client.id);
 });
 
-test('POST /dashboard/clients/:client_id > successfully', async (t) => {
+test('DELETE dashboard/clients > fails if user is "admin"', async (t) => {
   const { web, user } = t.context;
-  const member = await factory.create('member', { user });
+  const member = await factory.create('member', {
+    user,
+    group: 'admin'
+  });
+  const client = await factory.create('client', { members: member });
+
+  let query = await Clients.findOne({ id: client.id });
+  t.is(query.id, client.id);
+
+  const res = await web.delete(`/en/dashboard/clients/${client.id}`);
+
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.NO_PERMISSION);
+
+  query = await Clients.findOne({ id: client.id });
+  t.is(query.id, client.id);
+});
+
+test('POST /dashboard/clients/:client_id > successfully if "owner"', async (t) => {
+  const { web, user } = t.context;
+  const member = await factory.create('member', { user, group: 'owner' });
   const client = await factory.create('client', { members: member });
   const newClient = await factory.build('client');
 
@@ -360,9 +380,79 @@ test('POST /dashboard/clients/:client_id > successfully', async (t) => {
   );
 });
 
+test('POST /dashboard/clients/:client_id > successfully if "admin"', async (t) => {
+  const { web, user } = t.context;
+  const member = await factory.create('member', { user, group: 'admin' });
+  const client = await factory.create('client', { members: member });
+  const newClient = await factory.build('client');
+
+  let query = await Clients.findOne({ id: client.id });
+  t.true(
+    query.id === client.id &&
+      query.first_name === client.first_name &&
+      query.last_name === client.last_name &&
+      query.dob.toISOString() === client.dob.toISOString() &&
+      query.gender === client.gender
+  );
+
+  const res = await web.post(`/en/dashboard/clients/${client.id}`).send({
+    first_name: newClient.first_name,
+    last_name: newClient.last_name,
+    dob: newClient.dob,
+    gender: newClient.gender
+  });
+
+  t.is(res.status, 302);
+  t.is(res.header.location, `/en/dashboard/clients`);
+
+  query = await Clients.findOne({ id: client.id });
+  t.true(
+    query.id === client.id &&
+      query.first_name === newClient.first_name &&
+      query.last_name === newClient.last_name &&
+      query.dob.toISOString() === newClient.dob.toISOString() &&
+      query.gender === newClient.gender
+  );
+});
+
+test('POST /dashboard/clients/:client_id > fails if "user"', async (t) => {
+  const { web, user } = t.context;
+  const member = await factory.create('member', { user, group: 'user' });
+  const client = await factory.create('client', { members: member });
+  const newClient = await factory.build('client');
+
+  let query = await Clients.findOne({ id: client.id });
+  t.true(
+    query.id === client.id &&
+      query.first_name === client.first_name &&
+      query.last_name === client.last_name &&
+      query.dob.toISOString() === client.dob.toISOString() &&
+      query.gender === client.gender
+  );
+
+  const res = await web.post(`/en/dashboard/clients/${client.id}`).send({
+    first_name: newClient.first_name,
+    last_name: newClient.last_name,
+    dob: newClient.dob,
+    gender: newClient.gender
+  });
+
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.NO_PERMISSION);
+
+  query = await Clients.findOne({ id: client.id });
+  t.true(
+    query.id === client.id &&
+      query.first_name === client.first_name &&
+      query.last_name === client.last_name &&
+      query.dob.toISOString() === client.dob.toISOString() &&
+      query.gender === client.gender
+  );
+});
+
 test('POST /dashboard/clients/:client_id > fails if dob is invalid', async (t) => {
   const { web, user } = t.context;
-  const member = await factory.create('member', { user });
+  const member = await factory.create('member', { user, group: 'admin' });
   const client = await factory.create('client', { members: member });
 
   const res = await web.post(`/en/dashboard/clients/${client.id}`).send({
@@ -378,7 +468,7 @@ test('POST /dashboard/clients/:client_id > fails if dob is invalid', async (t) =
 
 test('POST /dashboard/clients/:client_id > fails if name is invalid', async (t) => {
   const { web, user } = t.context;
-  const member = await factory.create('member', { user });
+  const member = await factory.create('member', { user, group: 'admin' });
   const client = await factory.create('client', { members: member });
 
   const res = await web.post(`/en/dashboard/clients/${client.id}`).send({
