@@ -15,7 +15,7 @@ const Member = new mongoose.Schema({
   group: {
     type: String,
     default: 'user',
-    enum: ['admin', 'user'],
+    enum: ['owner', 'admin', 'user'],
     lowercase: true,
     trim: true
   }

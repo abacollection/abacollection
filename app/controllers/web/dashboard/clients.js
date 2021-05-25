@@ -52,7 +52,7 @@ async function add_client(ctx) {
       gender: ctx.request.body.gender,
       created_by: ctx.state.user._id,
       creation_date: new Date(),
-      members: [{ user: ctx.state.user._id, group: 'admin' }]
+      members: [{ user: ctx.state.user._id, group: 'owner' }]
     });
 
     const redirectTo = ctx.state.l('/dashboard/clients');
