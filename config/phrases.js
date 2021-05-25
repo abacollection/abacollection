@@ -39,6 +39,7 @@ module.exports = {
     'Your current email verification code has expired and we have sent a new one to your email address.',
   INVALID_OTP_PASSCODE: 'Invalid two-factor authentication passcode.',
   IS_NOT_ADMIN: 'You do not belong to the administrative user group.',
+  NO_PERMISSION: 'You do not have permission to perform that action.',
   TWO_FACTOR_REQUIRED:
     'Please log in with two-factor authentication to continue.',
   LOGIN_REQUIRED: 'Please log in or sign up to view the page you requested.',

@@ -57,39 +57,42 @@ block body
                     td.align-middle= client.gender
                     td.align-middle
                       .btn-group(role='group', aria-label=t('Actions'))
-                        a.edit-btn(href='#', data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
+                        if ['owner', 'admin'].includes(client.group)
+                          a.edit-btn(href='#', data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
                         a(href=l(`/dashboard/clients/${client.id}/programs`), data-toggle='tooltip', data-title=t('Programs')).btn.btn-secondary: i.fa.fa-fw.fa-list
                         a(href=l(`/collection/${client.id}`), data-toggle='tooltip', data-title=t('Data Collection')).btn.btn-secondary: i.fa.fa-fw.fa-table
-                        form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}`), method="POST", autocomplete="off")
-                          input(type='hidden', name='_csrf', value=ctx.csrf)
-                          input(type='hidden', name='_method', value='DELETE')
-                          button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
-                  tr.edit-form(id=`${client.id}-form`, hidden)
-                    form(id=`${client.id}-edit`, method='POST', action=l(`/dashboard/clients/${client.id}`)).ajax-form.confirm-prompt
-                    input(type='hidden', name='_csrf', value=ctx.csrf, form=`${client.id}-edit`)
-                    input(type='hidden', name='edit_client', value='true', form=`${client.id}-edit`)
-                    td.align-middle
-                      input(type='text', name='first_name', required, value=client.first_name, placeholder=t('First Name'), form=`${client.id}-edit`).form-control
-                    td.align-middle
-                      input(type='text', name='last_name', required, value=client.last_name, placeholder=t('Last Name'), form=`${client.id}-edit`).form-control
-                    td.align-middle
-                      input(type='date', name='dob', value=client.dob ? client.dob.toISOString().split('T')[0] : '', form=`${client.id}-edit`, placeholder=t('YYYY-MM-DD')).form-control
-                    td.align-middle
-                      select(name='gender', form=`${client.id}-edit`).form-control
-                        if client.gender === 'Male'
-                          option(value='')= t('-- Select --')
-                          option(value='Male' selected)= t('Male')
-                          option(value='Female')= t('Female')
-                        else if client.gender === 'Female'
-                          option(value='')= t('-- Select --')
-                          option(value='Male')= t('Male')
-                          option(value='Female' selected)= t('Female')
-                        else
-                          option(value='')= t('-- Select --')
-                          option(value='Male')= t('Male')
-                          option(value='Female')= t('Female')
-                    td.align-middle
-                      .btn-group
-                        button(type='submit', form=`${client.id}-edit`).btn.btn-success: i.fa.fa-fw.fa-check
-                        button.edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
+                        if client.group === 'owner'
+                          form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}`), method="POST", autocomplete="off")
+                            input(type='hidden', name='_csrf', value=ctx.csrf)
+                            input(type='hidden', name='_method', value='DELETE')
+                            button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
+                  if ['owner', 'admin'].includes(client.group)
+                    tr.edit-form(id=`${client.id}-form`, hidden)
+                      form(id=`${client.id}-edit`, method='POST', action=l(`/dashboard/clients/${client.id}`)).ajax-form.confirm-prompt
+                      input(type='hidden', name='_csrf', value=ctx.csrf, form=`${client.id}-edit`)
+                      input(type='hidden', name='edit_client', value='true', form=`${client.id}-edit`)
+                      td.align-middle
+                        input(type='text', name='first_name', required, value=client.first_name, placeholder=t('First Name'), form=`${client.id}-edit`).form-control
+                      td.align-middle
+                        input(type='text', name='last_name', required, value=client.last_name, placeholder=t('Last Name'), form=`${client.id}-edit`).form-control
+                      td.align-middle
+                        input(type='date', name='dob', value=client.dob ? client.dob.toISOString().split('T')[0] : '', form=`${client.id}-edit`, placeholder=t('YYYY-MM-DD')).form-control
+                      td.align-middle
+                        select(name='gender', form=`${client.id}-edit`).form-control
+                          if client.gender === 'Male'
+                            option(value='')= t('-- Select --')
+                            option(value='Male' selected)= t('Male')
+                            option(value='Female')= t('Female')
+                          else if client.gender === 'Female'
+                            option(value='')= t('-- Select --')
+                            option(value='Male')= t('Male')
+                            option(value='Female' selected)= t('Female')
+                          else
+                            option(value='')= t('-- Select --')
+                            option(value='Male')= t('Male')
+                            option(value='Female')= t('Female')
+                      td.align-middle
+                        .btn-group
+                          button(type='submit', form=`${client.id}-edit`).btn.btn-success: i.fa.fa-fw.fa-check
+                          button.edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
           include ../../_pagination

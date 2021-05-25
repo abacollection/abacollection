@@ -26,10 +26,14 @@ const clientRouter = new Router({ prefix: '/clients/:client_id' });
 clientRouter.use(web.dashboard.clients.retrieveClient);
 
 clientRouter.get('/', render('dashboard/clients/overview'));
-clientRouter.post('/', web.dashboard.clients.settings);
-clientRouter.delete(
+clientRouter.post(
   '/',
   web.dashboard.clients.ensureAdmin,
+  web.dashboard.clients.settings
+);
+clientRouter.delete(
+  '/',
+  web.dashboard.clients.ensureOwner,
   web.dashboard.clients.delete_client
 );
 //
@@ -43,14 +47,22 @@ clientRouter.get(
 
 clientRouter.use(web.dashboard.programs.retrievePrograms);
 
-clientRouter.put('/programs', web.dashboard.programs.addProgram);
+clientRouter.put(
+  '/programs',
+  web.dashboard.clients.ensureAdmin,
+  web.dashboard.programs.addProgram
+);
 //
 // program specific routes
 //
 const programRouter = new Router({ prefix: '/programs/:program_id' });
 programRouter.use(web.dashboard.programs.retrieveProgram);
 
-programRouter.post('/', web.dashboard.programs.editProgram);
+programRouter.post(
+  '/',
+  web.dashboard.clients.ensureAdmin,
+  web.dashboard.programs.editProgram
+);
 programRouter.delete(
   '/',
   web.dashboard.clients.ensureAdmin,
@@ -67,14 +79,22 @@ programRouter.get(
 
 programRouter.use(web.dashboard.targets.retrieveTargets);
 
-programRouter.put('/targets', web.dashboard.targets.addTarget);
+programRouter.put(
+  '/targets',
+  web.dashboard.clients.ensureAdmin,
+  web.dashboard.targets.addTarget
+);
 //
 // target specific routes
 //
 const targetRouter = new Router({ prefix: '/targets/:target_id' });
 targetRouter.use(web.dashboard.targets.retrieveTarget);
 
-targetRouter.post('/', web.dashboard.targets.editTarget);
+targetRouter.post(
+  '/',
+  web.dashboard.clients.ensureAdmin,
+  web.dashboard.targets.editTarget
+);
 targetRouter.delete(
   '/',
   web.dashboard.clients.ensureAdmin,

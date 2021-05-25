@@ -171,11 +171,19 @@ async function retrieveClient(ctx, next) {
 }
 
 async function ensureAdmin(ctx, next) {
-  if (ctx.state.client.group === 'admin') {
+  if (['owner', 'admin'].includes(ctx.state.client.group)) {
     return next();
   }
 
-  ctx.throw(Boom.badRequest(ctx.translateError('IS_NOT_ADMIN')));
+  ctx.throw(Boom.badRequest(ctx.translateError('NO_PERMISSION')));
+}
+
+async function ensureOwner(ctx, next) {
+  if (ctx.state.client.group === 'owner') {
+    return next();
+  }
+
+  ctx.throw(Boom.badRequest(ctx.translateError('NO_PERMISSION')));
 }
 
 async function delete_client(ctx) {
@@ -242,6 +250,7 @@ module.exports = {
   retrieveClients,
   retrieveClient,
   ensureAdmin,
+  ensureOwner,
   delete_client,
   settings
 };

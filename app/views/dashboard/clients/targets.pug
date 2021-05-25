@@ -52,36 +52,37 @@ block body
                   = t('Actions')
                   a#addBtn(type='button', data-toggle='tooltip', data-title=t('Add'), aria-label=t('Add')).btn.btn-success.btn-sm.float-right: i.fas.fa-plus
               tbody
-                tr#addForm(hidden=targets.length !== 0)
-                  input(type='hidden', name='_method', value='PUT', form='add')
-                  input(type='hidden', name='_csrf', value=ctx.csrf, form='add')
-                  input(type='hidden', name='add_target', value='true', form='add')
-                  td.align-middle
-                    input#input-name(type='text', name='name', required, placeholder=t('Name'), form='add').form-control
-                  td.align-middle
-                    input#input-description(type='text', name='description', placeholder=t('Description'), form='add').form-control
-                  td.align-middle
-                    select#input-data_type(name='data_type', form='add').form-control
-                      option(value='')= t('-- Select --')
-                      option(value='Frequency')= t('Frequency')
-                      option(value='Rate')= t('Rate')
-                      option(value='Duration')= t('Duration')
-                      option(value='Percent Correct')= t('Percent Correct')
-                      option(value='Task Analysis')= t('Task Analysis')
-                      //- option(value='Momentary Time Sampling')= t('Momentary Time Sampling')
-                      //- option(value='Whole Interval')= t('Whole Interval')
-                      //- option(value='Partial Interval')= t('Partial Interval')
-                  td.align-middle
-                    select#input-phase(name='phase', form='add').form-control
-                      option(value='Not Started' selected)= t('Not Started')
-                      option(value='Baseline')= t('Baseline')
-                      option(value='Intervention')= t('Intervention')
-                      option(value='Maintenance')= t('Maintenance')
-                      option(value='Mastered')= t('Mastered')
-                  td.align-middle
-                    .btn-group(role='group', aria-label=t('Actions'))
-                      button(type='submit', form='add').btn.btn-success: i.fa.fa-fw.fa-check
-                      button#cancelAddBtn(type='button', aria-label=t('Cancel') disabled=targets.length === 0).btn.btn-danger: i.fa.fa-fw.fa-times
+                if ['owner', 'admin'].includes(client.group)
+                  tr#addForm(hidden=targets.length !== 0)
+                    input(type='hidden', name='_method', value='PUT', form='add')
+                    input(type='hidden', name='_csrf', value=ctx.csrf, form='add')
+                    input(type='hidden', name='add_target', value='true', form='add')
+                    td.align-middle
+                      input#input-name(type='text', name='name', required, placeholder=t('Name'), form='add').form-control
+                    td.align-middle
+                      input#input-description(type='text', name='description', placeholder=t('Description'), form='add').form-control
+                    td.align-middle
+                      select#input-data_type(name='data_type', form='add').form-control
+                        option(value='')= t('-- Select --')
+                        option(value='Frequency')= t('Frequency')
+                        option(value='Rate')= t('Rate')
+                        option(value='Duration')= t('Duration')
+                        option(value='Percent Correct')= t('Percent Correct')
+                        option(value='Task Analysis')= t('Task Analysis')
+                        //- option(value='Momentary Time Sampling')= t('Momentary Time Sampling')
+                        //- option(value='Whole Interval')= t('Whole Interval')
+                        //- option(value='Partial Interval')= t('Partial Interval')
+                    td.align-middle
+                      select#input-phase(name='phase', form='add').form-control
+                        option(value='Not Started' selected)= t('Not Started')
+                        option(value='Baseline')= t('Baseline')
+                        option(value='Intervention')= t('Intervention')
+                        option(value='Maintenance')= t('Maintenance')
+                        option(value='Mastered')= t('Mastered')
+                    td.align-middle
+                      .btn-group(role='group', aria-label=t('Actions'))
+                        button(type='submit', form='add').btn.btn-success: i.fa.fa-fw.fa-check
+                        button#cancelAddBtn(type='button', aria-label=t('Cancel') disabled=targets.length === 0).btn.btn-danger: i.fa.fa-fw.fa-times
                 each target in targets
                   tr(id=target.id)
                     td.align-middle= t(target.name)
@@ -90,43 +91,46 @@ block body
                     td.align-middle= t(target.phase)
                     td.align-middle
                       .btn-group(role='group', aria-label=t('Actions'))
-                        a.edit-btn(data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
+                        if ['owner', 'admin'].includes(client.group)
+                          a.edit-btn(data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
                         button#graphTargetBtn(data-toggle='modal', data-target='#modal-graph-target', data-id=target.id, data-name=t(target.name)).btn.btn-secondary
                           a(data-toggle='tooltip', data-title=t('Graph')): i.fa.fa-fw.fa-chart-line
                         button#dataTargetBtn(data-toggle='modal', data-target='#modal-data-target', data-id=target.id, data-name=t(target.name)).btn.btn-secondary
                           a(data-toggle='tooltip', data-title=t('Data')): i.fa.fa-fw.fa-list
-                        form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`), method="POST", autocomplete="off")
-                          input(type='hidden', name='_csrf', value=ctx.csrf)
-                          input(type='hidden', name='_method', value='DELETE')
-                          button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
-                  tr.edit-form(id=`${target.id}-form`, hidden)
-                    form(id=`${target.id}-edit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`)).ajax-form.confirm-prompt
-                    input(type='hidden', name='_method', value='POST', form=`${target.id}-edit`)
-                    input(type='hidden', name='_csrf', value=ctx.csrf, form=`${target.id}-edit`)
-                    input(type='hidden', name='edit_program', value='true', form=`${target.id}-edit`)
-                    td.align-middle
-                      input(type='text', name='name', required, placeholder=t('Name'), value=t(target.name), form=`${target.id}-edit`).form-control
-                    td.align-middle
-                      input(type='text', name='description', placeholder=t('Description'), value=t(target.description), form=`${target.id}-edit`).form-control
-                    td.align-middle= t(target.data_type)
-                    td.align-middle
-                      select(name='phase', form=`${target.id}-edit`).form-control
-                        each item in ['Not Started', 'Baseline', 'Intervention', 'Maintenance', 'Mastered']
-                          if target.phase === item
-                            option(value=item, selected)= t(item)
-                          else
-                            option(value=item)= t(item)
-                    td.align-middle
-                      .btn-group
-                        button(type='submit', form=`${target.id}-edit`).btn.btn-success: i.fa.fa-fw.fa-check
-                        button.edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
-                  if target.data_type === 'Task Analysis'
-                    tr.edit-form(id=`${target.id}-form-ta`, hidden)
-                      td(colspan='4')
-                        ul(id=`${target.id}-sortable`).list-group
-                          for step in target.ta
-                            li.list-group-item
-                              input(type='hidden', name='ta', value=step form=`${target.id}-edit`)
-                              i.fa.fa-fw.fa-grip-lines-vertical.mt-1.mr-1
-                              = t(step)
+                        if ['owner', 'admin'].includes(client.group)
+                          form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`), method="POST", autocomplete="off")
+                            input(type='hidden', name='_csrf', value=ctx.csrf)
+                            input(type='hidden', name='_method', value='DELETE')
+                            button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
+                  if ['owner', 'admin'].includes(client.group)
+                    tr.edit-form(id=`${target.id}-form`, hidden)
+                      form(id=`${target.id}-edit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`)).ajax-form.confirm-prompt
+                      input(type='hidden', name='_method', value='POST', form=`${target.id}-edit`)
+                      input(type='hidden', name='_csrf', value=ctx.csrf, form=`${target.id}-edit`)
+                      input(type='hidden', name='edit_program', value='true', form=`${target.id}-edit`)
+                      td.align-middle
+                        input(type='text', name='name', required, placeholder=t('Name'), value=t(target.name), form=`${target.id}-edit`).form-control
+                      td.align-middle
+                        input(type='text', name='description', placeholder=t('Description'), value=t(target.description), form=`${target.id}-edit`).form-control
+                      td.align-middle= t(target.data_type)
+                      td.align-middle
+                        select(name='phase', form=`${target.id}-edit`).form-control
+                          each item in ['Not Started', 'Baseline', 'Intervention', 'Maintenance', 'Mastered']
+                            if target.phase === item
+                              option(value=item, selected)= t(item)
+                            else
+                              option(value=item)= t(item)
+                      td.align-middle
+                        .btn-group
+                          button(type='submit', form=`${target.id}-edit`).btn.btn-success: i.fa.fa-fw.fa-check
+                          button.edit-cancel-btn(type='button', aria-label=t('Cancel')).btn.btn-danger: i.fa.fa-fw.fa-times
+                    if target.data_type === 'Task Analysis'
+                      tr.edit-form(id=`${target.id}-form-ta`, hidden)
+                        td(colspan='4')
+                          ul(id=`${target.id}-sortable`).list-group
+                            for step in target.ta
+                              li.list-group-item
+                                input(type='hidden', name='ta', value=step form=`${target.id}-edit`)
+                                i.fa.fa-fw.fa-grip-lines-vertical.mt-1.mr-1
+                                = t(step)
           include ../../_pagination
