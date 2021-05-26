@@ -1396,10 +1396,10 @@
     plugin-error "^1.0.1"
     through2 "^2.0.0"
 
-"@ladjs/i18n@^7.0.1":
-  version "7.2.2"
-  resolved "https://registry.yarnpkg.com/@ladjs/i18n/-/i18n-7.2.2.tgz#4148fb848fafbf9c20e64b1b7cb0e8b0c7c5cf56"
-  integrity sha512-N9jR6Fnd7gQ4Z1BMvjgNqAukC/B69D85NmLZ95w/X7ZwO1cdqr73DiOoWoYvswe5wYCbGpqDdqP0cxYo4BsrEw==
+"@ladjs/i18n@^7.0.1", "@ladjs/i18n@^7.1.0", "@ladjs/i18n@^7.2.3":
+  version "7.2.3"
+  resolved "https://registry.yarnpkg.com/@ladjs/i18n/-/i18n-7.2.3.tgz#ea1872642709f25b12c2c28fefcdcc5b28cc270a"
+  integrity sha512-bCqZH47iH9XlfjG2IknNxfovvqtfRfmZYYwnTR+8e0FSz6ZKgF/u7X3PAM/sYz/YAc/01Z3/T2bZlmbSrFtUcg==
   dependencies:
     "@hapi/boom" "^9.1.2"
     "@ladjs/country-language" "^0.2.1"
@@ -1413,24 +1413,6 @@
     qs "^6.10.1"
     titleize "2"
     tlds "^1.221.1"
-
-"@ladjs/i18n@^7.1.0":
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/@ladjs/i18n/-/i18n-7.1.0.tgz#b8ad021356ecac32894f54230100a92419355cf1"
-  integrity sha512-VWR2AS0I+EdMF5HOR8PvNzW/Cq1QcFVQ3zvlqY0oOdYTPrll3hIqlDwFhumMoSm/Sn7OMYaFdip3Wi6ukCrqIA==
-  dependencies:
-    "@hapi/boom" "^9.1.1"
-    boolean "3.0.2"
-    country-language "^0.1.7"
-    debug "^4.3.1"
-    i18n "^0.13.2"
-    i18n-locales "^0.0.4"
-    lodash "^4.17.21"
-    multimatch "^5.0.0"
-    punycode "^2.1.1"
-    qs "^6.9.6"
-    titleize "^2.1.0"
-    tlds "^1.218.0"
 
 "@ladjs/koa-better-static@^2.0.1":
   version "2.0.1"
@@ -3438,11 +3420,6 @@ boolbase@^1.0.0, boolbase@~1.0.0:
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha1-aN/1++YMUes3cl6p4+0xDcwed24=
 
-boolean@3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/boolean/-/boolean-3.0.2.tgz#df1baa18b6a2b0e70840475e1d93ec8fe75b2570"
-  integrity sha512-RwywHlpCRc3/Wh81MiCKun4ydaIFyW5Ea6JbL6sRCVx5q5irDw7pMXBUFYF/jArQ6YrG36q0kpovc9P/Kd3I4g==
-
 boolean@3.0.3, boolean@^3.0.0, boolean@^3.0.1:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/boolean/-/boolean-3.0.3.tgz#0fee0c9813b66bef25a8a6a904bb46736d05f024"
@@ -5140,14 +5117,6 @@ cosmiconfig@^6.0.0:
     path-type "^4.0.0"
     yaml "^1.7.2"
 
-country-language@^0.1.7:
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/country-language/-/country-language-0.1.7.tgz#7870f4ba125db9a6071f19737bd9ef9343ae35db"
-  integrity sha1-eHD0uhJduaYHHxlze9nvk0OuNds=
-  dependencies:
-    underscore "~1.7.0"
-    underscore.deep "~0.5.1"
-
 cp-file@^3.1.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/cp-file/-/cp-file-3.2.0.tgz#6f83616254624f0ad58aa4aa8d076f026be7e188"
@@ -6332,19 +6301,19 @@ elliptic@^6.5.3:
     minimalistic-assert "^1.0.1"
     minimalistic-crypto-utils "^1.0.1"
 
-email-templates@^8.0.4:
-  version "8.0.4"
-  resolved "https://registry.yarnpkg.com/email-templates/-/email-templates-8.0.4.tgz#233b9bd954ca156fdcf8508ce0a97d091b6864f7"
-  integrity sha512-o/jv6Hf4324GgTyOPrWEPgwsHEyxRNKqzne16Ac/p8RRVVX6VY5xBncBI192cA1jAhxvF13NGRgg5DcAf5HkZw==
+email-templates@^8.0.7:
+  version "8.0.7"
+  resolved "https://registry.yarnpkg.com/email-templates/-/email-templates-8.0.7.tgz#4cdaa0bfd56bc3191262fe4b82cea5bf61bdef1a"
+  integrity sha512-Qlr9z5Zp1EFjs1T8zdFoQiBZNBdqo44OvlqSE36905dijnB06AZ8aPg+AycfC23obEA82gYGplGP25Khn2vrBg==
   dependencies:
-    "@ladjs/i18n" "^7.1.0"
+    "@ladjs/i18n" "^7.2.3"
     consolidate "^0.16.0"
     debug "^4.3.1"
     get-paths "^0.0.7"
     html-to-text "^6.0.0"
     juice "^7.0.0"
     lodash "^4.17.21"
-    nodemailer "^6.5.0"
+    nodemailer "^6.6.0"
     preview-email "^3.0.4"
 
 emittery@^0.8.0:
@@ -9484,13 +9453,6 @@ husky@^6.0.0:
   resolved "https://registry.yarnpkg.com/husky/-/husky-6.0.0.tgz#810f11869adf51604c32ea577edbc377d7f9319e"
   integrity sha512-SQS2gDTB7tBN486QSoKPKQItZw97BMOd+Kdb6ghfpBc0yXyzrddI0oDV5MkDAbuB4X2mO3/nj60TRMcYxwzZeQ==
 
-i18n-locales@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/i18n-locales/-/i18n-locales-0.0.4.tgz#95d6505f6563f870f68860c23d35f82bd805cbf5"
-  integrity sha512-aP6VjhoBwSC8uZUehHWSszqdeWiheNXp0+oLPcZY4QAktsqcouHNYQee2NQFM4KNcCTKHHbfXrRUuOxjxF2jYw==
-  dependencies:
-    country-language "^0.1.7"
-
 i18n-locales@^0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/i18n-locales/-/i18n-locales-0.0.5.tgz#8f587e598ab982511d7c7db910cb45b8d93cd96a"
@@ -9498,7 +9460,7 @@ i18n-locales@^0.0.5:
   dependencies:
     "@ladjs/country-language" "^0.2.1"
 
-i18n@^0.13.2, i18n@^0.13.3:
+i18n@^0.13.3:
   version "0.13.3"
   resolved "https://registry.yarnpkg.com/i18n/-/i18n-0.13.3.tgz#5820f48d87a77cf14e064719bee9bc682ed550eb"
   integrity sha512-QDmY2joBdKxj3wvk2LKyvZkjwGHta882kYHwEvx1WbwiPAet49kEU7cxzGfnrtWrfh4+7I07kBc0ZSjSlhnKyQ==
@@ -13298,10 +13260,10 @@ nodemailer@6.5.0:
   resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.5.0.tgz#d12c28d8d48778918e25f1999d97910231b175d9"
   integrity sha512-Tm4RPrrIZbnqDKAvX+/4M+zovEReiKlEXWDzG4iwtpL9X34MJY+D5LnQPH/+eghe8DLlAVshHAJZAZWBGhkguw==
 
-nodemailer@^6.4.11, nodemailer@^6.5.0:
-  version "6.6.0"
-  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.6.0.tgz#ed47bb572b48d9d0dca3913fdc156203f438f427"
-  integrity sha512-ikSMDU1nZqpo2WUPE0wTTw/NGGImTkwpJKDIFPZT+YvvR9Sj+ze5wzu95JHkBMglQLoG2ITxU21WukCC/XsFkg==
+nodemailer@^6.4.11, nodemailer@^6.5.0, nodemailer@^6.6.0:
+  version "6.6.1"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.6.1.tgz#2a05fbf205b897d71bf43884167b5d4d3bd01b99"
+  integrity sha512-1xzFN3gqv+/qJ6YRyxBxfTYstLNt0FCtZaFRvf4Sg9wxNGWbwFmGXVpfSi6ThGK6aRxAo+KjHtYSW8NvCsNSAg==
 
 nodemon@^2.0.4:
   version "2.0.7"
@@ -19309,7 +19271,7 @@ tlds@1.219.0:
   resolved "https://registry.yarnpkg.com/tlds/-/tlds-1.219.0.tgz#7e636062386a1f3c9184356de93d40842ffe91d9"
   integrity sha512-o4g9c8kXCmTDwUnK/9HpTT9o/GNH85KCvs+S5SgUw5yILdECvMmTGzK7ngoWMp97P5tfYr8fZeF16YhgV/l90A==
 
-tlds@^1.218.0, tlds@^1.221.1:
+tlds@^1.221.1:
   version "1.221.1"
   resolved "https://registry.yarnpkg.com/tlds/-/tlds-1.221.1.tgz#6cf6bff5eaf30c5618c5801c3f425a6dc61ca0ad"
   integrity sha512-N1Afn/SLeOQRpxMwHBuNFJ3GvGrdtY4XPXKPFcx8he0U9Jg9ZkvTKE1k3jQDtCmlFn44UxjVtouF6PT4rEGd3Q==
@@ -19742,11 +19704,6 @@ underscore@~1.13.1:
   version "1.13.1"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.13.1.tgz#0c1c6bd2df54b6b69f2314066d65b6cde6fcf9d1"
   integrity sha512-hzSoAVtJF+3ZtiFX0VgfFPHEDRm7Y/QPjGyNo4TVdnDTdft3tr8hEkD25a1jC+TjTuE7tkHGKkhwCgs9dgBB2g==
-
-underscore@~1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.7.0.tgz#6bbaf0877500d36be34ecaa584e0db9fef035209"
-  integrity sha1-a7rwh3UA02vjTsqlhODbn+8DUgk=
 
 undertaker-registry@^1.0.0:
   version "1.0.1"
