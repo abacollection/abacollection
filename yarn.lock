@@ -1892,10 +1892,10 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@tkrotoff/bootstrap-floating-label@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@tkrotoff/bootstrap-floating-label/-/bootstrap-floating-label-0.7.0.tgz#727c5654a954131fd688ee6590449cde3e9013b4"
-  integrity sha512-YLw6MBreep7dWkKi8oc6fUD+aNfuZHxoyfVx43qAdWR89FyE9BK2AF04blbynJSnCfTRHkGfs9FnDZ291Zi50A==
+"@tkrotoff/bootstrap-floating-label@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@tkrotoff/bootstrap-floating-label/-/bootstrap-floating-label-0.8.0.tgz#0b9d577ed87b051c11de52738596fb7b6a40b54e"
+  integrity sha512-1d09zeS4hLX7gUodGZ5NDhp2lq0jLqj4IKZvbKr/cS068jGzgPWqz6XaOQJrpmOK4+4oolGItCX6RynhLIjJKg==
 
 "@tootallnate/once@1":
   version "1.1.2"
