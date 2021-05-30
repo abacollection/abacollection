@@ -6,6 +6,8 @@ const _ = require('lodash');
 
 const { Clients } = require('../../../models');
 
+const config = require('../../../../config/index');
+
 async function list(ctx) {
   let [clients, itemCount] = await Promise.all([
     Clients.find({
@@ -259,6 +261,18 @@ async function settings(ctx) {
   }
 }
 
+async function listShare(ctx) {
+  const { fields } = config.passport;
+
+  const { members } = await Clients.findById(ctx.state.client._id)
+    .populate('members.user', `email ${fields.givenName} id`)
+    .lean()
+    .exec();
+
+  if (ctx.accepts('html'))
+    return ctx.render('dashboard/clients/_share', { members, fields });
+}
+
 module.exports = {
   list,
   add_client,
@@ -267,5 +281,6 @@ module.exports = {
   ensureAdmin,
   ensureOwner,
   delete_client,
-  settings
+  settings,
+  listShare
 };

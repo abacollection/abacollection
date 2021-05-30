@@ -7,6 +7,14 @@ append scripts
   script(defer, src=manifest('js/clients.js'), integrity=manifest('js/clients.js', 'integrity'), crossorigin='anonymous')
 
 block body
+  #modal-share(tabindex='-1', role='dialog').modal.fade
+    .modal-dialog.modal-xl(role='document')
+      .modal-content
+        .modal-header.d-inline-flex
+          h5.modal-title#share-title= t('Share Settings')
+          button(type='button', data-dismiss='modal', aria-label=t('Close')).close
+            span(aria-hidden='true')!= '&times;'
+        .modal-body#share
   form#add(action=ctx.path, method='PUT').ajax-form
   .container-fluid.py-3
     .row.mt-1
@@ -59,6 +67,12 @@ block body
                       .btn-group(role='group', aria-label=t('Actions'))
                         if ['owner', 'admin'].includes(client.group)
                           a.edit-btn(href='#', data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
+                          a.btn.btn-secondary.share-btn(
+                            data-toggle='tooltip',
+                            data-title=t('Share')
+                            data-id=client.id,
+                            data-name=t(`${client.name} Share Settings`)
+                          ): i.fa.fa-fw.fa-share-alt
                         a(href=l(`/dashboard/clients/${client.id}/programs`), data-toggle='tooltip', data-title=t('Programs')).btn.btn-secondary: i.fa.fa-fw.fa-list
                         a(href=l(`/collection/${client.id}`), data-toggle='tooltip', data-title=t('Data Collection')).btn.btn-secondary: i.fa.fa-fw.fa-table
                         if client.group === 'owner'

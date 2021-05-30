@@ -114,5 +114,7 @@ module.exports = {
   INVALID_CORRECT: 'Correct is invalid.',
   INVALID_INCORRECT: 'Incorrect is invalid.',
   INVALID_COUNTING_TIME: 'Counting time is invalid.',
-  INVALID_DATA: 'Data is invalid.'
+  INVALID_DATA: 'Data is invalid.',
+  NO_MEMBERS:
+    'There is a problem with sharing for this client. Please try again later'
 };

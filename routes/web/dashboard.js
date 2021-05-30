@@ -36,6 +36,13 @@ clientRouter.delete(
   web.dashboard.clients.ensureOwner,
   web.dashboard.clients.delete_client
 );
+
+// sharing settings
+clientRouter.get(
+  '/share',
+  web.dashboard.clients.ensureAdmin,
+  web.dashboard.clients.listShare
+);
 //
 // programs
 //
