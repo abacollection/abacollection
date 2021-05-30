@@ -7,11 +7,12 @@ const _ = require('lodash');
 const { Clients } = require('../../../models');
 
 async function list(ctx) {
-  const [clients, itemCount] = await Promise.all([
+  let [clients, itemCount] = await Promise.all([
     Clients.find({
       $or: [{ 'members.user': ctx.state.user._id }]
     })
       .collation({ locale: ctx.locale, strength: 2 })
+      .populate('members.user', 'id')
       .sort(ctx.query.sort)
       .limit(ctx.query.limit)
       .skip(ctx.paginate.skip)
@@ -21,6 +22,20 @@ async function list(ctx) {
       $or: [{ 'members.user': ctx.state.user._id }]
     })
   ]);
+
+  clients = clients.map((client) => {
+    // Populate a `group` on the client based off the user's association
+    const member = client.members.find(
+      (member) => member.user.id === ctx.state.user.id
+    );
+
+    const { group } = member ? member : { group: null };
+
+    return {
+      ...client,
+      group
+    };
+  });
 
   const pageCount = Math.ceil(itemCount / ctx.query.limit);
 
