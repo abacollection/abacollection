@@ -70,7 +70,7 @@ exports.defineUserFactory = async () => {
     if (buildOptions.resetToken) {
       user[config.userFields.resetToken] = buildOptions.resetToken;
       user[config.userFields.resetTokenExpiresAt] = new Date(
-        Date.now() + 10000
+        Date.now() + 10_000
       );
     }
 
@@ -85,9 +85,7 @@ exports.defineClientFactory = async () => {
       user: buildOptions.user
         ? buildOptions.user
         : factory.assoc('user', '_id'),
-      group: buildOptions.group
-        ? buildOptions.group
-        : factory.chance('pickone', ['admin', 'user'])
+      group: buildOptions.group ? buildOptions.group : 'user'
     };
   });
 
