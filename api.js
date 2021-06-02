@@ -31,7 +31,7 @@ if (!module.parent) {
 
       const { port } = api.server.address();
       logger.info(
-        `ABA Coleection API server listening on ${port} (LAN: ${ip.address()}:${port})`
+        `ABA Collection API server listening on ${port} (LAN: ${ip.address()}:${port})`
       );
       await mongoose.connect();
     } catch (err) {
