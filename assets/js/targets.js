@@ -103,7 +103,7 @@ $(document).on('click', '.data-edit-cancel-btn', function () {
   }
 });
 
-$(document).on('click', '#graphTargetBtn', async function (event) {
+$(document).on('click', '.graph-target-btn', async function (event) {
   try {
     event.preventDefault();
 
@@ -158,15 +158,15 @@ $(document).on('click', '#graphTargetBtn', async function (event) {
     }
 
     graph = new Apex(document.querySelector('#graph'), options);
+    graph.render();
     // Hide spinner
     $('#spinner').removeClass('show d-block');
-    graph.render();
   } catch (err) {
     logger.error(err);
   }
 });
 
-$(document).on('click', '#dataTargetBtn', async function (event) {
+$(document).on('click', '.data-target-btn', async function (event) {
   try {
     event.preventDefault();
 
@@ -187,12 +187,13 @@ $(document).on('click', '#dataTargetBtn', async function (event) {
       .retry(3)
       .send();
 
-    // Hide spinner
-    $('#spinner').removeClass('show d-block');
     $('#data').html(res.text);
 
     // Add timezone
     $('input[name="timezone"]').prop('value', dayjs.tz.guess());
+
+    // Hide spinner
+    $('#spinner').removeClass('show d-block');
   } catch (err) {
     logger.error(err);
   }

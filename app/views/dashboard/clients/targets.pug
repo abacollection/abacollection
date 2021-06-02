@@ -93,9 +93,9 @@ block body
                       .btn-group(role='group', aria-label=t('Actions'))
                         if ['owner', 'admin'].includes(client.group)
                           a.edit-btn(data-toggle='tooltip',  data-title=t('Edit')).btn.btn-secondary: i.fa.fa-fw.fa-edit
-                        button#graphTargetBtn(data-toggle='modal', data-target='#modal-graph-target', data-id=target.id, data-name=t(target.name)).btn.btn-secondary
+                        button.graph-target-btn(data-toggle='modal', data-target='#modal-graph-target', data-id=target.id, data-name=t(target.name)).btn.btn-secondary
                           a(data-toggle='tooltip', data-title=t('Graph')): i.fa.fa-fw.fa-chart-line
-                        button#dataTargetBtn(data-toggle='modal', data-target='#modal-data-target', data-id=target.id, data-name=t(target.name)).btn.btn-secondary
+                        button.data-target-btn(data-toggle='modal', data-target='#modal-data-target', data-id=target.id, data-name=t(target.name)).btn.btn-secondary
                           a(data-toggle='tooltip', data-title=t('Data')): i.fa.fa-fw.fa-list
                         if ['owner', 'admin'].includes(client.group)
                           form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}`), method="POST", autocomplete="off")
