@@ -18,7 +18,7 @@ async function list(ctx) {
       .sort(ctx.query.sort)
       .limit(ctx.query.limit)
       .skip(ctx.paginate.skip)
-      .lean()
+      .lean({ virtuals: true })
       .exec(),
     Clients.countDocuments({
       $or: [{ 'members.user': ctx.state.user._id }]
@@ -265,7 +265,7 @@ async function listShare(ctx) {
   const { fields } = config.passport;
 
   const { members } = await Clients.findById(ctx.state.client._id)
-    .populate('members.user', `email ${fields.givenName} id`)
+    .populate('members.user', `${fields.displayName} id`)
     .lean()
     .exec();
 

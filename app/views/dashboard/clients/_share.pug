@@ -5,14 +5,12 @@
       table.table.table-hover
         thead
           tr
-            th(scope='col')= t('Name')
-            th(scope='col')= t('Email')
+            th(scope='col')= t('Member')
             th(scope='col')= t('Group')
             th(scope='col')= t('Actions')
           tbody
             each member in members
               tr(id=member.id)
                 td.align-middle= member.user[fields.displayName]
-                td.align-middle= member.user.email
                 td.align-middle= member.group
                 td.align-middle
