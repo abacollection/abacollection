@@ -286,6 +286,9 @@ async function addMember(ctx) {
     .lean()
     .exec();
 
+  if (!newMember)
+    return ctx.throw(Boom.badRequest(ctx.translateError('INVALID_USER')));
+
   const client = await Clients.findById(ctx.state.client._id);
 
   client.members.push({ user: newMember._id, group: 'user' });
