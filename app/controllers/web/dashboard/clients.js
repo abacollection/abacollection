@@ -4,7 +4,7 @@ const isSANB = require('is-string-and-not-blank');
 const { isISO8601 } = require('validator');
 const _ = require('lodash');
 
-const { Clients } = require('../../../models');
+const { Users, Clients } = require('../../../models');
 
 const config = require('../../../../config/index');
 
@@ -269,8 +269,30 @@ async function listShare(ctx) {
     .lean()
     .exec();
 
-  if (ctx.accepts('html'))
-    return ctx.render('dashboard/clients/_share', { members, fields });
+  await ctx.render('dashboard/clients/_share', { members, fields });
+
+  ctx.body = {
+    message: ctx.body,
+    renderModalBodyWithHTML: true
+  };
+}
+
+async function addMember(ctx) {
+  const { body } = ctx.request;
+
+  const newMember = await Users.findOne({
+    [config.passport.fields.displayName]: body.member
+  })
+    .lean()
+    .exec();
+
+  const client = await Clients.findById(ctx.state.client._id);
+
+  client.members.push({ user: newMember._id, group: 'user' });
+
+  ctx.state.client = await client.save({ validateBeforeSave: false });
+
+  await listShare(ctx);
 }
 
 module.exports = {
@@ -282,5 +304,6 @@ module.exports = {
   ensureOwner,
   delete_client,
   settings,
-  listShare
+  listShare,
+  addMember
 };

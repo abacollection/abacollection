@@ -43,6 +43,11 @@ clientRouter.get(
   web.dashboard.clients.ensureAdmin,
   web.dashboard.clients.listShare
 );
+clientRouter.put(
+  '/share',
+  web.dashboard.clients.ensureAdmin,
+  web.dashboard.clients.addMember
+);
 //
 // programs
 //
