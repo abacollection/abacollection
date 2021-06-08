@@ -25,3 +25,9 @@
                 td.align-middle= member.user[fields.displayName]
                 td.align-middle= member.group
                 td.align-middle
+                  .btn-group(role='group', aria-label=t('Actions'))
+                    form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/share`), method="POST", autocomplete="off")
+                      input(type='hidden', name='_csrf', value=ctx.csrf)
+                      input(type='hidden', name='_method', value='DELETE')
+                      input(type='hidden', name='member', value=member.user[fields.displayName])
+                      button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary: i.fa.fa-fw.fa-remove
