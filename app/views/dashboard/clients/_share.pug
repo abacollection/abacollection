@@ -1,6 +1,17 @@
 
 .row.mt-1
   .col
+    form.ajax-form#addMember(method='PUT', action=l(ctx.pathWithoutLocale))
+      input(type='hidden', name='_method', value='PUT')
+      input(type='hidden', name='_csrf', value=ctx.csrf)
+      input(type='hidden', name='add_member', value='true')
+      .input-group.floating-label.mb-3
+        input.form-control#input-add-member(required, type='text', name='member')
+        label(for='input-add-member')= t('Member To Share With')
+        .input-group-append
+          button#add-member-btn(type='submit').btn.btn-secondary= t('Share')
+.row
+  .col
     .table-responsive
       table.table.table-hover
         thead

@@ -46,7 +46,7 @@ $(document).on('click', '.share-btn', async function (event) {
       .retry(3)
       .send();
 
-    $('#share').html(res.text);
+    $('#share').html(res.body.message);
 
     // Hide spinner
     $('#spinner').removeClass('show d-block');
