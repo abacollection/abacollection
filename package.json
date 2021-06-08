@@ -121,7 +121,7 @@
     "qs": "^6.9.4",
     "reserved-email-addresses-list": "0.0.9",
     "rev-hash": "^3.0.0",
-    "sanitize-html": "^2.3.3",
+    "sanitize-html": "^2.4.0",
     "signale": "^1.4.0",
     "sortablejs": "^1.10.2",
     "speakingurl": "^14.0.1",
