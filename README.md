@@ -35,6 +35,7 @@ Each client can have Programs which each have Targets.
 ### Data Types
 
 The following is a list of currently supported data types:
+
 * Frequency
 * Duration
 * Percent Correct
