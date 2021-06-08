@@ -1,18 +1,19 @@
-const paginate = require('koa-ctx-paginate');
 const Boom = require('@hapi/boom');
-const isSANB = require('is-string-and-not-blank');
 const _ = require('lodash');
+const isSANB = require('is-string-and-not-blank');
+const paginate = require('koa-ctx-paginate');
 
 const { Programs } = require('../../../models');
 
 async function retrievePrograms(ctx, next) {
   ctx.state.programs = [];
 
-  const query = {
+  ctx.state.programs = await Programs.find({
     $or: [{ client: ctx.state.client._id }]
-  };
-
-  ctx.state.programs = await Programs.find(query).sort('name').lean().exec();
+  })
+    .sort('name')
+    .lean()
+    .exec();
 
   //
   // set breadcrumb

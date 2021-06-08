@@ -1,11 +1,9 @@
-const test = require('ava');
 const { factory } = require('factory-girl');
+const test = require('ava');
 
-const config = require('../../../../config');
 const { Users, Programs } = require('../../../../app/models');
-
+const config = require('../../../../config');
 const phrases = require('../../../../config/phrases');
-
 const utils = require('../../../utils');
 
 test.before(utils.setupMongoose);
@@ -37,7 +35,6 @@ test.beforeEach(async (t) => {
 
   t.context.root = `/en/dashboard/clients/${t.context.client.id}`;
 });
-
 
 test('PUT dashboard/clients/programs > successfully', async (t) => {
   const { web, root } = t.context;

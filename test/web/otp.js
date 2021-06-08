@@ -1,11 +1,13 @@
-const test = require('ava');
-const { factory } = require('factory-girl');
-
+const { authenticator } = require('otplib');
 const _ = require('lodash');
+
+const { factory } = require('factory-girl');
+const test = require('ava');
+
+const { Users } = require('../../app/models');
 const config = require('../../config');
 const phrases = require('../../config/phrases');
-const { Users } = require('../../app/models');
-const { authenticator } = require('otplib');
+
 // if default authenticator options in #ladjs/passport or
 // config sets authenticator options for otp
 // these settings will need to be changed

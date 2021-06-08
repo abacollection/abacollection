@@ -71,9 +71,9 @@ Client.post('findOneAndRemove', async function () {
     .lean()
     .exec();
 
-  programs.forEach(async (program) => {
-    await Programs.findByIdAndRemove(program._id);
-  });
+  await Promise.all(
+    programs.map((program) => Programs.findByIdAndRemove(program._id))
+  );
 });
 
 module.exports = mongoose.model('Client', Client);

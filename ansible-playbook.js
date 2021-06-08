@@ -1,7 +1,6 @@
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
-
 const parse = require('parse-git-config');
 
 const env = path.join(__dirname, '.env.production');

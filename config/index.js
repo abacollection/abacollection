@@ -1,15 +1,16 @@
 const path = require('path');
 
+const { boolean } = require('boolean');
 const Axe = require('axe');
 const Boom = require('@hapi/boom');
 const _ = require('lodash');
 const base64ToS3 = require('nodemailer-base64-to-s3');
 const consolidate = require('consolidate');
 const manifestRev = require('manifest-rev');
-const ms = require('ms');
 const nodemailer = require('nodemailer');
 const zxcvbn = require('zxcvbn');
-const { boolean } = require('boolean');
+
+const ms = require('ms');
 
 const pkg = require('../package');
 const env = require('./env');
@@ -198,7 +199,7 @@ const config = {
     digestAlgorithm: 'sha256',
     encoding: 'hex',
     saltlen: 32,
-    iterations: 25000,
+    iterations: 25_000,
     keylen: 512,
     passwordValidator: (password, fn) => {
       if (env.NODE_ENV === 'development') {

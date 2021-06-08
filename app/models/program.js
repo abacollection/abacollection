@@ -36,9 +36,9 @@ Program.post('findOneAndRemove', async function () {
     .lean()
     .exec();
 
-  targets.forEach(async (target) => {
-    await Targets.findByIdAndRemove(target._id);
-  });
+  await Promise.all(
+    targets.map((target) => Targets.findByIdAndRemove(target._id))
+  );
 });
 
 module.exports = mongoose.model('Program', Program);

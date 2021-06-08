@@ -1,4 +1,3 @@
-const ms = require('ms');
 const config = require('.');
 
 module.exports = {

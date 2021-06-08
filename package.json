@@ -294,7 +294,8 @@
     "rules": {
       "ava/assertion-arguments": "off",
       "unicorn/prevent-abbreviations": "off",
-      "unicorn/no-fn-reference-in-iterator": "off"
+      "unicorn/no-fn-reference-in-iterator": "off",
+      "unicorn/prefer-module": "off"
     }
   }
 }

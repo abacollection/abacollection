@@ -1,12 +1,12 @@
-const paginate = require('koa-ctx-paginate');
-const Boom = require('@hapi/boom');
-const isSANB = require('is-string-and-not-blank');
 const { isISO8601 } = require('validator');
+const Boom = require('@hapi/boom');
 const _ = require('lodash');
+const isSANB = require('is-string-and-not-blank');
+const paginate = require('koa-ctx-paginate');
 
 const { Users, Clients } = require('../../../models');
-
 const config = require('../../../../config/index');
+
 const { fields } = config.passport;
 
 async function list(ctx) {
@@ -103,11 +103,9 @@ async function retrieveClients(ctx, next) {
     return next();
   }
 
-  const query = {
+  ctx.state.clients = await Clients.find({
     $or: [{ 'members.user': ctx.state.user._id }]
-  };
-
-  ctx.state.clients = await Clients.find(query)
+  })
     .populate('members.user', `id ${fields.displayName}`)
     .sort('last_name')
     .lean({ virtuals: true })

@@ -2,9 +2,8 @@ const mongoose = require('mongoose');
 const mongooseCommonPlugin = require('mongoose-common-plugin');
 
 const Datas = require('../data');
-
-const frequencySchema = require('./frequency');
 const durationSchema = require('./duration');
+const frequencySchema = require('./frequency');
 const pcSchema = require('./percent-correct');
 const rateSchema = require('./rate');
 const taSchema = require('./task-analysis');
@@ -59,9 +58,7 @@ targetSchema.plugin(mongooseCommonPlugin, { object: 'target' });
 targetSchema.post('findOneAndRemove', async function () {
   const datas = await Datas.find({ target: this.getQuery()._id }).lean().exec();
 
-  datas.forEach(async (data) => {
-    await Datas.findByIdAndRemove(data._id);
-  });
+  await Promise.all(datas.map((data) => Datas.findByIdAndRemove(data._id)));
 });
 
 targetSchema.method('getPreviousData', async () => {
