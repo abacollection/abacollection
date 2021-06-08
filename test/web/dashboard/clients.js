@@ -559,3 +559,61 @@ test('PUT /dashboard/clients/:client_id/share > fails if no user exists', async 
   t.is(res.status, 400);
   t.is(JSON.parse(res.text).message, phrases.INVALID_USER);
 });
+
+test('DELETE /dashboard/clients/:client_id/share > successful', async (t) => {
+  const { web, user } = t.context;
+  const extraUser = await factory.create('user');
+  const members = await factory.createMany('member', [
+    { user, group: 'admin' },
+    { user: extraUser, group: 'user' }
+  ]);
+  const client = await factory.create('client', { members });
+
+  let query = await Clients.findById(client._id)
+    .populate('members.user')
+    .lean()
+    .exec();
+
+  t.is(query.members.length, 2);
+
+  const res = await web
+    .delete(`/en/dashboard/clients/${client.id}/share`)
+    .send({
+      member: extraUser.email
+    });
+
+  t.is(res.status, 200);
+
+  query = await Clients.findById(client._id)
+    .populate('members.user')
+    .lean()
+    .exec();
+
+  t.is(query.members.length, 1);
+  t.like(query.members[0], { user: { id: user.id }, group: 'admin' });
+});
+
+test('DELETE /dashboard/clients/:client_id/share > fails if no member', async (t) => {
+  const { web, user } = t.context;
+  const extraUser = await factory.create('user');
+  const members = await factory.createMany('member', [
+    { user, group: 'admin' }
+  ]);
+  const client = await factory.create('client', { members });
+
+  const query = await Clients.findById(client._id)
+    .populate('members.user')
+    .lean()
+    .exec();
+
+  t.is(query.members.length, 1);
+
+  const res = await web
+    .delete(`/en/dashboard/clients/${client.id}/share`)
+    .send({
+      member: extraUser.email
+    });
+
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.MEMBER_DOES_NOT_EXIST);
+});
