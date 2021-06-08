@@ -12832,10 +12832,10 @@ mongoose-validation-error-transform@^0.0.5:
     humanize-string "^2.1.0"
     lodash "^4.17.15"
 
-mongoose@^5.12.12:
-  version "5.12.12"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.12.12.tgz#7da29c7d7924ad1fb07b5c5fc0acde2f4aaff4f9"
-  integrity sha512-n+ZmGApaL5x/r92w6S4pb+c075i+YKzg1F9YWkznSzQMtvetj/2dSjj2cqsITpd6z60k3K7ZaosIl6hzHwUA9g==
+mongoose@^5.12.13:
+  version "5.12.13"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.12.13.tgz#6707fb2f6284536bb6367c94ccc3ce85475a387d"
+  integrity sha512-QGn1FCzZ8Z+mMGVg8oR2kQw4NmhLloCHsw1NqKWg3Yr7WfPzkE4pe7s9P6o5pkYGsku17n9mqMHowne7EFK/zQ==
   dependencies:
     "@types/mongodb" "^3.5.27"
     bson "^1.1.4"
@@ -15300,7 +15300,7 @@ postcss-scss@^2.1.1:
   dependencies:
     postcss "^7.0.6"
 
-postcss-scss@^3.0.5:
+postcss-scss@^3.0.4:
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/postcss-scss/-/postcss-scss-3.0.5.tgz#bd484faf05890e48a6f5e097acb3d104cc7b9ac7"
   integrity sha512-3e0qYk87eczfzg5P73ZVuuxEGCBfatRhPze6KrSaIbEKVtmnFI1RYp1Fv+AyZi+w8kcNRSPeNX6ap4b65zEkiA==
@@ -18873,10 +18873,10 @@ svgpath@^1.0.7:
   resolved "https://registry.yarnpkg.com/svgpath/-/svgpath-1.0.7.tgz#e554212b87e5d0469141a284c020c87f5c9a4ed0"
   integrity sha1-5VQhK4fl0EaRQaKEwCDIf1yaTtA=
 
-sweetalert2@11.0.12:
-  version "11.0.12"
-  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.0.12.tgz#7b500fad352def30412798883433b37e48cb14dc"
-  integrity sha512-iAn9nB1qu+8z4xjuxeJp+BfBcgReh+NDZ7P/I1r8oDMcukLtYYJxcpEbiaIpBYU4+k698WHe90oCm+UgCCVnqA==
+sweetalert2@11.0.11:
+  version "11.0.11"
+  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.0.11.tgz#13bc8312244c94894ec0bb2b80670e1b0f1c17e2"
+  integrity sha512-3xO4NI9mfO/9UImBu0Kym4tHEPQClxucLzBl9R8PPphNrdpen0TyWWBggz/EKCnidQfXYmt9R3pOr6CK4EQMwQ==
 
 sweetalert2@8.x:
   version "8.19.0"
@@ -20601,10 +20601,10 @@ xo@^0.32.0:
     typescript "^3.3.1"
     update-notifier "^4.1.0"
 
-xo@^0.40.1:
-  version "0.40.1"
-  resolved "https://registry.yarnpkg.com/xo/-/xo-0.40.1.tgz#5f9d7ca80d0f99b4d744b30987b92686a233b724"
-  integrity sha512-cle9DGwXjiL/Xu4KU2uajBLaNgi1K97BWO2sRJwAodWSRSdDFgLWdVCGCYQWCvRx/PI9yDaMM/KIng3U3yYPdQ==
+xo@^0.40.2:
+  version "0.40.2"
+  resolved "https://registry.yarnpkg.com/xo/-/xo-0.40.2.tgz#68a8bed647cddb750fe75edecc2dbe866ddad803"
+  integrity sha512-luBFj3WAhE2EJKainO+lLPFF7aKvlRUdBZbn1iZuMeioPXaVqqcsb/Nbn0+l0sAcDwhJL6Wa1GFHFja6JAiTOw==
   dependencies:
     "@eslint/eslintrc" "^0.4.1"
     "@typescript-eslint/eslint-plugin" "^4.22.0"
