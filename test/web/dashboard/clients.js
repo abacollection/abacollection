@@ -534,3 +534,28 @@ test('PUT /dashboard/clients/:client_id/share > successfully', async (t) => {
     else t.fail();
   }
 });
+
+test('PUT /dashboard/clients/:client_id/share > fails if no user exists', async (t) => {
+  const { web, user } = t.context;
+  const nonMemberUser = await factory.build('user');
+  const member = await factory.create('member', { user, group: 'admin' });
+  const client = await factory.create('client', { members: [member] });
+
+  const query = await Clients.findById(client._id)
+    .populate('members.user')
+    .lean()
+    .exec();
+
+  t.is(query.members.length, 1);
+  t.like(query.members[0], { user: { id: user.id }, group: 'admin' });
+
+  const res = await web
+    .put(`/en/dashboard/clients/${client.id}/share`)
+    .set('Accept', 'application/json')
+    .send({
+      member: nonMemberUser.email
+    });
+
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.INVALID_USER);
+});
