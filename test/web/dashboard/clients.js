@@ -494,3 +494,43 @@ test('GET /dashboard/clients/:client_id/share > successfully', async (t) => {
   t.true(res.text.includes(user.email));
   t.false(res.text.includes(nonMemberUser.email));
 });
+
+test('PUT /dashboard/clients/:client_id/share > successfully', async (t) => {
+  const { web, user } = t.context;
+  const nonMemberUser = await factory.create('user');
+  const member = await factory.create('member', { user, group: 'admin' });
+  const client = await factory.create('client', { members: [member] });
+
+  let query = await Clients.findById(client._id)
+    .populate('members.user')
+    .lean()
+    .exec();
+
+  t.is(query.members.length, 1);
+  t.like(query.members[0], { user: { id: user.id }, group: 'admin' });
+
+  const res = await web
+    .put(`/en/dashboard/clients/${client.id}/share`)
+    .set('Accept', 'application/json')
+    .send({
+      member: nonMemberUser.email
+    });
+
+  t.is(res.status, 200);
+  t.true(res.body.message.includes(user.email));
+  t.true(res.body.message.includes(nonMemberUser.email));
+
+  query = await Clients.findById(client._id)
+    .populate('members.user')
+    .lean()
+    .exec();
+
+  t.is(query.members.length, 2);
+
+  for (const member of query.members) {
+    if (member.user.id === user.id && member.group === 'admin') t.pass();
+    else if (member.user.id === nonMemberUser.id && member.group === 'user')
+      t.pass();
+    else t.fail();
+  }
+});
