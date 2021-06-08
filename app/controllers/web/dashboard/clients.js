@@ -7,6 +7,7 @@ const _ = require('lodash');
 const { Users, Clients } = require('../../../models');
 
 const config = require('../../../../config/index');
+const { fields } = config.passport;
 
 async function list(ctx) {
   let [clients, itemCount] = await Promise.all([
@@ -107,7 +108,7 @@ async function retrieveClients(ctx, next) {
   };
 
   ctx.state.clients = await Clients.find(query)
-    .populate('members.user', 'id')
+    .populate('members.user', `id ${fields.displayName}`)
     .sort('last_name')
     .lean({ virtuals: true })
     .exec();
@@ -262,10 +263,8 @@ async function settings(ctx) {
 }
 
 async function listShare(ctx) {
-  const { fields } = config.passport;
-
   const { members } = await Clients.findById(ctx.state.client._id)
-    .populate('members.user', `${fields.displayName} id`)
+    .populate('members.user', fields.displayName)
     .lean()
     .exec();
 
@@ -281,7 +280,7 @@ async function addMember(ctx) {
   const { body } = ctx.request;
 
   const newMember = await Users.findOne({
-    [config.passport.fields.displayName]: body.member
+    [fields.displayName]: body.member
   })
     .lean()
     .exec();
@@ -298,6 +297,31 @@ async function addMember(ctx) {
   await listShare(ctx);
 }
 
+async function deleteMember(ctx) {
+  const { body } = ctx.request;
+
+  // check that member exists
+  const member = ctx.state.client.members.find(
+    (member) => member.user && member.user[fields.displayName] === body.member
+  );
+
+  if (!member)
+    return ctx.throw(
+      Boom.badRequest(ctx.translateError('MEMBER_DOES_NOT_EXIST'))
+    );
+
+  ctx.state.client = await Clients.findById(ctx.state.client._id)
+    .populate('members.user', fields.displayName)
+    .exec();
+  ctx.state.client.members = ctx.state.client.members.filter(
+    (member) => member.user[fields.displayName] !== body.member
+  );
+
+  ctx.state.client = await ctx.state.client.save({ validateBeforeSave: false });
+
+  await listShare(ctx);
+}
+
 module.exports = {
   list,
   add_client,
@@ -308,5 +332,6 @@ module.exports = {
   delete_client,
   settings,
   listShare,
-  addMember
+  addMember,
+  deleteMember
 };
