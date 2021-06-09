@@ -138,7 +138,7 @@
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.14.3",
     "@babel/polyfill": "^7.11.5",
-    "@babel/preset-env": "^7.14.2",
+    "@babel/preset-env": "^7.14.4",
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
     "@ladjs/browserslist-config": "^0.0.1",
