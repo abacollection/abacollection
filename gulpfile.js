@@ -22,7 +22,7 @@ const gulpXo = require('gulp-xo');
 const imagemin = require('gulp-imagemin');
 const lr = require('gulp-livereload');
 const makeDir = require('make-dir');
-const nodeSass = require('node-sass');
+const dartSass = require('sass');
 const pngquant = require('imagemin-pngquant');
 const postcss = require('gulp-postcss');
 const postcssPresetEnv = require('postcss-preset-env');
@@ -37,10 +37,11 @@ const stylelint = require('stylelint');
 const terser = require('gulp-terser');
 const through2 = require('through2');
 const unassert = require('gulp-unassert');
+const Fiber = require('fibers');
 const { lastRun, watch, series, parallel, src, dest } = require('gulp');
 
-// explicitly set the compiler in case it were to change to dart
-sass.compiler = nodeSass;
+// explicitly set the compiler so it uses dart
+sass.compiler = dartSass;
 
 // required to disable watching of I18N files in @ladjs/i18n
 // otherwises tasks will fail to exit due to watchers running
@@ -111,7 +112,7 @@ function css() {
     base: 'assets'
   })
     .pipe(sourcemaps.init())
-    .pipe(sass().on('error', sass.logError))
+    .pipe(sass({ fiber: Fiber }).on('error', sass.logError))
     .pipe(
       postcss([
         fontMagician({
