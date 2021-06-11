@@ -117,5 +117,7 @@ module.exports = {
   INVALID_COUNTING_TIME: 'Counting time is invalid.',
   INVALID_DATA: 'Data is invalid.',
   NO_MEMBERS:
-    'There is a problem with sharing for this client. Please try again later'
+    'There is a problem with sharing for this client. Please try again later',
+  MUST_HAVE_OWNER:
+    'This action would leave no owner for this client. Please assign a new owner before removing yourself as owner.'
 };

@@ -11,6 +11,8 @@ const phrases = require('../../../config/phrases');
 
 const utils = require('../../utils');
 
+const { displayName } = config.passport.fields;
+
 test.before(utils.setupMongoose);
 test.before(utils.defineUserFactory);
 test.before(utils.defineClientFactory);
@@ -491,8 +493,8 @@ test('GET /dashboard/clients/:client_id/share > successfully', async (t) => {
   const res = await web.get(`/en/dashboard/clients/${client.id}/share`).send();
 
   t.is(res.status, 200);
-  t.true(res.text.includes(user.email));
-  t.false(res.text.includes(nonMemberUser.email));
+  t.true(res.text.includes(user[displayName]));
+  t.false(res.text.includes(nonMemberUser[displayName]));
 });
 
 test('PUT /dashboard/clients/:client_id/share > successfully', async (t) => {
@@ -513,12 +515,12 @@ test('PUT /dashboard/clients/:client_id/share > successfully', async (t) => {
     .put(`/en/dashboard/clients/${client.id}/share`)
     .set('Accept', 'application/json')
     .send({
-      member: nonMemberUser.email
+      member: nonMemberUser[displayName]
     });
 
   t.is(res.status, 200);
-  t.true(res.body.message.includes(user.email));
-  t.true(res.body.message.includes(nonMemberUser.email));
+  t.true(res.body.message.includes(user[displayName]));
+  t.true(res.body.message.includes(nonMemberUser[displayName]));
 
   query = await Clients.findById(client._id)
     .populate('members.user')
@@ -553,7 +555,7 @@ test('PUT /dashboard/clients/:client_id/share > fails if no user exists', async 
     .put(`/en/dashboard/clients/${client.id}/share`)
     .set('Accept', 'application/json')
     .send({
-      member: nonMemberUser.email
+      member: nonMemberUser[displayName]
     });
 
   t.is(res.status, 400);
@@ -579,7 +581,7 @@ test('DELETE /dashboard/clients/:client_id/share > successful', async (t) => {
   const res = await web
     .delete(`/en/dashboard/clients/${client.id}/share`)
     .send({
-      member: extraUser.email
+      member: extraUser[displayName]
     });
 
   t.is(res.status, 200);
@@ -611,9 +613,90 @@ test('DELETE /dashboard/clients/:client_id/share > fails if no member', async (t
   const res = await web
     .delete(`/en/dashboard/clients/${client.id}/share`)
     .send({
-      member: extraUser.email
+      member: extraUser[displayName]
     });
 
   t.is(res.status, 400);
   t.is(JSON.parse(res.text).message, phrases.MEMBER_DOES_NOT_EXIST);
+});
+
+test('POST /dashboard/clients/:client_id/share > successfully', async (t) => {
+  const { web, user } = t.context;
+  const extraUser = await factory.create('user');
+  const members = await factory.createMany('member', [
+    { user, group: 'admin' },
+    { user: extraUser, group: 'user' }
+  ]);
+  const client = await factory.create('client', { members });
+
+  let query = await Clients.findById(client._id)
+    .populate('members.user')
+    .lean()
+    .exec();
+
+  t.is(
+    query.members.find(
+      (member) => member.user[displayName] === extraUser[displayName]
+    ).group,
+    'user'
+  );
+
+  const res = await web
+    .post(`/en/dashboard/clients/${client.id}/share`)
+    .send({ member: extraUser[displayName], group: 'admin' });
+
+  t.is(res.status, 200);
+
+  query = await Clients.findById(client._id)
+    .populate('members.user')
+    .lean()
+    .exec();
+
+  t.is(
+    query.members.find((member) => member.user.id === extraUser.id).group,
+    'admin'
+  );
+});
+
+test('POST /dashboard/clients/:client_id/share > fails when changing self to owner but not there is no other owner', async (t) => {
+  const { web, user } = t.context;
+  const extraUser = await factory.create('user');
+  const members = await factory.createMany('member', [
+    { user, group: 'owner' },
+    { user: extraUser, group: 'user' }
+  ]);
+  const client = await factory.create('client', { members });
+
+  const res = await web
+    .post(`/en/dashboard/clients/${client.id}/share`)
+    .send({ member: user[displayName], group: 'admin' });
+
+  t.is(res.status, 400);
+  t.is(JSON.parse(res.text).message, phrases.MUST_HAVE_OWNER);
+});
+
+test('POST /dashboard/clients/:client_id/share > successful when another owner exists', async (t) => {
+  const { web, user } = t.context;
+  const extraUser = await factory.create('user');
+  const members = await factory.createMany('member', [
+    { user, group: 'owner' },
+    { user: extraUser, group: 'owner' }
+  ]);
+  const client = await factory.create('client', { members });
+
+  const res = await web
+    .post(`/en/dashboard/clients/${client.id}/share`)
+    .send({ member: user[displayName], group: 'admin' });
+
+  t.is(res.status, 200);
+
+  const query = await Clients.findById(client._id)
+    .populate('members.user')
+    .lean()
+    .exec();
+
+  t.is(
+    query.members.find((member) => member.user.id === user.id).group,
+    'admin'
+  );
 });
