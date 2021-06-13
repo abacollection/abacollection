@@ -48,6 +48,11 @@ clientRouter.put(
   web.dashboard.clients.ensureAdmin,
   web.dashboard.clients.addMember
 );
+clientRouter.post(
+  '/share',
+  web.dashboard.clients.ensureAdmin,
+  web.dashboard.clients.editMember
+);
 clientRouter.delete(
   '/share',
   web.dashboard.clients.ensureAdmin,

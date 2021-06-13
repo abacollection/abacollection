@@ -320,6 +320,44 @@ async function deleteMember(ctx) {
   await listShare(ctx);
 }
 
+async function editMember(ctx) {
+  const { body } = ctx.request;
+
+  // check that group is appropriate
+  if (!['owner', 'admin', 'user'].includes(body.group))
+    return ctx.throw(Boom.badRequest(ctx.translateError('NOT_A_GROUP_TYPE')));
+
+  // check that member exists
+  const member = ctx.state.client.members.find(
+    (member) => member.user && member.user[fields.displayName] === body.member
+  );
+
+  if (!member)
+    return ctx.throw(
+      Boom.badRequest(ctx.translateError('MEMBER_DOES_NOT_EXIST'))
+    );
+
+  // check that if changing an owner there is still an owner for the client
+  if (
+    member.group === 'owner' &&
+    ctx.state.client.members.filter((member) => member.group === 'owner')
+      .length <= 1
+  ) {
+    return ctx.throw(Boom.badRequest(ctx.translateError('MUST_HAVE_OWNER')));
+  }
+
+  ctx.state.client = await Clients.findById(ctx.state.client._id)
+    .populate('members.user', fields.displayName)
+    .exec();
+  ctx.state.client.members.find(
+    (member) => member.user && member.user[fields.displayName] === body.member
+  ).group = body.group;
+
+  ctx.state.client = await ctx.state.client.save({ validateBeforeSave: false });
+
+  await listShare(ctx);
+}
+
 module.exports = {
   list,
   add_client,
@@ -331,5 +369,6 @@ module.exports = {
   settings,
   listShare,
   addMember,
-  deleteMember
+  deleteMember,
+  editMember
 };

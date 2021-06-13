@@ -119,5 +119,7 @@ module.exports = {
   NO_MEMBERS:
     'There is a problem with sharing for this client. Please try again later',
   MUST_HAVE_OWNER:
-    'This action would leave no owner for this client. Please assign a new owner before removing yourself as owner.'
+    'This action would leave no owner for this client. Please assign a new owner before removing yourself as owner.',
+  NOT_A_GROUP_TYPE:
+    'This is not a group type. Must be one of the following values: "owner", "admin", "user".'
 };
