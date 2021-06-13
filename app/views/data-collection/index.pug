@@ -10,11 +10,14 @@ mixin clicker(extraClasses)
 mixin timer()
   .row.justify-content-center.timer
     .col-auto
-      .timer-hour 0
+      span.timer-hour 0
+      span= ' h'
     .col-auto.border-right.border-left
-      .timer-minute 0
+      span.timer-minute 0
+      span= ' m'
     .col-auto
-      .timer-second 0
+      span.timer-second 0
+      span= ' s'
     .w-100
     .col.text-center
       .btn-group
@@ -42,7 +45,7 @@ append stylesheets
 append scripts
   script(defer, src=manifest('js/data-collection.js'), integrity=manifest('js/data-collection.js', 'integrity'), crossorigin='anonymous')
 
-append navigation
+block body
   if targets.length !== 0
     #sidebar.fixed-top.vh-100.position-fixed.d-inline-flex
       #targetNavCollapse.collapse.navbar-collapse
@@ -55,8 +58,6 @@ append navigation
                 a.nav-link(href=`#${target.id}`)
                   = t(target.name)
       button#sidebarBtn(type='button', data-toggle='collapse', data-target='#targetNavCollapse', aria-controls='targetNavCollapse', aria-expanded='false', aria-label=t('Targets')).btn.btn-secondary.mt-auto.ml-3.mb-3: i.fa.fa-fw.fa-chevron-left
-
-block body
   .container-fluid.py-3
     .row
       if targets.length === 0
@@ -93,14 +94,14 @@ block body
             .card-body
               case target.data_type
                 when 'Frequency'
-                  .row.text-center.frequency
+                  .row.text-center.h-100.align-items-center.frequency
                     .col
                       +clicker()
                 when 'Duration'
-                  .row.duration
+                  .row.text-center.h-100.align-items-center.duration
                     +timer()
                 when 'Percent Correct'
-                  .row.percent-correct
+                  .row.text-center.h-100.align-items-center.percent-correct
                     .col
                       button.btn.percent-correct-previous(disabled): i.fas.fa-chevron-left
                     .col-6
@@ -113,25 +114,26 @@ block body
                     .col
                       button.btn.percent-correct-next(disabled): i.fas.fa-chevron-right
                 when 'Rate'
-                  .row.rate
-                    .row.border-bottom
-                      .col.correct
-                        .row.text-center
-                          .col
-                            = t('Correct')
-                        .row
-                          .col
-                            +clicker()
-                      .col.incorrect
-                        .row.text-center
-                          .col
-                            = t('Incorrect')
-                        .row
-                          .col
-                            +clicker()
-                    +timer()
+                  .row.text-center.h-100.align-items-center.rate
+                    .col
+                      .row.border-bottom
+                        .col.correct
+                          .row.text-center
+                            .col
+                              = t('Correct')
+                          .row.text-center
+                            .col
+                              +clicker()
+                        .col.incorrect
+                          .row.text-center
+                            .col
+                              = t('Incorrect')
+                          .row.text-center
+                            .col
+                              +clicker()
+                      +timer()
                 when 'Task Analysis'
-                  .row.ta
+                  .row.text-center.h-100.align-items-center.ta
                     .col
                       button.btn.ta-previous(disabled): i.fas.fa-chevron-left
                     .col-6

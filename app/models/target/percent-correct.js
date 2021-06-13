@@ -114,7 +114,7 @@ pcSchema.method('getPreviousData', async function () {
 });
 
 pcSchema.method('getCurrentData', async function () {
-  let ret = 'NA';
+  let ret;
 
   ret = await Datas.find({
     $and: [
@@ -128,6 +128,8 @@ pcSchema.method('getCurrentData', async function () {
       }
     ]
   }).exec();
+
+  if (ret.length === 0) return 'NA';
 
   const total = ret.length;
   const correct = ret.filter((data) => data.value === 'correct').length;
