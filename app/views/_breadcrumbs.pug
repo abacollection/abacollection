@@ -21,6 +21,6 @@ if !ctx.pathWithoutLocale.includes('dashboard')
         = _.isObject(breadcrumbs[breadcrumbs.length - 2]) ? breadcrumbs[breadcrumbs.length - 2].header || breadcrumbs[breadcrumbs.length - 2].name : t(titleize(humanize(breadcrumbs[breadcrumbs.length - 2])))
   if [ 'programs', 'targets' ].includes(breadcrumbs[breadcrumbs.length-1])
     a(href=_.isObject(breadcrumbs[breadcrumbs.length-3]) ? breadcrumbs[breadcrumbs.length-3].href : '').btn.btn-outline-secondary.text-center
-      span
+      .d-flex.align-items-center.h-100
         i.fas.fa-angle-left.pr-2
         = t(`Back to ${breadcrumbs[breadcrumbs.length-3].name}`)
