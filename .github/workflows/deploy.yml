@@ -12,7 +12,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh/
           echo "$SSH_PRIVATE_KEY" > ./id_rsa_abacollection_deploy
-          sudo chmod 600 ./deploy.key
+          sudo chmod 600 ./id_rsa_abacollection_deploy
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
         shell: bash
         env:
