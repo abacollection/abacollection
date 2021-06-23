@@ -11,8 +11,8 @@ jobs:
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh/
-          echo "$SSH_PRIVATE_KEY" > ./id_rsa_abacollection_deploy
-          sudo chmod 600 ./id_rsa_abacollection_deploy
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa_abacollection_deploy
+          sudo chmod 600 ~/.ssh/id_rsa_abacollection_deploy
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
         shell: bash
         env:
