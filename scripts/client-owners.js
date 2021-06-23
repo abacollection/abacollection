@@ -44,7 +44,7 @@ graceful.listen();
             };
         }
 
-        return client.save();
+        return client.save({ validateBeforeSave: false });
       })
     );
   }
