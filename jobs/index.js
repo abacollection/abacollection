@@ -1,7 +1,6 @@
 const { boolean } = require('boolean');
 
 const jobs = [
-  'client-owners',
   {
     name: 'welcome-email',
     interval: '1m'
