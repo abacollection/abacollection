@@ -35,15 +35,14 @@ graceful.listen();
     .populate('members')
     .exec();
 
+  logger.log('noOwner', JSON.stringify(noOwner, null, 2));
+
   if (noOwner.length > 0) {
     await Promise.all(
       noOwner.map((client) => {
         for (let i = 0; i < client.members.length; i++) {
           if (client.members[i].group === 'admin')
-            client.members[i] = {
-              user: client.members[i].user,
-              group: 'owner'
-            };
+            client.members[i].group = 'owner';
         }
 
         return client.save({ validateBeforeSave: false });
