@@ -20,7 +20,7 @@ jobs:
           SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
 
       - name: Install PM2
-        run: yarn add pm2
+        run: yarn global add pm2
 
       - name: Deploy
         run: yarn deploy
