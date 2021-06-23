@@ -1,6 +1,8 @@
 // eslint-disable-next-line import/no-unassigned-import
 require('../config/env');
 
+const { parentPort } = require('worker_threads');
+
 const Graceful = require('@ladjs/graceful');
 const Mongoose = require('@ladjs/mongoose');
 const sharedConfig = require('@ladjs/shared-config');
@@ -48,4 +50,7 @@ graceful.listen();
       })
     );
   }
+
+  if (parentPort) parentPort.postMessage('done');
+  else process.exit(0);
 })();
