@@ -40,7 +40,8 @@
   "deploy": {
     "production": {
       "user": "deploy",
-      "host": "abacollection-deploy",
+      "host": "45.32.202.28",
+      "key": "id_rsa_abacollection_deploy",
       "ref": "origin/master",
       "repo": "git@github.com:abacollection/abacollection.git",
       "path": "/var/www/production",
