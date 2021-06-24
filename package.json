@@ -264,7 +264,9 @@
     "test-coverage": "nps test-coverage",
     "watch": "nps watch",
     "deploy": "pm2 deploy ecosystem.json production update",
-    "release": "dotenv release-it --ci"
+    "release": "dotenv release-it --ci",
+    "reset-db": "mongo abacollection_development --eval='db.dropDatabase()' && mongorestore --gzip --archive=dev_dump.gz",
+    "dump-db": "mongodump --db=abacollection_development --excludeCollection=datas --gzip --archive=dev_dump.gz"
   },
   "xo": {
     "prettier": true,
