@@ -61,7 +61,7 @@ block body
                   tr(id=client.id)
                     td.align-middle= client.first_name
                     td.align-middle= client.last_name
-                    td.align-middle= client.dob ? dayjs(client.dob).format('MM/DD/YYYY') : ''
+                    td.align-middle= client.dob ? dayjs.utc(client.dob).format('MM/DD/YYYY') : ''
                     td.align-middle= client.gender
                     td.align-middle
                       .btn-group(role='group', aria-label=t('Actions'))
