@@ -1,5 +1,6 @@
 const test = require('ava');
 const { factory } = require('factory-girl');
+const dayjs = require('dayjs');
 
 const config = require('../../../config');
 const { Clients, Users } = require('../../../app/models');
@@ -222,7 +223,7 @@ test('PUT dashbaord/clients > successfully with name and dob', async (t) => {
   t.deepEqual(query.dob, client.dob);
 });
 
-test('PUT dashbaord/clients > successfully with name, gender, and dob', async (t) => {
+test('PUT dashboard/clients > successfully with name, gender, and dob', async (t) => {
   const { web } = t.context;
   const client = await factory.build('client');
 
