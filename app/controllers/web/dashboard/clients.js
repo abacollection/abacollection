@@ -16,7 +16,7 @@ async function list(ctx) {
     })
       .collation({ locale: ctx.locale, strength: 2 })
       .populate('members.user', 'id')
-      .sort(ctx.query.sort)
+      .sort(ctx.query.sort ? ctx.query.sort : 'last_name')
       .limit(ctx.query.limit)
       .skip(ctx.paginate.skip)
       .lean({ virtuals: true })

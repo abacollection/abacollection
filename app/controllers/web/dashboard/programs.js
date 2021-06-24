@@ -80,7 +80,7 @@ async function list(ctx) {
       $or: [{ client: ctx.state.client._id }]
     })
       .collation({ locale: ctx.locale, strength: 2 })
-      .sort(ctx.query.sort)
+      .sort(ctx.query.sort ? ctx.query.sort : 'name')
       .limit(ctx.query.limit)
       .skip(ctx.paginate.skip)
       .lean()
