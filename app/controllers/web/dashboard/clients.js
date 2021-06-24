@@ -50,7 +50,7 @@ async function list(ctx) {
   });
 }
 
-async function add_client(ctx) {
+async function addClient(ctx) {
   if (
     !isSANB(ctx.request.body.first_name) ||
     !isSANB(ctx.request.body.last_name)
@@ -202,7 +202,7 @@ async function ensureOwner(ctx, next) {
   ctx.throw(Boom.badRequest(ctx.translateError('NO_PERMISSION')));
 }
 
-async function delete_client(ctx) {
+async function deleteClient(ctx) {
   await Clients.findByIdAndRemove(ctx.state.client._id);
   ctx.flash('custom', {
     title: ctx.request.t('Success'),
@@ -360,12 +360,12 @@ async function editMember(ctx) {
 
 module.exports = {
   list,
-  add_client,
+  addClient,
   retrieveClients,
   retrieveClient,
   ensureAdmin,
   ensureOwner,
-  delete_client,
+  deleteClient,
   settings,
   listShare,
   addMember,

@@ -18,7 +18,7 @@ router.get('/clients', paginate.middleware(10, 50), web.dashboard.clients.list);
 
 router.use(web.dashboard.clients.retrieveClients);
 
-router.put('/clients', web.dashboard.clients.add_client);
+router.put('/clients', web.dashboard.clients.addClient);
 //
 // client specific routes
 //
@@ -34,7 +34,7 @@ clientRouter.post(
 clientRouter.delete(
   '/',
   web.dashboard.clients.ensureOwner,
-  web.dashboard.clients.delete_client
+  web.dashboard.clients.deleteClient
 );
 
 // sharing settings
