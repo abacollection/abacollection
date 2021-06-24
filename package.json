@@ -150,7 +150,7 @@
     "browserify": "^17.0.0",
     "bundle-collapser": "^1.4.0",
     "codecov": "^3.8.2",
-    "cssnano": "^5.0.5",
+    "cssnano": "^5.0.6",
     "dotenv-cli": "^4.0.0",
     "eslint": "^7.28.0",
     "eslint-config-xo-lass": "^1.0.5",
