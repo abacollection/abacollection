@@ -65,6 +65,7 @@ test('PUT data(JSON) > frequency', async (t) => {
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
+    timezone: dayjs.tz.guess(),
     date: dayjs(data.date).format('YYYY-MM-DDThh:mm'),
     data: data.value.toString(),
     add_data: 'true'
@@ -104,6 +105,7 @@ test('POST data(JSON) > frequency', async (t) => {
   t.is(query.value, data.value);
 
   const res = await web.post(`${root}/${target.id}/data`).send({
+    timezone: dayjs.tz.guess(),
     date: data.date.toISOString(),
     data: newData.value.toString(),
     origData: data.value.toString(),
@@ -149,6 +151,7 @@ test('POST data(JSON) > frequency > raw data', async (t) => {
   t.is(query.value, data.value);
 
   const res = await web.post(`${root}/${target.id}/data`).send({
+    timezone: dayjs.tz.guess(),
     id: data.id,
     data: newData.value.toString(),
     edit_raw_data: 'true',
@@ -183,10 +186,10 @@ async function putDuration(t, input, expected) {
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
+    timezone: dayjs.tz.guess(),
     date: dayjs(data.date).format('YYYY-MM-DDThh:mm'),
     data: input,
-    add_data: 'true',
-    timezone: 'America/New_York'
+    add_data: 'true'
   });
 
   t.is(res.status, 200);
@@ -220,10 +223,10 @@ async function postDuration(t, input, expected) {
   t.is(query.value, data.value);
 
   const res = await web.post(`${root}/${target.id}/data`).send({
+    timezone: dayjs.tz.guess(),
     id: data.id,
     data: input,
-    edit_raw_data: 'true',
-    timezone: 'America/New_York'
+    edit_raw_data: 'true'
   });
 
   t.is(res.status, 200);
@@ -270,12 +273,12 @@ test('PUT data(JSON) > rate', async (t) => {
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
+    timezone: dayjs.tz.guess(),
     date: dayjs(date).format('YYYY-MM-DDThh:mm'),
     correct: '3',
     incorrect: '4',
     counting_time: '1:00',
-    add_data: 'true',
-    timezone: 'America/New_York'
+    add_data: 'true'
   });
 
   t.is(res.status, 200);
@@ -320,10 +323,10 @@ test('POST data(JSON) > rate > raw data', async (t) => {
   t.is(query.value.counting_time, data.value.counting_time);
 
   const res = await web.post(`${root}/${target.id}/data`).send({
+    timezone: dayjs.tz.guess(),
     id: data.id,
     ...value,
-    edit_raw_data: 'true',
-    timezone: 'America/New_York'
+    edit_raw_data: 'true'
   });
 
   t.is(res.status, 200);
@@ -357,10 +360,10 @@ test('PUT data(JSON) > percent correct', async (t) => {
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
+    timezone: dayjs.tz.guess(),
     date: dayjs(data.date).format('YYYY-MM-DDThh:mm'),
     data: data.value.toString(),
-    add_data: 'true',
-    timezone: 'America/New_York'
+    add_data: 'true'
   });
 
   t.is(res.status, 200);
@@ -397,10 +400,10 @@ test('POST data(JSON) > percent correct > raw data', async (t) => {
   t.is(query.value, data.value);
 
   const res = await web.post(`${root}/${target.id}/data`).send({
+    timezone: dayjs.tz.guess(),
     id: data.id,
     data: newData.value.toString(),
-    edit_raw_data: 'true',
-    timezone: 'America/New_York'
+    edit_raw_data: 'true'
   });
 
   t.is(res.status, 200);
@@ -424,6 +427,7 @@ test('PUT data(JSON) > task analysis', async (t) => {
   });
 
   await web.put(`${root}`).send({
+    timezone: dayjs.tz.guess(),
     name: target.name,
     description: target.description,
     data_type: target.data_type,
@@ -442,10 +446,10 @@ test('PUT data(JSON) > task analysis', async (t) => {
   t.is(query, null);
 
   const res = await web.put(`${root}/${target.id}/data`).send({
+    timezone: dayjs.tz.guess(),
     date: dayjs(data.date).format('YYYY-MM-DDThh:mm'),
     data: data.value,
-    add_data: 'true',
-    timezone: 'America/New_York'
+    add_data: 'true'
   });
 
   t.is(res.status, 200);
@@ -470,6 +474,7 @@ test('POST data(JSON) > task analysis > raw data', async (t) => {
   });
 
   await web.put(`${root}`).send({
+    timezone: dayjs.tz.guess(),
     name: target.name,
     description: target.description,
     data_type: target.data_type,
@@ -496,10 +501,10 @@ test('POST data(JSON) > task analysis > raw data', async (t) => {
   t.is(query.value[2], data.value[2]);
 
   const res = await web.post(`${root}/${target.id}/data`).send({
+    timezone: dayjs.tz.guess(),
     id: data.id,
     data: newData.value,
-    edit_raw_data: 'true',
-    timezone: 'America/New_York'
+    edit_raw_data: 'true'
   });
 
   t.is(res.status, 200);

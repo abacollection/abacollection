@@ -58,7 +58,7 @@ async function addData(ctx, next) {
     const value = getValue(ctx.state.target.data_type, body);
 
     await Datas.create({
-      date: dayjs(body.date).toDate(),
+      date: dayjs.tz(body.date, body.timezone).utc(),
       value,
       data_type: ctx.state.target.data_type,
       creation_date: new Date(),
@@ -116,7 +116,7 @@ async function editData(ctx, next) {
       await data.save();
     } else
       await Datas.create({
-        date: dayjs.tz(body.date, body.timezone).toDate(),
+        date: dayjs.tz(body.date, body.timezone).utc(),
         value:
           Number.parseInt(body.data, 10) - Number.parseInt(body.origData, 10),
         data_type: ctx.state.target.data_type,

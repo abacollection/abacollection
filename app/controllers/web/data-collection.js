@@ -1,6 +1,7 @@
 const dayjs = require('dayjs');
 const revHash = require('rev-hash');
 const safeStringify = require('fast-safe-stringify');
+dayjs.extend(require('dayjs/plugin/utc'));
 
 const { Targets, Datas } = require('../../models');
 
@@ -80,7 +81,7 @@ async function update(ctx) {
             value: d.value ? d.value : d,
             target: target._id,
             user: ctx.state.user._id,
-            date: new Date(Date.now()),
+            date: dayjs.utc(),
             data_type: target.data_type
           });
         }
@@ -94,7 +95,7 @@ async function update(ctx) {
         value: targets[target._id].value,
         target: target._id,
         user: ctx.state.user._id,
-        date: new Date(Date.now()),
+        date: dayjs.utc(),
         data_type: target.data_type
       });
 

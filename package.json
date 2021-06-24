@@ -28,7 +28,7 @@
   ],
   "dependencies": {
     "@abacollection/assets": "^1.2.0",
-    "@abacollection/web": "^11.2.1",
+    "@abacollection/web": "^11.3.0",
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@hapi/boom": "^9.1.0",
     "@koa/router": "^10.0.0",

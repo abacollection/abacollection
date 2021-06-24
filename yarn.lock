@@ -15,10 +15,10 @@
     sweetalert2 "8.x"
     url-parse "^1.4.7"
 
-"@abacollection/web@^11.2.1":
-  version "11.2.1"
-  resolved "https://registry.yarnpkg.com/@abacollection/web/-/web-11.2.1.tgz#4beb7b38ccb65445235418b9e90914d9d36bd895"
-  integrity sha512-2G5ikltrmbmTu9L9XtV8MtvA2WkIytm2K+yJ5BhvqT4Tr/mzO1kyFstNXYU+Zc43NSKjR9SyiivYIN6GqVXUeA==
+"@abacollection/web@^11.3.0":
+  version "11.3.0"
+  resolved "https://registry.yarnpkg.com/@abacollection/web/-/web-11.3.0.tgz#014fc7c5d08ba8b1dd2dbe50dbbd707bb5f88998"
+  integrity sha512-4iN1sjLyW+xdfzfeVgDGRJNjMlQA6gMl78+A8htZaxkcw2805ZvIP2Ywitmp7fnS+100v/C6mktBNES8wiFuGQ==
   dependencies:
     "@hapi/boom" "^9.1.1"
     "@koa/router" "^10.0.0"

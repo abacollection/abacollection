@@ -22,6 +22,7 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
             tr.dataAddForm(hidden)
               input(type='hidden', name='_method', value='PUT', form='dataAdd')
               input(type='hidden', name='_csrf', value=ctx.csrf, form='dataAdd')
+              input(type='hidden', name='timezone', form='dataAdd')
               input(type='hidden', name='add_data', value='true', form='dataAdd')
               //- Date input
               td.align-middle
@@ -150,9 +151,11 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                                   a(id=`#${rawD.id}-toggle`, href='#', data-target=`#${rawD.id}-steps`, data-toggle='toggle', role='button', aria-expanded='false', aria-controls=`${rawD.id}-steps`).btn
                                     i.fas.fa-caret-right
                                     = ' '
-                                    = dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
+                                    local-time(datetime=rawD.date, month='short', day='numeric', year='numeric', hour='numeric', minute='numeric', second='numeric')
+                                      = dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
                                 else
-                                  = dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
+                                  local-time(datetime=rawD.date, month='short', day='numeric', year='numeric', hour='numeric', minute='numeric', second='numeric')
+                                    = dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
                               //- Data columns
                               if target.data_type === 'Rate'
                                 td.align-middle= rawD.value.correct
@@ -169,6 +172,7 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                                   form.ajax-form.confirm-prompt.btn-group(action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`), method="POST", autocomplete="off")
                                     input(type='hidden', name='_csrf', value=ctx.csrf)
                                     input(type='hidden', name='_method', value='DELETE')
+                                    input(type='hidden', name='timezone')
                                     input(type='hidden', name='id', value=rawD.id)
                                     button(type='submit', data-toggle='tooltip', data-title=t('Remove')).btn.btn-secondary.btn-sm: i.fa.fa-fw.fa-remove
                               td.align-middle(id=`${rawD.id}-edit-actions`, hidden)
@@ -193,6 +197,7 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                                 form(id=`${rawD.id}-dataEdit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`)).ajax-form.confirm-prompt
                                 input(type='hidden', name='_method', value='POST', form=`${rawD.id}-dataEdit`)
                                 input(type='hidden', name='_csrf', value=ctx.csrf, form=`${rawD.id}-dataEdit`)
+                                input(type='hidden', name='timezone', form=`${rawD.id}-dataEdit`)
                                 input(type='hidden', name='edit_raw_data', value='true', form=`${rawD.id}-dataEdit`)
                                 input(type='hidden', name='id', value=rawD.id, form=`${rawD.id}-dataEdit`)
                                 td.align-middle(colspan='3')
@@ -218,10 +223,13 @@ form#dataAdd(method='PUT', action=l(`/dashboard/clients/${client.id}/programs/${
                                 form(id=`${rawD.id}-dataEdit`, method='POST', action=l(`/dashboard/clients/${client.id}/programs/${program.id}/targets/${target.id}/data${ctx.request.search ? ctx.request.search : ''}`)).ajax-form.confirm-prompt
                                 input(type='hidden', name='_method', value='POST', form=`${rawD.id}-dataEdit`)
                                 input(type='hidden', name='_csrf', value=ctx.csrf, form=`${rawD.id}-dataEdit`)
+                                input(type='hidden', name='timezone', form=`${rawD.id}-dataEdit`)
                                 input(type='hidden', name='edit_raw_data', value='true', form=`${rawD.id}-dataEdit`)
                                 input(type='hidden', name='id', value=rawD.id, form=`${rawD.id}-dataEdit`)
                                 //- Date column
-                                td.align-middle= dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
+                                td.align-middle
+                                  local-time(datetime=rawD.date, month='short', day='numeric', year='numeric', hour='numeric', minute='numeric', second='numeric')
+                                    = dayjs(rawD.date).format('MM/DD/YYYY HH:mm:ss')
                                 //- Data columns
                                 if target.data_type === 'Rate'
                                   td.align-middle
