@@ -28,7 +28,7 @@
   ],
   "dependencies": {
     "@abacollection/assets": "^1.2.0",
-    "@abacollection/web": "^11.2.1",
+    "@abacollection/web": "^11.3.0",
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@hapi/boom": "^9.1.0",
     "@koa/router": "^10.0.0",
@@ -150,7 +150,7 @@
     "browserify": "^17.0.0",
     "bundle-collapser": "^1.4.0",
     "codecov": "^3.8.2",
-    "cssnano": "^5.0.5",
+    "cssnano": "^5.0.6",
     "dotenv-cli": "^4.0.0",
     "eslint": "^7.28.0",
     "eslint-config-xo-lass": "^1.0.5",
