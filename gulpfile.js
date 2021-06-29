@@ -22,7 +22,6 @@ const gulpXo = require('gulp-xo');
 const imagemin = require('gulp-imagemin');
 const lr = require('gulp-livereload');
 const makeDir = require('make-dir');
-const dartSass = require('sass');
 const pngquant = require('imagemin-pngquant');
 const postcss = require('gulp-postcss');
 const postcssPresetEnv = require('postcss-preset-env');
@@ -30,7 +29,7 @@ const pugLinter = require('gulp-pug-linter');
 const reporter = require('postcss-reporter');
 const rev = require('gulp-rev');
 const revSri = require('gulp-rev-sri');
-const sass = require('gulp-sass');
+const sass = require('gulp-sass')(require('sass'));
 const scssParser = require('postcss-scss');
 const sourcemaps = require('gulp-sourcemaps');
 const stylelint = require('stylelint');
@@ -39,9 +38,6 @@ const through2 = require('through2');
 const unassert = require('gulp-unassert');
 const Fiber = require('fibers');
 const { lastRun, watch, series, parallel, src, dest } = require('gulp');
-
-// explicitly set the compiler so it uses dart
-sass.compiler = dartSass;
 
 // required to disable watching of I18N files in @ladjs/i18n
 // otherwises tasks will fail to exit due to watchers running
