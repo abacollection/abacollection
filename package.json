@@ -176,7 +176,7 @@
     "gulp-rev": "^9.0.0",
     "gulp-rev-all": "^3.0.0",
     "gulp-rev-sri": "0.0.4",
-    "gulp-sass": "^4.1.0",
+    "gulp-sass": "^5.0.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-terser": "^2.0.1",
     "gulp-unassert": "^2.0.0",
