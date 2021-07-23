@@ -123,7 +123,7 @@
     "rev-hash": "^3.0.0",
     "sanitize-html": "^2.4.0",
     "signale": "^1.4.0",
-    "sortablejs": "^1.10.2",
+    "sortablejs": "^1.14.0",
     "speakingurl": "^14.0.1",
     "stacktrace-js": "^2.0.2",
     "striptags": "^3.1.1",
