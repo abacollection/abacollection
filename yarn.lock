@@ -1709,10 +1709,10 @@
     "@otplib/plugin-crypto" "^12.0.1"
     "@otplib/plugin-thirty-two" "^12.0.1"
 
-"@primer/css@^17.3.0":
-  version "17.3.0"
-  resolved "https://registry.yarnpkg.com/@primer/css/-/css-17.3.0.tgz#992d6724db287bb4c5947b798007d6f46bce0ad7"
-  integrity sha512-fKxMh6CixHxRI/0zQmEkQ2eP0960TeIsHsc2oKFvGVDwaIi7Dm1BOC10lrC9aEMxsvRG3rfCW2HXgsaua+iGKA==
+"@primer/css@^17.4.0":
+  version "17.4.0"
+  resolved "https://registry.yarnpkg.com/@primer/css/-/css-17.4.0.tgz#86a390811de7f1ca0f19507b047e822f06eeada6"
+  integrity sha512-Zqb7z7pi+iySb2+RAmw9b/3HeDtNwqmlW4wJWq61VBqlY+xDdyauf5LVlVtXAXTxRsBarLqTpDcz4DyRJfAIMA==
   dependencies:
     "@primer/primitives" "^4.3.5"
 
@@ -17712,10 +17712,10 @@ sort-keys@^2.0.0:
   dependencies:
     is-plain-obj "^1.0.0"
 
-sortablejs@^1.10.2:
-  version "1.13.0"
-  resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.13.0.tgz#3ab2473f8c69ca63569e80b1cd1b5669b51269e9"
-  integrity sha512-RBJirPY0spWCrU5yCmWM1eFs/XgX2J5c6b275/YyxFRgnzPhKl/TDeU2hNR8Dt7ITq66NRPM4UlOt+e5O4CFHg==
+sortablejs@^1.14.0:
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.14.0.tgz#6d2e17ccbdb25f464734df621d4f35d4ab35b3d8"
+  integrity sha512-pBXvQCs5/33fdN1/39pPL0NZF20LeRbLQ5jtnheIPN9JQAaufGjKdWduZn4U7wCtVuzKhmRkI0DFYHYRbB2H1w==
 
 source-map-js@^0.6.2:
   version "0.6.2"
