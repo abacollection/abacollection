@@ -1723,10 +1723,10 @@
     "@otplib/plugin-crypto" "^12.0.1"
     "@otplib/plugin-thirty-two" "^12.0.1"
 
-"@primer/css@^17.3.0":
-  version "17.3.0"
-  resolved "https://registry.yarnpkg.com/@primer/css/-/css-17.3.0.tgz#992d6724db287bb4c5947b798007d6f46bce0ad7"
-  integrity sha512-fKxMh6CixHxRI/0zQmEkQ2eP0960TeIsHsc2oKFvGVDwaIi7Dm1BOC10lrC9aEMxsvRG3rfCW2HXgsaua+iGKA==
+"@primer/css@^17.4.0":
+  version "17.4.0"
+  resolved "https://registry.yarnpkg.com/@primer/css/-/css-17.4.0.tgz#86a390811de7f1ca0f19507b047e822f06eeada6"
+  integrity sha512-Zqb7z7pi+iySb2+RAmw9b/3HeDtNwqmlW4wJWq61VBqlY+xDdyauf5LVlVtXAXTxRsBarLqTpDcz4DyRJfAIMA==
   dependencies:
     "@primer/primitives" "^4.3.5"
 
