@@ -149,7 +149,7 @@
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
     "bundle-collapser": "^1.4.0",
-    "codecov": "^3.8.2",
+    "codecov": "^3.8.3",
     "cssnano": "^5.0.6",
     "dotenv-cli": "^4.0.0",
     "eslint": "^7.28.0",
